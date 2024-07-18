@@ -20,13 +20,24 @@ const Home = () => {
             if (!username) setUsernameErrMsg("Username is required!")
             return;
         }
+        axios
+            .create({
+                baseURL: import.meta.env.VITE_IS_DEV ? 'http://localhost:4000' : ''
+            })
+            .post('/api/v1/auth/register', { email, username, password })
+            .then((res) => {
+                console.log(res)
+            })
+            .catch((error) => {
+                console.log(error)
+            })
+        
         setPassword(""); setEmail(""); setUsername("");
-        alert("Handling Sign Up")
     }
 
     return (
         <div className='w-full h-[1000px] flex flex-col items-center'>
-            <div className='w-[90%] md:w-[500px] m-auto flex flex-col justify-center'>
+            <div className='w-[90%] sm:w-[500px] m-auto flex flex-col justify-center'>
                 <h1 className='text-center text-3xl'> Sign Up</h1>
                 <br />
                 <>
@@ -40,14 +51,15 @@ const Home = () => {
                                 setEmail(e.target.value)
                                 if (!e.target.value) {
                                     setEmailErrMsg("Email is required!")
-                                } else if (e.target.value.length > 6 && e.target.value.length < 28) {
+                                } else if (e.target.value.length >= 6 && e.target.value.length <= 28) {
                                     setEmailErrMsg("")
-                                } else if (e.target.value.length <= 6) {
+                                } else if (e.target.value.length < 6) {
                                     setEmailErrMsg("Email too short!")
                                 } else {
                                     setEmailErrMsg("Email too long!")
                                 }
                             }}
+                            onKeyDown={(e) => { e.key === "Enter" && handleSignup() }}
                         />
                     </div>
                     <div className='h-7'>
@@ -65,14 +77,15 @@ const Home = () => {
                                 setUsername(e.target.value)
                                 if (!e.target.value) {
                                     setUsernameErrMsg("Username is required!")
-                                } else if (e.target.value.length > 6 && e.target.value.length < 28) {
+                                } else if (e.target.value.length >= 6 && e.target.value.length <= 28) {
                                     setUsernameErrMsg("")
-                                } else if (e.target.value.length <= 6) {
+                                } else if (e.target.value.length < 6) {
                                     setUsernameErrMsg("Username too short!")
                                 } else {
                                     setUsernameErrMsg("Username too long!")
                                 }
                             }}
+                            onKeyDown={(e) => { e.key === "Enter" && handleSignup() }}
                         />
                     </div>
                     <div className='h-7'>
@@ -90,14 +103,15 @@ const Home = () => {
                                 setPassword(e.target.value)
                                 if (!e.target.value) {
                                     setPasswordErrMsg("Password is required!")
-                                } else if (e.target.value.length > 6 && e.target.value.length < 28) {
+                                } else if (e.target.value.length >= 6 && e.target.value.length <= 28) {
                                     setPasswordErrMsg("")
-                                } else if (e.target.value.length <= 6) {
+                                } else if (e.target.value.length < 6) {
                                     setPasswordErrMsg("Password too short!")
                                 } else {
                                     setPasswordErrMsg("Password too long!")
                                 }
                             }}
+                            onKeyDown={(e) => { e.key === "Enter" && handleSignup() }}
                         />
                     </div>
                     <div className='h-7'>

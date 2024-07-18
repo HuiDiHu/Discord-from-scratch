@@ -17,13 +17,24 @@ const Home = () => {
             if (!password) setPasswordErrMsg("Password is required!")
             return;
         }
+        axios
+            .create({
+                baseURL: import.meta.env.VITE_IS_DEV ? 'http://localhost:4000' : ''
+            })
+            .post('/api/v1/auth/login', { email, password })
+            .then((res) => {
+                console.log(res)
+            })
+            .catch((error) => {
+                console.log(error)
+            })
+
         setPassword(""); setEmail("");
-        alert("Handling Log In")
     }
 
     return (
         <div className='w-full h-[1000px] flex flex-col items-center'>
-            <div className='w-[90%] md:w-[500px] m-auto flex flex-col justify-center'>
+            <div className='w-[90%] sm:w-[500px] m-auto flex flex-col justify-center'>
                 <h1 className='text-center text-3xl'> Log In</h1>
                 <br />
                 <>
@@ -37,14 +48,15 @@ const Home = () => {
                                 setEmail(e.target.value)
                                 if (!e.target.value) {
                                     setEmailErrMsg("Email is required!")
-                                } else if (e.target.value.length > 6 && e.target.value.length < 28) {
+                                } else if (e.target.value.length >= 6 && e.target.value.length <= 28) {
                                     setEmailErrMsg("")
-                                } else if (e.target.value.length <= 6) {
+                                } else if (e.target.value.length < 6) {
                                     setEmailErrMsg("Email too short!")
                                 } else {
                                     setEmailErrMsg("Email too long!")
                                 }
                             }}
+                            onKeyDown={(e) => { e.key === "Enter" && handleLogin() }}
                         />
                     </div>
                     <div className='h-7'>
@@ -62,14 +74,15 @@ const Home = () => {
                                 setPassword(e.target.value)
                                 if (!e.target.value) {
                                     setPasswordErrMsg("Password is required!")
-                                } else if (e.target.value.length > 6 && e.target.value.length < 28) {
+                                } else if (e.target.value.length >= 6 && e.target.value.length <= 28) {
                                     setPasswordErrMsg("")
-                                } else if (e.target.value.length <= 6) {
+                                } else if (e.target.value.length < 6) {
                                     setPasswordErrMsg("Password too short!")
                                 } else {
                                     setPasswordErrMsg("Password too long!")
                                 }
                             }}
+                            onKeyDown={(e) => { e.key === "Enter" && handleLogin() }}
                         />
                     </div>
                     <div className='h-7'>
