@@ -13,13 +13,18 @@ const Home = () => {
 
     const navigate = useNavigate();
     const handleSignup = () => {
-        if (emailErrMsg || passwordErrMsg || usernameErrMsg) return;
         if (!email || !password || !username) {
             if (!email) setEmailErrMsg("Email is required!")
             if (!password) setPasswordErrMsg("Password is required!")
             if (!username) setUsernameErrMsg("Username is required!")
             return;
         }
+        const emailRegix = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+        if (!emailRegix.test(email)) {
+            setEmailErrMsg("Email is invalid!")
+            return;
+        }
+        if (email.length < 6 || email.length > 28 || password.length < 6 || password.length > 28 || username.length < 6 || username.length > 28) return;
         axios
             .create({
                 baseURL: import.meta.env.VITE_IS_DEV ? 'http://localhost:4000' : ''
@@ -27,12 +32,15 @@ const Home = () => {
             .post('/api/v1/auth/register', { email, username, password })
             .then((res) => {
                 console.log(res)
+                setPassword(""); setEmail(""); setUsername("");
+                setPasswordErrMsg(""); setEmailErrMsg(""); setUsernameErrMsg("");
+                //redirect to chatroom
             })
             .catch((error) => {
                 console.log(error)
+                setEmailErrMsg(error.response.data.emailErrMsg)
             })
-        
-        setPassword(""); setEmail(""); setUsername("");
+
     }
 
     return (
@@ -42,11 +50,12 @@ const Home = () => {
                 <br />
                 <>
                     <span className='mb-1 ml-1'>Email</span>
-                    <div className={`border-2 ${emailErrMsg ? 'border-red-600' : 'border-gray-500 focus-within:border-sky-500'} rounded-lg pl-4 py-2 mb-1`}>
+                    <div className={`border-2 ${emailErrMsg ? 'border-red-600' : 'border-gray-500 focus-within:border-sky-500'} rounded-lg pl-4 py-2`}>
                         <input
                             className='bg-transparent text-lg w-[90%] outline-none placeholder:text-neutral-500'
                             placeholder='Enter Email'
                             value={email}
+                            type='email'
                             onChange={(e) => {
                                 setEmail(e.target.value)
                                 if (!e.target.value) {
@@ -62,13 +71,13 @@ const Home = () => {
                             onKeyDown={(e) => { e.key === "Enter" && handleSignup() }}
                         />
                     </div>
-                    <div className='h-7'>
-                        <span className='text-red-600 text-sm ml-1'>{emailErrMsg}</span>
+                    <div className='h-6'>
+                        <span className='text-red-600 text-xs ml-1'>{emailErrMsg}</span>
                     </div>
                 </>
                 <>
                     <span className='mb-1 ml-1'>Username</span>
-                    <div className={`border-2 ${usernameErrMsg ? 'border-red-600' : 'border-gray-500 focus-within:border-sky-500'} rounded-lg pl-4 py-2 mb-1`}>
+                    <div className={`border-2 ${usernameErrMsg ? 'border-red-600' : 'border-gray-500 focus-within:border-sky-500'} rounded-lg pl-4 py-2`}>
                         <input
                             className='bg-transparent text-lg w-[90%] outline-none placeholder:text-neutral-500'
                             placeholder='Enter Username'
@@ -88,17 +97,18 @@ const Home = () => {
                             onKeyDown={(e) => { e.key === "Enter" && handleSignup() }}
                         />
                     </div>
-                    <div className='h-7'>
-                        <span className='text-red-600 text-sm ml-1'>{usernameErrMsg}</span>
+                    <div className='h-6'>
+                        <span className='text-red-600 text-xs ml-1'>{usernameErrMsg}</span>
                     </div>
                 </>
                 <>
                     <span className='mb-1 ml-1'>Password</span>
-                    <div className={`border-2 ${passwordErrMsg ? 'border-red-600' : 'border-gray-500 focus-within:border-sky-500'} rounded-lg pl-4 py-2 mb-1`}>
+                    <div className={`border-2 ${passwordErrMsg ? 'border-red-600' : 'border-gray-500 focus-within:border-sky-500'} rounded-lg pl-4 py-2`}>
                         <input
                             className='bg-transparent text-lg w-[90%] outline-none placeholder:text-neutral-500'
                             placeholder='Enter Password'
                             value={password}
+                            type='password'
                             onChange={(e) => {
                                 setPassword(e.target.value)
                                 if (!e.target.value) {
@@ -114,22 +124,22 @@ const Home = () => {
                             onKeyDown={(e) => { e.key === "Enter" && handleSignup() }}
                         />
                     </div>
-                    <div className='h-7'>
-                        <span className='text-red-600 text-sm ml-1'>{passwordErrMsg}</span>
+                    <div className='h-6'>
+                        <span className='text-red-600 text-xs ml-1'>{passwordErrMsg}</span>
                     </div>
                 </>
                 <div className='w-full flex justify-center space-x-4 mt-3'>
-                    <button 
+                    <button
                         className='bg-neutral-600 rounded-lg py-2 px-4 hover:bg-neutral-400 hover:text-black hover:[text-shadow:_0_1.5px_0_rgb(255_255_255_/_40%)] shadow-md ease-in-out duration-300'
                         onClick={handleSignup}
                     >
                         Create Account
                     </button>
-                    <button 
+                    <button
                         className='flex items-center bg-teal-500 rounded-lg pl-3 pr-4 px-4 text-black hover:text-white hover:bg-teal-700 hover:[text-shadow:_0_1.5px_0_rgb(0_0_0_/_40%)] shadow-md ease-in-out duration-300'
-                        onClick={() => {navigate("/login");}}
+                        onClick={() => { navigate("/login"); }}
                     >
-                        <IoMdArrowRoundBack className='mr-1'/>
+                        <IoMdArrowRoundBack className='mr-1' />
                         Back
                     </button>
                 </div>
