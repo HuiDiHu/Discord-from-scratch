@@ -27,7 +27,8 @@ const Home = () => {
         if (email.length < 6 || email.length > 28 || password.length < 6 || password.length > 28 || username.length < 6 || username.length > 28) return;
         axios
             .create({
-                baseURL: import.meta.env.VITE_IS_DEV ? 'http://localhost:4000' : ''
+                baseURL: import.meta.env.VITE_IS_DEV ? 'http://localhost:4000' : '',
+                withCredentials: true
             })
             .post('/api/v1/auth/register', { email, username, password })
             .then((res) => {
