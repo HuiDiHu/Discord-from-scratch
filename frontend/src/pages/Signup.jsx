@@ -37,7 +37,7 @@ const Signup = () => {
             .post('/api/v1/auth/register', { email, username, password })
             .then((res) => {
                 setUser({ ...res.data })
-                navigate('/friends')
+                navigate('/channels/@me')
             })
             .catch((error) => {
                 setEmailErrMsg(error.response.data.emailErrMsg || "")

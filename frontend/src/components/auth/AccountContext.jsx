@@ -22,7 +22,6 @@ const UserContext = ({ children }) => {
                 } else {
                     setUser({ ...res.data })
                     console.log("logged in", { ...res.data })
-                    navigate('/friends')
                 }
             })
             .catch((error) => {
