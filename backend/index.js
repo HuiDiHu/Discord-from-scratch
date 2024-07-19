@@ -1,9 +1,11 @@
 const express = require('express');
+require('dotenv').config();
+require('express-async-errors');
 const { Server } = require('socket.io')
 const helmet = require('helmet')
 const session = require('express-session')
-require('dotenv').config();
-require('express-async-errors');
+const RedisStore = require('connect-redis').default
+const redisClient = require('./redis')
 
 const app = express();
 const server = require("http").createServer(app);
@@ -39,6 +41,7 @@ app.use(
         secret: process.env.COOKIE_SECRET,
         credentials: true,
         name: "sid",
+        store: new RedisStore({ client: redisClient }),
         resave: false,
         saveUninitialized: false,
         cookie: {
