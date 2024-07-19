@@ -1,9 +1,12 @@
-import { useState } from 'react'
+import { useContext, useState } from 'react'
 import axios from 'axios'
 import { useNavigate } from "react-router-dom";
+import { AccountContext } from 'src/components/auth/AccountContext';
 
 
-const Home = () => {
+const Login = () => {
+    const { setUser } = useContext(AccountContext)
+
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
     const [emailErrMsg, setEmailErrMsg] = useState("")
@@ -29,15 +32,12 @@ const Home = () => {
             })
             .post('/api/v1/auth/login', { email, password })
             .then((res) => {
-                console.log(res)
-                setPassword(""); setEmail("");
-                setPasswordErrMsg(""); setEmailErrMsg("");
-                //redirect to chatroom
+                setUser({ ...res.data })
+                navigate('/friends')
             })
             .catch((error) => {
-                console.log(error)
                 setEmailErrMsg(error.response.data.emailErrMsg || "")
-                setPasswordErrMsg(error.response.data.passwordErrMsg || "")
+                setPasswordErrMsg(" ")
             })
 
     }
@@ -108,9 +108,9 @@ const Home = () => {
                     >
                         Log In
                     </button>
-                    <button 
+                    <button
                         className='bg-neutral-600 rounded-lg py-2 px-4 hover:bg-neutral-400 hover:text-black hover:[text-shadow:_0_1.5px_0_rgb(255_255_255_/_40%)] shadow-md ease-in-out duration-300'
-                        onClick={() => {navigate('/signup');}}
+                        onClick={() => { navigate('/signup'); }}
                     >
                         Create Account
                     </button>
@@ -120,4 +120,4 @@ const Home = () => {
     )
 }
 
-export default Home
+export default Login

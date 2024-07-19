@@ -1,9 +1,13 @@
-import { useState } from 'react'
+import { useContext, useState } from 'react'
 import axios from 'axios'
 import { IoMdArrowRoundBack } from "react-icons/io";
 import { useNavigate } from "react-router-dom";
+import { AccountContext } from 'src/components/auth/AccountContext';
 
-const Home = () => {
+
+const Signup = () => {
+    const { setUser } = useContext(AccountContext)
+
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
     const [username, setUsername] = useState("")
@@ -32,14 +36,11 @@ const Home = () => {
             })
             .post('/api/v1/auth/register', { email, username, password })
             .then((res) => {
-                console.log(res)
-                setPassword(""); setEmail(""); setUsername("");
-                setPasswordErrMsg(""); setEmailErrMsg(""); setUsernameErrMsg("");
-                //redirect to chatroom
+                setUser({ ...res.data })
+                navigate('/friends')
             })
             .catch((error) => {
-                console.log(error)
-                setEmailErrMsg(error.response.data.emailErrMsg)
+                setEmailErrMsg(error.response.data.emailErrMsg || "")
             })
 
     }
@@ -149,4 +150,4 @@ const Home = () => {
     )
 }
 
-export default Home
+export default Signup

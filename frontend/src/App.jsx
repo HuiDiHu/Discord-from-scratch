@@ -1,13 +1,11 @@
-import { Routes, Route } from 'react-router-dom';
-import Login from 'src/pages/Login';
-import Signup from 'src/pages/Signup';
+import UserContext from 'src/components/auth/AccountContext.jsx';
+import Views from './components/Views';
 
 function App() {
   return (
-    <Routes>
-      <Route path='/login' element={<Login />} />
-      <Route path='/signup' element={<Signup />} />
-    </Routes>
+    <UserContext>
+      <Views />
+    </UserContext>
   )
 }
 

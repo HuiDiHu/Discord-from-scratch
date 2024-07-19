@@ -3,10 +3,11 @@ const router = express.Router()
 
 const {
     register,
-    login
+    login,
+    verifyLogin
 } = require('../controllers/auth')
 
-router.post('/login', login)
-router.post('/register', register)
+router.route('/login').get(verifyLogin).post(login)
+router.route('/register').post(register)
 
 module.exports = router;
