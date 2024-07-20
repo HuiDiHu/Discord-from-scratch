@@ -1,6 +1,6 @@
 import { useContext, useState } from 'react'
-import axios from 'axios'
-import { IoMdArrowRoundBack } from "react-icons/io";
+import axios from 'axios' //an alternative to fetch request to send data to database
+import { IoMdArrowRoundBack } from "react-icons/io"; //basic arrow icon as an html element
 import { useNavigate } from "react-router-dom";
 import { AccountContext } from 'src/components/auth/AccountContext';
 
@@ -8,28 +8,33 @@ import { AccountContext } from 'src/components/auth/AccountContext';
 const Signup = () => {
     const { setUser } = useContext(AccountContext)
 
-    const [email, setEmail] = useState("")
+    //useState() functions from react initialize (email, password, etc) variables with empty strings and update them based on user input
+    const [email, setEmail] = useState("") 
     const [password, setPassword] = useState("")
     const [username, setUsername] = useState("")
     const [emailErrMsg, setEmailErrMsg] = useState("")
     const [passwordErrMsg, setPasswordErrMsg] = useState("")
     const [usernameErrMsg, setUsernameErrMsg] = useState("")
 
+    //used to send the user to different pages
+    //called with navigate("route")
     const navigate = useNavigate();
+
+    //activated when enter or continue button is pressed
     const handleSignup = () => {
         if (!email || !password || !username) {
             if (!email) setEmailErrMsg("Email is required!")
             if (!password) setPasswordErrMsg("Password is required!")
             if (!username) setUsernameErrMsg("Username is required!")
-            return;
+            return; //contraints not met
         }
         const emailRegix = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
         if (!emailRegix.test(email)) {
             setEmailErrMsg("Email is invalid!")
-            return;
+            return; //constraints not met
         }
-        if (email.length < 6 || email.length > 28 || password.length < 6 || password.length > 28 || username.length < 6 || username.length > 28) return;
-        axios
+        if (email.length < 6 || email.length > 28 || password.length < 6 || password.length > 28 || username.length < 6 || username.length > 28) return; //constraints not met so terminate function before entries are saved
+        axios //use axios to save to postgresql database
             .create({
                 baseURL: import.meta.env.VITE_IS_DEV ? 'http://localhost:4000' : '',
                 withCredentials: true
@@ -45,16 +50,16 @@ const Signup = () => {
 
     }
 
-    return (
+    return ( //flex-col stacks elements vertically. flex by itself stacks elements horizontally
         <div className='w-full h-[1000px] flex flex-col items-center'>
-            <div className='w-[90%] sm:w-[500px] m-auto flex flex-col justify-center'>
-                <h1 className='text-center text-3xl'> Sign Up</h1>
+            <div className='w-[90%] sm:w-[500px] m-auto flex flex-col justify-center bg-[#313167] rounded-[15%] p-8'>
+                <h1 className='text-center text-3xl bg-[#98C8DE] p-5 rounded-xl w-1/2 m-auto'> Sign Up</h1>
                 <br />
                 <>
-                    <span className='mb-1 ml-1'>Email</span>
-                    <div className={`border-2 ${emailErrMsg ? 'border-red-600' : 'border-gray-500 focus-within:border-sky-500'} rounded-lg pl-4 py-2`}>
+                    <span className='mb-2 mt-5 text-xl'>Email</span>
+                    <div className={`border-2 ${emailErrMsg ? 'border-red-600' : 'border-gray-400 focus-within:border-sky-500'} rounded-lg pl-4 py-2 bg-[#5C7Fd0]`}>
                         <input
-                            className='bg-transparent text-lg w-[90%] outline-none placeholder:text-neutral-500'
+                            className='bg-transparent text-black w-[90%] outline-none placeholder-black'
                             placeholder='Enter Email'
                             value={email}
                             type='email'
@@ -78,10 +83,10 @@ const Signup = () => {
                     </div>
                 </>
                 <>
-                    <span className='mb-1 ml-1'>Username</span>
-                    <div className={`border-2 ${usernameErrMsg ? 'border-red-600' : 'border-gray-500 focus-within:border-sky-500'} rounded-lg pl-4 py-2`}>
+                    <span className='mb-2 mt-5 text-xl'>Username</span>
+                    <div className={`border-2 ${usernameErrMsg ? 'border-red-600' : 'border-gray-400 focus-within:border-sky-500'} rounded-lg pl-4 py-2 bg-[#5C7Fd0]`}>
                         <input
-                            className='bg-transparent text-lg w-[90%] outline-none placeholder:text-neutral-500'
+                            className='bg-transparent text-black w-[90%] outline-none placeholder-black'
                             placeholder='Enter Username'
                             value={username}
                             onChange={(e) => {
@@ -104,10 +109,10 @@ const Signup = () => {
                     </div>
                 </>
                 <>
-                    <span className='mb-1 ml-1'>Password</span>
-                    <div className={`border-2 ${passwordErrMsg ? 'border-red-600' : 'border-gray-500 focus-within:border-sky-500'} rounded-lg pl-4 py-2`}>
+                    <span className='mb-2 mt-5 text-xl'>Password</span>
+                    <div className={`border-2 ${passwordErrMsg ? 'border-red-600' : 'border-gray-400 focus-within:border-sky-500'} rounded-lg pl-4 py-2 bg-[#5C7Fd0]`}>
                         <input
-                            className='bg-transparent text-lg w-[90%] outline-none placeholder:text-neutral-500'
+                            className='bg-transparent text-black w-[90%] outline-none placeholder-black'
                             placeholder='Enter Password'
                             value={password}
                             type='password'
@@ -130,21 +135,19 @@ const Signup = () => {
                         <span className='text-red-600 text-xs ml-1'>{passwordErrMsg}</span>
                     </div>
                 </>
-                <div className='w-full flex justify-center space-x-4 mt-3'>
                     <button
-                        className='bg-neutral-600 rounded-lg py-2 px-4 hover:bg-neutral-400 hover:text-black hover:[text-shadow:_0_1.5px_0_rgb(255_255_255_/_40%)] shadow-md ease-in-out duration-300'
+                        className='bg-[#203FAF] rounded-xl py-4 mb-5 text-white hover:bg-teal-700 hover:[text-shadow:_0_1.5px_0_rgb(0_0_0_/_40%)] shadow-md ease-in-out duration-300 mt-5 w-1/2 mx-auto'
                         onClick={handleSignup}
                     >
-                        Create Account
+                        Continue
                     </button>
                     <button
-                        className='flex items-center bg-teal-500 rounded-lg pl-3 pr-4 px-4 text-black hover:text-white hover:bg-teal-700 hover:[text-shadow:_0_1.5px_0_rgb(0_0_0_/_40%)] shadow-md ease-in-out duration-300'
+                        className='bg-[#203FAF] rounded-xl py-4 mb-5 text-white content-center hover:bg-teal-700 hover:[text-shadow:_0_1.5px_0_rgb(0_0_0_/_40%)] shadow-md ease-in-out duration-300 mt-5 w-1/2 mx-auto flex justify-center items-center'
                         onClick={() => { navigate("/login"); }}
                     >
-                        <IoMdArrowRoundBack className='mr-1' />
+                        <IoMdArrowRoundBack className='mr-1'/>
                         Back
                     </button>
-                </div>
             </div>
         </div>
     )
