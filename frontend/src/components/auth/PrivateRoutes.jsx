@@ -1,6 +1,6 @@
 import { useContext } from "react";
 import { Outlet, Navigate } from "react-router-dom";
-import { AccountContext } from "./AccountContext";
+import { AccountContext } from "./UserContext";
 
 const useAuth = () => {
     const { user } = useContext(AccountContext)

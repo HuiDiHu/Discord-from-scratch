@@ -1,7 +1,7 @@
 import { useContext, useState } from 'react'
 import axios from 'axios'
 import { useNavigate } from "react-router-dom";
-import { AccountContext } from 'src/components/auth/AccountContext';
+import { AccountContext } from 'src/components/auth/UserContext';
 
 
 const Login = () => {
@@ -70,12 +70,12 @@ const Login = () => {
                             onKeyDown={(e) => { e.key === "Enter" && handleLogin() }}
                         />
                     </div>
-                    <div className='h-6'>
+                    <div className='h-6 bg-red'>
                         <span className='text-red-600 text-xs ml-1'>{emailErrMsg}</span>
                     </div>
                 </>
                 <>
-                    <span className='mb-2 mt-5 text-xl'>Password</span>
+                    <span className='mb-2 mt-2 text-xl'>Password</span>
                     <div className={`border-2 ${passwordErrMsg ? 'border-red-600' : 'border-gray-400 focus-within:border-sky-500'} rounded-lg pl-4 py-2 bg-[#5C7Fd0]`}>
                         <input
                             className='bg-transparent text-black w-[90%] outline-none placeholder-black'

@@ -1,4 +1,4 @@
-import UserContext from 'src/components/auth/AccountContext.jsx';
+import UserContext from 'src/components/auth/UserContext';
 import Views from './components/Views';
 
 function App() {

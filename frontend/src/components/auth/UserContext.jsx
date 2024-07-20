@@ -2,6 +2,7 @@ import axios from "axios";
 import { useState, createContext, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
+
 export const AccountContext = createContext();
 
 const UserContext = ({ children }) => {
@@ -17,10 +18,11 @@ const UserContext = ({ children }) => {
             .get('/api/v1/auth/login')
             .then((res) => {
                 //I might just have the tism frfr what the fuck am I writing at 4AM
-                if (!res || res.status >= 400 || !res.data) {
+                if (!res || res.status >= 400 || !res.data || !res.data.loggedIn) {
                     setUser({ loggedIn: false })
                 } else {
                     setUser({ ...res.data })
+                    if (!window.location.pathname.startsWith('/channels')) { navigate('/channels/@me') }
                     console.log("logged in", { ...res.data })
                 }
             })
@@ -36,4 +38,4 @@ const UserContext = ({ children }) => {
     )
 }
 
-export default UserContext
+export default UserContext;

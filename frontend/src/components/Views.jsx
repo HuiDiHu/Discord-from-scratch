@@ -1,6 +1,6 @@
 import { Routes, Route } from 'react-router-dom';
 import { useContext } from 'react';
-import { AccountContext } from './auth/AccountContext';
+import { AccountContext } from './auth/UserContext';
 import PrivateRoutes from 'src/components/auth/PrivateRoutes';
 import Login from 'src/pages/Login';
 import Signup from 'src/pages/Signup';
@@ -19,7 +19,7 @@ const Views = () => {
                 <Route path='/channels/server/:id' element={<Channels props={{ page: "server" }} />} />
             </Route>
 
-            
+
             <Route path='*' element={<NotFoundPage />} />
         </Routes>
     )

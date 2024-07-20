@@ -2,14 +2,14 @@ import { useContext, useState } from 'react'
 import axios from 'axios' //an alternative to fetch request to send data to database
 import { IoMdArrowRoundBack } from "react-icons/io"; //basic arrow icon as an html element
 import { useNavigate } from "react-router-dom";
-import { AccountContext } from 'src/components/auth/AccountContext';
+import { AccountContext } from 'src/components/auth/UserContext';
 
 
 const Signup = () => {
     const { setUser } = useContext(AccountContext)
 
     //useState() functions from react initialize (email, password, etc) variables with empty strings and update them based on user input
-    const [email, setEmail] = useState("") 
+    const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
     const [username, setUsername] = useState("")
     const [emailErrMsg, setEmailErrMsg] = useState("")
@@ -56,7 +56,7 @@ const Signup = () => {
                 <h1 className='text-center text-3xl bg-[#98C8DE] p-5 rounded-xl w-1/2 m-auto'> Sign Up</h1>
                 <br />
                 <>
-                    <span className='mb-2 mt-5 text-xl'>Email</span>
+                    <span className='mb-2 mt-2 text-xl'>Email</span>
                     <div className={`border-2 ${emailErrMsg ? 'border-red-600' : 'border-gray-400 focus-within:border-sky-500'} rounded-lg pl-4 py-2 bg-[#5C7Fd0]`}>
                         <input
                             className='bg-transparent text-black w-[90%] outline-none placeholder-black'
@@ -83,7 +83,7 @@ const Signup = () => {
                     </div>
                 </>
                 <>
-                    <span className='mb-2 mt-5 text-xl'>Username</span>
+                    <span className='mb-2 mt-2 text-xl'>Username</span>
                     <div className={`border-2 ${usernameErrMsg ? 'border-red-600' : 'border-gray-400 focus-within:border-sky-500'} rounded-lg pl-4 py-2 bg-[#5C7Fd0]`}>
                         <input
                             className='bg-transparent text-black w-[90%] outline-none placeholder-black'
@@ -109,7 +109,7 @@ const Signup = () => {
                     </div>
                 </>
                 <>
-                    <span className='mb-2 mt-5 text-xl'>Password</span>
+                    <span className='mb-2 mt-2 text-xl'>Password</span>
                     <div className={`border-2 ${passwordErrMsg ? 'border-red-600' : 'border-gray-400 focus-within:border-sky-500'} rounded-lg pl-4 py-2 bg-[#5C7Fd0]`}>
                         <input
                             className='bg-transparent text-black w-[90%] outline-none placeholder-black'
@@ -135,6 +135,7 @@ const Signup = () => {
                         <span className='text-red-600 text-xs ml-1'>{passwordErrMsg}</span>
                     </div>
                 </>
+                <div className='flex space-x-5'>
                     <button
                         className='bg-[#203FAF] rounded-xl py-4 mb-5 text-white hover:bg-teal-700 hover:[text-shadow:_0_1.5px_0_rgb(0_0_0_/_40%)] shadow-md ease-in-out duration-300 mt-5 w-1/2 mx-auto'
                         onClick={handleSignup}
@@ -145,9 +146,10 @@ const Signup = () => {
                         className='bg-[#203FAF] rounded-xl py-4 mb-5 text-white content-center hover:bg-teal-700 hover:[text-shadow:_0_1.5px_0_rgb(0_0_0_/_40%)] shadow-md ease-in-out duration-300 mt-5 w-1/2 mx-auto flex justify-center items-center'
                         onClick={() => { navigate("/login"); }}
                     >
-                        <IoMdArrowRoundBack className='mr-1'/>
+                        <IoMdArrowRoundBack className='mr-1' />
                         Back
                     </button>
+                </div>
             </div>
         </div>
     )
