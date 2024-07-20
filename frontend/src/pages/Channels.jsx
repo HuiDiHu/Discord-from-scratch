@@ -1,14 +1,15 @@
-import { useEffect, useState } from "react"
+import { createContext, useEffect, useState } from "react"
 import Friends from "./channels/Friends"
 import DirectMessage from "./channels/DirectMessage"
 import Server from "./channels/Server"
 import NotFoundPage from "./NotFoundPage"
 import ServerSideNavBar from "src/components/channels/ServerSideNavBar"
 
+export const FriendContext = createContext();
+
 const Channels = ({ props }) => {
     const path = window.location.pathname.substring(9);
-    const [curPath, setCurPath] = useState(path) 
-
+    const [curPath, setCurPath] = useState(path)
     const pageView = () => {
         switch (props.page) {
             case "friends":
@@ -25,18 +26,38 @@ const Channels = ({ props }) => {
 
     }, [])
 
+    const [friendList, setFriendList] = useState([
+        {
+            id: "69",
+            username: "Andy",
+            profile: "GAREN",
+            connected: false
+        },
+        {
+            id: "2",
+            username: "Jerry",
+            profile: "RIVEN",
+            connected: true
+        },
+        {
+            id: "3",
+            username: "Brandon",
+            profile: "GRAGAS",
+            connected: true
+        }
+    ])
+
     return (
-        <div className="flex h-screen w-screen">
-            <ServerSideNavBar props={{ selectedPath: curPath, setSelectedPath: setCurPath }}/>
-            <div className="flex flex-col w-[250px] h-screen bg-[#31313c]">
-                Stuff
+        <FriendContext.Provider value={{ friendList, setFriendList }}>
+            <div className="flex h-screen w-screen">
+                <ServerSideNavBar props={{ selectedPath: curPath, setSelectedPath: setCurPath }} />
+                <div
+                    className="grow h-screen"
+                >
+                    {pageView()}
+                </div>
             </div>
-            <div
-                className="flex flex-col grow"
-            >
-                {pageView()}
-            </div>
-        </div>
+        </FriendContext.Provider>
     )
 }
 
