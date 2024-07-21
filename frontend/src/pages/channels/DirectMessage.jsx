@@ -9,7 +9,7 @@ const DirectMessage = () => {
     <div className='flex w-full h-full'>
       <FriendsAndDMSidebar />
       <div className='grow flex flex-col'>
-        DM with friend id: {id}
+        DM with friend user id: {id}
       </div>
     </div>
   )

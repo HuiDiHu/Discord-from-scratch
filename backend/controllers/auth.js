@@ -2,6 +2,7 @@ const { StatusCodes } = require('http-status-codes')
 const Yup = require('yup')
 const pool = require('../db/connect')
 const bcrypt = require('bcryptjs')
+const { v4: uuidv4 } = require('uuid')
 
 const loginSchema = Yup.object({
     email: Yup.string()
@@ -41,21 +42,22 @@ const register = async (req, res) => {
         const salt = await bcrypt.genSalt(10);
         const passhash = await bcrypt.hash(password, salt);
         //TODO: once the users table is updated (to include things like profile), update the pool.query to include them (remember to add $4, $5,...)
+        //returning username and email for debugging purpose
         const user = await pool.query(
-            "INSERT INTO users(username, email, passhash) values($1,$2,$3) RETURNING id, username, email",
-            [username, email, passhash]
+            "INSERT INTO users(username, email, passhash, userid) values($1,$2,$3,$4) RETURNING id, username, email, userid",
+            [username, email, passhash, uuidv4()]
         )
         //stores the session data which will persist
         req.session.user = {
-            username, email,
-            id: user.rows[0].id
+            id: user.rows[0].id,
+            username, 
+            email,
+            userid: user.rows[0].userid
         }
         //TODO: update this too once updated users table is implemented
         res.status(StatusCodes.CREATED).json({
             loggedIn: true,
-            id: user.rows[0].id,
-            username: user.rows[0].username,
-            email: user.rows[0].email,
+            ...req.session.user
         })
     } else {
         res.status(StatusCodes.BAD_REQUEST).json({
@@ -70,23 +72,22 @@ const login = async (req, res) => {
 
     //TODO: update this too once updated users table is implemented
     const user = await pool.query(
-        "SELECT id, email, username, passhash FROM users u WHERE u.email=$1",
+        "SELECT id, email, username, passhash, userid FROM users u WHERE u.email=$1",
         [email]
     )
     if (user.rowCount > 0) {
         const isSamePassword = await bcrypt.compare(password, user.rows[0].passhash)
         if (isSamePassword) {
             req.session.user = {
+                id: user.rows[0].id,
                 username: user.rows[0].username,
                 email,
-                id: user.rows[0].id
+                userid: user.rows[0].userid
             }
             //TODO: update this too once updated users table is implemented
             res.status(StatusCodes.OK).json({
                 loggedIn: true,
-                id: user.rows[0].id,
-                username: user.rows[0].username,
-                email: user.rows[0].email,
+                ...req.session.user
             })
         } else {
             res.status(StatusCodes.BAD_REQUEST).json({

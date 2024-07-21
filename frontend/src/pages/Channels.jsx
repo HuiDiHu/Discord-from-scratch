@@ -4,6 +4,7 @@ import DirectMessage from "./channels/DirectMessage"
 import Server from "./channels/Server"
 import NotFoundPage from "./NotFoundPage"
 import ServerSideNavBar from "src/components/channels/ServerSideNavBar"
+import UseSocketSetup from "src/components/channels/UseSocketSetup"
 
 export const FriendContext = createContext();
 
@@ -25,25 +26,28 @@ const Channels = ({ props }) => {
     useEffect(() => {
 
     }, [])
-
+    UseSocketSetup();
     const [friendList, setFriendList] = useState([
         {
-            id: "69",
+            id: 0,
             username: "Andy",
             profile: "GAREN",
-            connected: false
+            connected: false,
+            userid: "69"
         },
         {
-            id: "2",
+            id: 1,
             username: "Jerry",
             profile: "RIVEN",
-            connected: true
+            connected: true,
+            userid: "2"
         },
         {
-            id: "3",
+            id: 2,
             username: "Brandon",
             profile: "GRAGAS",
-            connected: true
+            connected: true,
+            userid: "3"
         }
     ])
 

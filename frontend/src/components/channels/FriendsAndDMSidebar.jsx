@@ -19,9 +19,9 @@ const FriendsAndDMSidebar = () => {
             <ul className='flex flex-col px-1 py-3'>
                 {friendList.map((friend) => (
                     <li
-                        key={friend.id}
-                        className={`flex items-center pointer-events-auto cursor-pointer p-1 rounded-md ${friend.id === id ? 'bg-[#404248]' : 'hover:bg-[#36383c]'} transition-all duration-150 ease-in-out`}
-                        onClick={() => {navigate(`/channels/@me/${friend.id}`)}}
+                        key={friend.userid}
+                        className={`flex items-center pointer-events-auto cursor-pointer p-1 rounded-md ${friend.userid === id ? 'bg-[#404248]' : 'hover:bg-[#36383c]'} transition-all duration-150 ease-in-out`}
+                        onClick={() => {navigate(`/channels/@me/${friend.userid}`)}}
                     >
                         <FriendIcon props={{ friend }}/>
                     </li>

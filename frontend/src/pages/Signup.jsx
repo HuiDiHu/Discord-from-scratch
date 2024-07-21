@@ -36,12 +36,13 @@ const Signup = () => {
         if (email.length < 6 || email.length > 28 || password.length < 6 || password.length > 28 || username.length < 6 || username.length > 28) return; //constraints not met so terminate function before entries are saved
         axios //use axios to save to postgresql database
             .create({
-                baseURL: import.meta.env.VITE_IS_DEV ? 'http://localhost:4000' : '',
+                baseURL: import.meta.env.VITE_IS_DEV ? import.meta.env.VITE_SERVER_DEV_URL : import.meta.env.VITE_SERVER_URL,
                 withCredentials: true
             })
             .post('/api/v1/auth/register', { email, username, password })
             .then((res) => {
                 setUser({ ...res.data })
+                console.log("logged in", { ...res.data })
                 navigate('/channels/@me')
             })
             .catch((error) => {

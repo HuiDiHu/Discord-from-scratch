@@ -12,7 +12,7 @@ const UserContext = ({ children }) => {
     useEffect(() => {
         axios
             .create({
-                baseURL: import.meta.env.VITE_IS_DEV ? 'http://localhost:4000' : '',
+                baseURL: import.meta.env.VITE_IS_DEV ? import.meta.env.VITE_SERVER_DEV_URL : import.meta.env.VITE_SERVER_URL,
                 withCredentials: true
             })
             .get('/api/v1/auth/login')
@@ -22,8 +22,8 @@ const UserContext = ({ children }) => {
                     setUser({ loggedIn: false })
                 } else {
                     setUser({ ...res.data })
-                    if (!window.location.pathname.startsWith('/channels')) { navigate('/channels/@me') }
                     console.log("logged in", { ...res.data })
+                    if (!window.location.pathname.startsWith('/channels')) { navigate('/channels/@me') }
                 }
             })
             .catch((error) => {
