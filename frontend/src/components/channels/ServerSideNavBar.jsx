@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom';
 import SideNavItem from "src/components/channels/SideNavItem"
-import logo from "assets/logo.png"
+import logo from "assets/Dlogo.png"
 import { GoPlus } from "react-icons/go";
 
 const tempServerIconList = [
@@ -28,7 +28,7 @@ const ServerSideNavBar = ({ props }) => {
                 />
                 <div
                     className={`flex justify-center items-center h-12 w-12
-                             ${(props.selectedPath.startsWith('/@me') || hoveredPath.startsWith('/@me')) ? "rounded-2xl bg-[#203faf]" : "rounded-[50%] bg-[#31313c]"} transition-all duration-300 ease-in-out`}
+                             ${(props.selectedPath.startsWith('/@me') || hoveredPath.startsWith('/@me')) ? "rounded-2xl bg-[#313167]" : "rounded-[50%] bg-[#31313c]"} transition-all duration-300 ease-in-out`}
                     onMouseOver={() => { setHoveredPath('/@me') }}
                     onMouseOutCapture={() => { setHoveredPath('') }}
                     onClick={() => {

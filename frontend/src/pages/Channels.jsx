@@ -52,7 +52,7 @@ const Channels = ({ props }) => {
             <div className="flex h-screen w-screen">
                 <ServerSideNavBar props={{ selectedPath: curPath, setSelectedPath: setCurPath }} />
                 <div
-                    className="grow h-screen"
+                    className="w-auto h-screen"
                 >
                     {pageView()}
                 </div>
