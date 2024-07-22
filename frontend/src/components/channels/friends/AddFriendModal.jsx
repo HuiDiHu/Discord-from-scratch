@@ -1,18 +1,28 @@
-import React, { useState } from 'react'
+import React, { useContext, useState } from 'react'
 import { IoMdClose } from "react-icons/io";
+import socket from 'src/socket';
+import { FriendContext } from 'src/pages/Channels'
 
 const AddFriendModal = ({ props }) => {
     const [friendId, setFriendId] = useState("")
     const [friendIdErrMsg, setFriendIdErrMsg] = useState("")
+    const { friendList, setFriendList } = useContext(FriendContext)
 
     const handleAddFriend = () => {
         if (!friendId) {
-            setFriendIdErrMsg("id cannot be empty!")
+            setFriendIdErrMsg("id or email cannot be empty!")
             return;
         }
-        
-        props.setIsAddFriendOpen(false)
-        alert("Friend request sent!")
+        socket.emit("add_friend", friendId, ({ done,  errMsg, friend }) => {
+            if (done) {
+                //TODO: set pending list 
+                setFriendList((prev) => ([friend, ...prev]))
+                console.log(friend)
+                props.setIsAddFriendOpen(false)
+                return;
+            }
+            setFriendIdErrMsg(errMsg)
+        })
     }
 
     return (
@@ -23,26 +33,27 @@ const AddFriendModal = ({ props }) => {
             <div
                 className='relative w-[95%] sm:w-[80%] md:w-[60%] lg:w-[45%] h-[300px] bg-[#31313c] rounded-3xl flex flex-col py-5 px-10'
                 onClick={(e) => e.stopPropagation()}
-                onKeyDown={(e) => { e.key === "Enter" && handleAddFriend() }}
             >
                 <span className='text-2xl'>Add a friend!</span>
                 <br />
                 <br />
                 <>
-                    <span className='text-sm text-neutral-400 mb-2'>You can add friends with their user id</span>
+                    <span className='text-sm text-neutral-400 mb-2'>You can add friends with their user id or email</span>
                     <div className={`border-2 ${friendIdErrMsg ? 'border-red-600' : 'border-gray-400 focus-within:border-sky-500'} rounded-lg pl-4 py-2`}>
                         <input
                             className='bg-transparent w-[90%] outline-none'
-                            placeholder='Enter an user id ...'
+                            placeholder='Enter an user id or email...'
+                            type='text'
                             value={friendId}
                             onChange={(e) => {
                                 setFriendId(e.target.value)
                                 if (!e.target.value) {
-                                    setFriendIdErrMsg("id cannot be empty!")
+                                    setFriendIdErrMsg("id or email cannot be empty!")
                                 } else {
                                     setFriendIdErrMsg("")
                                 }
                             }}
+                            onKeyDown={(e) => { e.key === "Enter" && handleAddFriend() }}
                         />
                     </div>
                     <div className='h-6 bg-red'>

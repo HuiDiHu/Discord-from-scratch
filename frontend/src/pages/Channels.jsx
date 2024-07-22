@@ -26,30 +26,9 @@ const Channels = ({ props }) => {
     useEffect(() => {
 
     }, [])
-    UseSocketSetup();
-    const [friendList, setFriendList] = useState([
-        {
-            id: 0,
-            username: "Andy",
-            profile: "GAREN",
-            connected: false,
-            userid: "69"
-        },
-        {
-            id: 1,
-            username: "Jerry",
-            profile: "RIVEN",
-            connected: true,
-            userid: "2"
-        },
-        {
-            id: 2,
-            username: "Brandon",
-            profile: "GRAGAS",
-            connected: true,
-            userid: "3"
-        }
-    ])
+    //TODO: add pendingList, setPendingList into FriendContext.Provder value
+    const [friendList, setFriendList] = useState([])
+    UseSocketSetup(setFriendList);
 
     return (
         <FriendContext.Provider value={{ friendList, setFriendList }}>

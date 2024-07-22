@@ -8,7 +8,7 @@ const FriendsAndDMSidebar = () => {
     const navigate = useNavigate();
     const { id } = useParams();
     return (
-        <div className="flex flex-col w-[250px] h-screen bg-[#2a2d31]">
+        <div className="flex flex-col w-[250px] h-screen bg-[#2a2d31] overflow-y-scroll">
             <button 
                 className='m-2 px-auto py-2 bg-red-800 flex justify-center items-center'
                 onClick={() => {navigate('/channels/@me')}}
@@ -27,7 +27,7 @@ const FriendsAndDMSidebar = () => {
                     </li>
                 ))}
                 {friendList.length === 0 && (
-                    <div className='w-full flex p-3 justify-center'>No bitches? .XD</div>
+                    <div className='w-full flex p-3 justify-center'>Insert loading state here...</div>
                 )}
             </ul>
         </div>

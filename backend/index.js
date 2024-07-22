@@ -10,7 +10,7 @@ const server = require("http").createServer(app);
 const cors = require('cors');
 const helmet = require('helmet')
 const { sessionMiddleware, wrap } = require('./controllers/serverController')
-const { authorizeUser } = require('./controllers/socketController');
+const { authorizeUser, initializeUser, addFriend } = require('./controllers/socketController');
 
 //routes
 const authRouter = require('./routes/auth')
@@ -50,8 +50,8 @@ app.use(errorHandlerMiddleware)
 io.use(wrap(sessionMiddleware));
 io.use(authorizeUser);
 io.on("connect", socket => {
-    console.log("socket id:", socket.id)
-    console.log("userid: ", socket.user.userid)
+    socket.on('initialize', async () => { await initializeUser(socket); });
+    socket.on("add_friend", (temp, cb) => { addFriend(socket, temp, cb) })
 });
 
 const port = process.env.PORT || 4000;
