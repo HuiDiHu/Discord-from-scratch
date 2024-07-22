@@ -1,8 +1,9 @@
 /*TODO 
 (upon user login)
-1. Load Servers
-2. Load Friend List
-3. Load Dms
+1. Find User And Record Information
+2. Load Servers
+3. Load Friend List
+4. Load Dms
 
 (upon clicking server)
 1. Load Channels
