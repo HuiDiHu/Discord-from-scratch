@@ -1,1 +1,18 @@
+/*TODO 
+(upon user login)
+1. Load Servers
+2. Load Friend List
+3. Load Dms
 
+(upon clicking server)
+1. Load Channels
+2. Load Server Members
+3. Load Messages Of First Channel
+
+(upon clicking channel)
+1. Load Messages Of Clicked Channel
+
+(upon clicking dm)
+1. Load Messages Of Dm
+2. Load 2 Users Of Dm
+*/
