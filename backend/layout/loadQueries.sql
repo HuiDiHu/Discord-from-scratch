@@ -12,7 +12,7 @@
 (upon clicking channel)
 1. Load Messages Of Clicked Channel
 
-(upon clicking dm)
+(upon clicking dm or user in friend list)
 1. Load Messages Of Dm
 2. Load 2 Users Of Dm
 */
