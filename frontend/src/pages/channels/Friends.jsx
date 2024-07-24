@@ -1,14 +1,12 @@
-import React, { useContext, useState } from 'react'
+import React, { useState } from 'react'
 import FriendsAndDMSidebar from 'src/components/channels/FriendsAndDMSidebar'
 import AddFriendModal from 'src/components/channels/friends/AddFriendModal'
 import Navbar from 'src/components/channels/friends/Navbar'
-import { FriendContext } from 'src/pages/Channels'
 
 
 const Friends = () => {
   const [selectedSection, setSelectedSection] = useState('Online')
   const [isAddFriendOpen, setIsAddFriendOpen] = useState(false)
-  const { friendList, setFriendList } = useContext(FriendContext)
 
   return (
     <div className='flex w-full h-screen'>

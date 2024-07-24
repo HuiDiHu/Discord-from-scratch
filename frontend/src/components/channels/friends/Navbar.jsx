@@ -2,7 +2,7 @@ import React from 'react'
 
 const Navbar = ({ props }) => {
   return (
-    <div className='flex items-center w-full m-4 space-x-4'>
+    <div className='flex items-center w-full space-x-4 h-12'>
         <div className='px-3 border-r'>
             Friends
         </div>

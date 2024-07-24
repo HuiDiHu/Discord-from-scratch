@@ -6,7 +6,7 @@ import { FriendContext } from 'src/pages/Channels'
 const AddFriendModal = ({ props }) => {
     const [friendId, setFriendId] = useState("")
     const [friendIdErrMsg, setFriendIdErrMsg] = useState("")
-    const { friendList, setFriendList } = useContext(FriendContext)
+    const { setFriendList } = useContext(FriendContext)
 
     const handleAddFriend = () => {
         if (!friendId) {
@@ -16,8 +16,7 @@ const AddFriendModal = ({ props }) => {
         socket.emit("add_friend", friendId, ({ done,  errMsg, friend }) => {
             if (done) {
                 //TODO: set pending list 
-                setFriendList((prev) => ([friend, ...prev]))
-                console.log(friend)
+                setFriendList(prev => [friend, ...prev])
                 props.setIsAddFriendOpen(false)
                 return;
             }

@@ -4,7 +4,7 @@ import { FriendContext } from 'src/pages/Channels'
 import FriendIcon from './friends/FriendIcon'
 
 const FriendsAndDMSidebar = () => {
-    const { friendList, setFriendList } = useContext(FriendContext)
+    const { friendList } = useContext(FriendContext)
     const navigate = useNavigate();
     const { id } = useParams();
     return (

@@ -10,7 +10,6 @@ const server = require("http").createServer(app);
 const cors = require('cors');
 const helmet = require('helmet')
 const { sessionMiddleware, wrap } = require('./controllers/serverController')
-const { authorizeUser, initializeUser, addFriend } = require('./controllers/socketController');
 
 //routes
 const authRouter = require('./routes/auth')
@@ -22,7 +21,8 @@ const errorHandlerMiddleware = require('./middleware/error-handler.js');
 const io = new Server(server, {
     cors: {
         origin: process.env.IS_DEV ? 'http://localhost:5173' : '',
-        credentials: true
+        credentials: true,
+        transports: ['polling', 'websocket']
     }
 });
 
@@ -47,11 +47,22 @@ app.use(errorHandlerMiddleware)
 
 
 
+const { 
+    authorizeUser, 
+    initializeUser, 
+    addFriend, 
+    onDisconnect, 
+    createMessage 
+} = require('./controllers/socketController');
+
 io.use(wrap(sessionMiddleware));
 io.use(authorizeUser);
+
 io.on("connect", socket => {
     socket.on('initialize', async () => { await initializeUser(socket); });
-    socket.on("add_friend", (temp, cb) => { addFriend(socket, temp, cb) })
+    socket.on("add_friend", (temp, cb) => { addFriend(socket, temp, cb) });
+    socket.on('disconnecting', () => onDisconnect(socket));
+    socket.on('create_message', (message) => createMessage(socket, message))
 });
 
 const port = process.env.PORT || 4000;

@@ -7,6 +7,7 @@ import ServerSideNavBar from "src/components/channels/ServerSideNavBar"
 import UseSocketSetup from "src/components/channels/UseSocketSetup"
 
 export const FriendContext = createContext();
+export const MessagesContext = createContext();
 
 const Channels = ({ props }) => {
     const path = window.location.pathname.substring(9);
@@ -28,17 +29,18 @@ const Channels = ({ props }) => {
     }, [])
     //TODO: add pendingList, setPendingList into FriendContext.Provder value
     const [friendList, setFriendList] = useState([])
-    UseSocketSetup(setFriendList);
+    const [messages, setMessages] = useState([])
+    UseSocketSetup(setFriendList, setMessages);
 
     return (
         <FriendContext.Provider value={{ friendList, setFriendList }}>
             <div className="flex h-screen w-screen">
                 <ServerSideNavBar props={{ selectedPath: curPath, setSelectedPath: setCurPath }} />
-                <div
-                    className="w-auto h-screen"
-                >
-                    {pageView()}
-                </div>
+                <MessagesContext.Provider value={{ messages, setMessages }}>
+                    <div className="grow">
+                        {pageView()}
+                    </div>
+                </MessagesContext.Provider>
             </div>
         </FriendContext.Provider>
     )
