@@ -8,7 +8,7 @@ const FriendsAndDMSidebar = () => {
     const navigate = useNavigate();
     const { id } = useParams();
     return (
-        <div className="flex flex-col w-[250px] h-screen bg-[#2a2d31] overflow-y-scroll">
+        <div className="flex flex-col w-[250px] h-screen bg-[#2a2d31] overflow-y-scroll scrollbar-hide">
             <button 
                 className='m-2 px-auto py-2 bg-red-800 flex justify-center items-center'
                 onClick={() => {navigate('/channels/@me')}}
