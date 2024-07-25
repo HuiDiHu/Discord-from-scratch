@@ -58,6 +58,7 @@ CREATE TABLE CHANNELS(
   channel_id SERIAL PRIMARY KEY,
   in_server INTEGER NOT NULL
   channelName VARCHAR(20) NOT NULL,
+  CONSTRAINT fk_channel_constraint FOREIGN KEY (in_server) REFERENCES SERVERS (server_id) ON DELETE CASCADE --if in_server does not match a server_id, the channel row is deleted automatically
 );
 
 CREATE TABLE DMS(
@@ -73,15 +74,12 @@ CREATE TABLE MESSAGES(
   posted_by VARCHAR NOT NULL, /*holds userid*/
   in_channel INTEGER, /*holds channel_id (can be null)*/
   in_dm INTEGER /*holds dm_id (can be null)*/
+  CONSTRAINT fk_message_constraint FOREIGN KEY (in_channel) REFERENCES CHANNELS (channel_id) ON DELETE CASCADE --messages should be deleted automatically upon server/channel deletion
 );
 
 
 /* 
   TODO
-  - Add FOREIGN KEY constraints to handle the following:
-  - delete the associated channels and messages upon a servers deletion
-  - delete the associated messages upon a channels deletion
-  - list any other cases here
 
   DM ADD FRIEND
   - when user add friend a DMS entry is created with their userid
@@ -124,7 +122,7 @@ VALUES
   (
     <content>,
     <id of user who posted message>,
-    <id of channel or DM the message was posted in>
+    <id of DM the message was posted in>
   )
 
 --send message in channel
@@ -138,7 +136,7 @@ VALUES
   (
     <content>,
     <id of user who posted message>,
-    <id of channel or DM the message was posted in>
+    <id of channel the message was posted in>
   )
 
 --create DM entry after user adds friend
