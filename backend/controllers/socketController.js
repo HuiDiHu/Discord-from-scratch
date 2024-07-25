@@ -1,5 +1,6 @@
 const { BadRequestError } = require('../errors')
 const redisClient = require('../redis')
+const pool = require('../db/connect')
 
 const authorizeUser = (socket, next) => {
     if (!socket.request.session || !socket.request.session.user) {
@@ -24,15 +25,15 @@ const initializeUser = async (socket) => {
         'userid', socket.user.userid,
     )
     //friend rooms id
-    const friendIdList = await redisClient.lrange(
+    const friendDMIdList = await redisClient.lrange(
         `friends:${socket.user.userid}`, 0, -1
     )
-    if (friendIdList.length > 0) {
-        socket.to(friendIdList).emit("connected", true, socket.user.userid)
+    if (friendDMIdList.length > 0) {
+        socket.to(friendDMIdList.map((item) => item.split('.')[0])).emit("connected", true, socket.user.userid)
     }
     console.log(socket.user.username, "logged ON")
-    const friendList = await getFriendList(friendIdList)
-    socket.emit("friends", friendList)
+    const friendList = await getFriendList(friendDMIdList)
+    setTimeout(() => { socket.emit("friends", friendList) }, 69)
 };
 
 const addFriend = async (socket, temp, cb) => {
@@ -57,30 +58,40 @@ const addFriend = async (socket, temp, cb) => {
         cb({ done: false, errMsg: "User doesn't exist!" })
         return;
     }
-    const currentFriendList = await redisClient.lrange(
+    const friendIdList = (await redisClient.lrange(
         `friends:${socket.user.userid}`, 0, -1
-    )
+    )).map((item) => item.split('.')[0])
     //TODO: Add pending here 
-    //const currentFriendPendingList = redisClient.lrange(`pending:${friendId}`, 0, -1)
-    if (currentFriendList && currentFriendList.indexOf(friendId) !== -1) {
+    //const friendIdList = redisClient.lrange(`pending:${friendId}`, 0, -1)
+    if (friendIdList && friendIdList.indexOf(friendId) !== -1) {
         cb({ done: false, errMsg: "Friend already added!" })
         return;
     }
+
+    const alreadyExistingDM = (await redisClient.lrange(
+        `friends:${friendId}`, 0, -1
+    )).find(item => item.split('.')[0] === socket.user.userid)
+
+    const dm_id = alreadyExistingDM ? Number(alreadyExistingDM.split('.')[1]) : (await pool.query(
+        "INSERT INTO DMS(members) values($1) RETURNING dm_id",
+        [[socket.user.userid, friendId]])).rows[0].dm_id;
+
     //TODO: lpush to pending instead of friends
-    await redisClient.lpush(`friends:${socket.user.userid}`, friendId);
-    const friend = await redisClient.hgetall( `user:${friendId}` ); friend.connected = friend.connected === 'true' ? true : false;
+    await redisClient.lpush(`friends:${socket.user.userid}`, [friendId, dm_id].join('.'));
+    const friend = await redisClient.hgetall(`user:${friendId}`); friend.connected = friend.connected === 'true' ? true : false;
     socket.to(friend.userid).emit("connected", true, socket.user.userid)
-    cb({ done: true, friend })
+
+    cb({ done: true, friend: { ...friend, dm_id } })
 }
 
-const getFriendList = async (friendIdList) => {
+const getFriendList = async (friendDMIdList) => {
     const friendList = []
-    for (let friendId of friendIdList) {
+    for (let friendDMId of friendDMIdList) {
         const friend = await redisClient.hgetall(
-            `user:${friendId}`
+            `user:${friendDMId.split('.')[0]}`
         )
         friend.connected = friend.connected === 'true' ? true : false;
-        friendList.push(friend)
+        friendList.push({ ...friend, dm_id: Number(friendDMId.split('.')[1]) })
     }
     return friendList;
 }
@@ -93,18 +104,33 @@ const onDisconnect = async (socket) => {
         'connected', false
     )
     //friend room id
-    const friendIdList = await redisClient.lrange(`friends:${socket.user.userid}`, 0, -1)
+    const friendIdList = (await redisClient.lrange(`friends:${socket.user.userid}`, 0, -1)).map((item) => item.split('.')[0])
     if (friendIdList.length > 0) {
         socket.to(friendIdList).emit("connected", false, socket.user.userid)
     }
 }
 
-const createMessage = async (socket, message) => {
+const createMessage = async (socket, tempMessage) => {
     //TODO: add persistent messages from postgreSQL
     //TODO: store channel member list based on message.from.channel.
 
-    //change message.from.channel to an array of userid of members from message.from.channel
-    socket.to(message.from.channel).emit("create_message", message)
+    const message = (await pool.query(
+        "INSERT INTO MESSAGES(created_at, content, posted_by, in_channel, in_dm) values($1,$2,$3,$4,$5) RETURNING *",
+        [tempMessage.created_at, tempMessage.content, tempMessage.posted_by, tempMessage.in_channel, tempMessage.in_dm]
+    )).rows[0]
+
+    let membersQuery;
+    if (message.in_dm !== null) {
+        membersQuery = await pool.query(
+            "SELECT members FROM DMS WHERE dm_id = $1",
+            [message.in_dm]
+        )
+    }
+    const members = [];
+    if (membersQuery.rowCount > 0) {
+        members.push(...(membersQuery.rows[0].members.filter(item => item !== socket.user.userid)))
+    }
+    socket.to(members).emit("create_message", message)
 }
 
 module.exports = {

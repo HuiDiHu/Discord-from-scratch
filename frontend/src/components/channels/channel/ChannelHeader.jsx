@@ -1,9 +1,9 @@
 import React from 'react'
 
-const ChannelHeader = () => {
+const ChannelHeader = ({ props }) => {
   return (
     <div className='min-h-12 w-auto bg-red-800'>
-        ChannelHeader
+        {props.channelName}
     </div>
   )
 }

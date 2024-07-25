@@ -14,15 +14,14 @@ const ChatBox = ({ props }) => {
         if (!message.length) return;
         //TODO: add message length limit
         const messageObject = {
-            from: {
-                user: user.userid,
-                channel: props.channelId 
-            },
+            created_at: new Date().toJSON(),
             content: message,
-            createdAt: new Date().toJSON()
+            posted_by: user.userid
         }
+        if (props.channelType === 'dm') messageObject.in_dm = props.channelId;
+        if (props.channelType === 'channel') messageObject.in_channel = props.channelId;
         socket.emit("create_message", messageObject);
-        setMessages(prev => [messageObject, ...prev])
+        setMessages(prev => [...prev, messageObject])
 
         textRef.current.style.height = '24px'
         setMessage("")
@@ -32,7 +31,7 @@ const ChatBox = ({ props }) => {
             <div className='h-6 w-6 bg-red-800'>A</div>
             <textarea
                 className='h-6 max-h-72 w-[80%] resize-none text-sm bg-transparent outline-none cursor-text'
-                placeholder={`Message ${props.channelId}`}
+                placeholder={`Message ${props.channelName}`}
                 autoComplete='off'
                 ref={textRef}
                 onChange={(e) => {

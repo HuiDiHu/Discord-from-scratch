@@ -5,7 +5,7 @@ import { AccountContext } from 'src/components/auth/UserContext';
 const UseSocketSetup = (setFriendList, setMessages) => {
     const { setUser } = useContext(AccountContext)
     useEffect(() => {
-        socket.connect().emit("initialize");
+        socket.connect();
         socket.on("friends", (friendList) => {
             setFriendList(friendList.sort((a, b) => {
                 if (a.connected === b.connected) return 0;
@@ -14,12 +14,8 @@ const UseSocketSetup = (setFriendList, setMessages) => {
             }))
         });
         //TODO: set up messages socket
-        socket.on("messages", (messages) => {
-            setMessages(messages);
-        });
         socket.on("create_message", (message) => {
-            console.log(message)
-            setMessages(prev => [message, ...prev])
+            setMessages(prev => [...prev, message])
         });
         socket.on("connected", (connected, userid) => {
             setFriendList(prev =>
@@ -40,8 +36,9 @@ const UseSocketSetup = (setFriendList, setMessages) => {
             setUser({ loggedIn: false })
         });
         return () => {
+            socket.off("initialize");
             socket.off("friends");
-            socket.off("messages");
+            socket.off("create_message");
             socket.off("connected");
             socket.off("connect_error");
         };

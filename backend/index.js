@@ -13,6 +13,7 @@ const { sessionMiddleware, wrap } = require('./controllers/serverController')
 
 //routes
 const authRouter = require('./routes/auth')
+const messagesRouter = require('./routes/messages')
 
 //error handler
 const notFoundMiddleware = require('./middleware/not-found.js');
@@ -41,28 +42,32 @@ app.get('/', async (req, res) => {
 })
 
 app.use('/api/v1/auth', authRouter)
+app.use('/api/v1/messages', messagesRouter)
 
 app.use(notFoundMiddleware)
 app.use(errorHandlerMiddleware)
 
 
 
-const { 
-    authorizeUser, 
-    initializeUser, 
-    addFriend, 
-    onDisconnect, 
-    createMessage 
+const {
+    authorizeUser,
+    initializeUser,
+    addFriend,
+    onDisconnect,
+    createMessage
 } = require('./controllers/socketController');
 
 io.use(wrap(sessionMiddleware));
 io.use(authorizeUser);
 
 io.on("connect", socket => {
-    socket.on('initialize', async () => { await initializeUser(socket); });
-    socket.on("add_friend", (temp, cb) => { addFriend(socket, temp, cb) });
-    socket.on('disconnecting', () => onDisconnect(socket));
-    socket.on('create_message', (message) => createMessage(socket, message))
+    initializeUser(socket)
+    if (socket.user) {
+        socket.on("add_friend", (temp, cb) => { addFriend(socket, temp, cb) });
+        socket.on('disconnecting', () => onDisconnect(socket));
+        socket.on('create_message', (message) => createMessage(socket, message));
+    }
+
 });
 
 const port = process.env.PORT || 4000;

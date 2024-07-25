@@ -29,6 +29,7 @@ const Channels = ({ props }) => {
     }, [])
     //TODO: add pendingList, setPendingList into FriendContext.Provder value
     const [friendList, setFriendList] = useState([])
+    const [loadedDMs, setLoadedDMs] = useState([])
     const [messages, setMessages] = useState([])
     UseSocketSetup(setFriendList, setMessages);
 
@@ -36,7 +37,7 @@ const Channels = ({ props }) => {
         <FriendContext.Provider value={{ friendList, setFriendList }}>
             <div className="flex h-screen w-screen">
                 <ServerSideNavBar props={{ selectedPath: curPath, setSelectedPath: setCurPath }} />
-                <MessagesContext.Provider value={{ messages, setMessages }}>
+                <MessagesContext.Provider value={{ messages, setMessages, loadedDMs, setLoadedDMs }}>
                     <div className="grow">
                         {pageView()}
                     </div>
