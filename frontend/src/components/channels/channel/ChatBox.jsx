@@ -2,6 +2,9 @@ import React, { useContext, useRef, useState } from 'react'
 import { AccountContext } from 'src/components/auth/UserContext';
 import socket from 'src/socket'
 import { MessagesContext } from 'src/pages/Channels';
+import { BsPlusCircleFill } from "react-icons/bs";
+import { HiPaperAirplane } from "react-icons/hi2";
+
 
 const ChatBox = ({ props }) => {
     const [message, setMessage] = useState("")
@@ -14,7 +17,7 @@ const ChatBox = ({ props }) => {
         if (!message.length) return;
         //TODO: add message length limit
         const messageObject = {
-            created_at: new Date().toJSON(),
+            created_at: new Date().getTime(),
             content: message,
             posted_by: user.userid
         }
@@ -27,10 +30,13 @@ const ChatBox = ({ props }) => {
         setMessage("")
     }
     return (
-        <div className='flex w-full px-3 py-2 bg-[#313167] space-x-4'>
-            <div className='h-6 w-6 bg-red-800'>A</div>
+        <div className='flex w-auto px-3 py-2 bg-[#313167] space-x-4 mx-4 mb-3'>
+            <BsPlusCircleFill 
+                className='h-6 w-6 cursor-pointer text-neutral-300'
+                onClick={() => {alert("Upload stuff and shits yn?")}}
+            />
             <textarea
-                className='h-6 max-h-72 w-[80%] resize-none text-sm bg-transparent outline-none cursor-text'
+                className='h-6 max-h-72 w-[80%] resize-none text-sm bg-transparent outline-none cursor-text mt-0.5'
                 placeholder={`Message ${props.channelName}`}
                 autoComplete='off'
                 ref={textRef}
@@ -42,10 +48,14 @@ const ChatBox = ({ props }) => {
                 value={message}
                 onKeyDown={(e) => { e.key === "Enter" && handleSubmit(e) }}
             />
-            <div className='h-6 w-6 bg-red-800'>B</div>
-            <div className='h-6 w-6 bg-red-800'>C</div>
-            <div className='h-6 w-6 bg-red-800'>D</div>
-            <div className='h-6 w-6 bg-red-800'>E</div>
+            <div className='flex justify-end grow'>
+                <button 
+                    className='flex items-center justify-center w-16 border-l border-neutral-500'
+                    onClick={handleSubmit}
+                >
+                    <HiPaperAirplane className='text-neutral-500 w-10 h-5'/>
+                </button>
+            </div>
         </div>
     )
 }

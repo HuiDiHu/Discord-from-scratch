@@ -1,30 +1,46 @@
 import React, { useContext, useEffect, useState } from 'react'
 import axios from 'axios'
 import { useNavigate, useParams } from 'react-router-dom'
-import { FriendContext } from 'src/pages/Channels'
-import { MessagesContext } from 'src/pages/Channels'
+import { FriendContext, MessagesContext, MemberContext } from 'src/pages/Channels'
+import { AccountContext } from 'src/components/auth/UserContext'
 import FriendIcon from './friends/FriendIcon'
 
 const FriendsAndDMSidebar = () => {
     const { friendList } = useContext(FriendContext)
-    const { setMessages, loadedDMs, setLoadedDMs } = useContext(MessagesContext)
+    const { setMessages, loadedDMs, setLoadedDMs, setMsgLoading } = useContext(MessagesContext)
+    const { setMemberList } = useContext(MemberContext)
+    const { user } = useContext(AccountContext)
     const navigate = useNavigate();
     const { id } = useParams();
     useEffect(() => {
-        if (!id || friendList.length === 0) return;
-        const channelId = (friendList.find(item => item.userid === id)).dm_id;
-        if (loadedDMs.indexOf(channelId) !== -1) return;
+        setMsgLoading(true)
+        if (!id || friendList.length === 0) {
+            console.log("INVALID ID!")
+            return;
+        }
+        const friend = friendList.find(item => item.userid === id)
+        if (!friend) {
+            console.log("FRIEND DOESN'T EXIST!")
+            return;
+        }
+        setMemberList([user, friend])
+        if (loadedDMs.indexOf(friend.dm_id) !== -1) {
+            setMsgLoading(false)
+            console.log("DM ALREADY IN FRONTEND CACHE!")
+        }
         axios
             .create({
                 baseURL: import.meta.env.VITE_IS_DEV ? import.meta.env.VITE_SERVER_DEV_URL : import.meta.env.VITE_SERVER_URL,
                 withCredentials: true
             })
-            .get(`/api/v1/messages/channels/@me/${channelId}`)
+            .get(`/api/v1/messages/channels/@me/${friend.dm_id}`)
             .then((res) => {
-                setLoadedDMs(prev => [...prev, channelId])
+                setLoadedDMs(prev => [...prev, friend.dm_id])
                 setMessages(prev => [...res.data, ...prev])
+                setMsgLoading(false)
             })
             .catch((error) => {
+                setMsgLoading(false)
                 console.log(error)
                 navigate('/channels/@me')
             })

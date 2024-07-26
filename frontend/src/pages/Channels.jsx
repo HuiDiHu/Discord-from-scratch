@@ -8,6 +8,7 @@ import UseSocketSetup from "src/components/channels/UseSocketSetup"
 
 export const FriendContext = createContext();
 export const MessagesContext = createContext();
+export const MemberContext = createContext();
 
 const Channels = ({ props }) => {
     const path = window.location.pathname.substring(9);
@@ -31,18 +32,22 @@ const Channels = ({ props }) => {
     const [friendList, setFriendList] = useState([])
     const [loadedDMs, setLoadedDMs] = useState([])
     const [messages, setMessages] = useState([])
+    const [memberList, setMemberList] = useState([])
+    const [msgLoading, setMsgLoading] = useState(false)
     UseSocketSetup(setFriendList, setMessages);
 
     return (
         <FriendContext.Provider value={{ friendList, setFriendList }}>
-            <div className="flex h-screen w-screen">
-                <ServerSideNavBar props={{ selectedPath: curPath, setSelectedPath: setCurPath }} />
-                <MessagesContext.Provider value={{ messages, setMessages, loadedDMs, setLoadedDMs }}>
-                    <div className="grow">
-                        {pageView()}
-                    </div>
-                </MessagesContext.Provider>
-            </div>
+            <MemberContext.Provider value={{ memberList, setMemberList }}>
+                <div className="flex h-screen w-screen">
+                    <ServerSideNavBar props={{ selectedPath: curPath, setSelectedPath: setCurPath }} />
+                    <MessagesContext.Provider value={{ messages, setMessages, loadedDMs, setLoadedDMs, msgLoading, setMsgLoading }}>
+                        <div className="grow">
+                            {pageView()}
+                        </div>
+                    </MessagesContext.Provider>
+                </div>
+            </MemberContext.Provider>
         </FriendContext.Provider>
     )
 }

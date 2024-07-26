@@ -33,7 +33,7 @@ const initializeUser = async (socket) => {
     }
     console.log(socket.user.username, "logged ON")
     const friendList = await getFriendList(friendDMIdList)
-    setTimeout(() => { socket.emit("friends", friendList) }, 69)
+    setTimeout(() => { socket.emit("friends", friendList) }, 100)
 };
 
 const addFriend = async (socket, temp, cb) => {
@@ -115,8 +115,8 @@ const createMessage = async (socket, tempMessage) => {
     //TODO: store channel member list based on message.from.channel.
 
     const message = (await pool.query(
-        "INSERT INTO DM_MESSAGES(created_at, content, posted_by, in_dm) values($1,$2,$3,$4) RETURNING *",
-        [tempMessage.created_at, tempMessage.content, tempMessage.posted_by, tempMessage.in_dm]
+        "INSERT INTO DM_MESSAGES(created_at, content, posted_by, in_dm) values(to_timestamp($1),$2,$3,$4) RETURNING *",
+        [tempMessage.created_at / 1000.0, tempMessage.content, tempMessage.posted_by, tempMessage.in_dm]
     )).rows[0]
 
     let membersQuery;
