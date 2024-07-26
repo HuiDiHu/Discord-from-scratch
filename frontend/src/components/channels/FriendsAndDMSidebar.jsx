@@ -27,6 +27,7 @@ const FriendsAndDMSidebar = () => {
         if (loadedDMs.indexOf(friend.dm_id) !== -1) {
             setMsgLoading(false)
             console.log("DM ALREADY IN FRONTEND CACHE!")
+            return;
         }
         axios
             .create({
