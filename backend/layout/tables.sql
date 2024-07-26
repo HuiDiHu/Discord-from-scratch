@@ -67,14 +67,21 @@ CREATE TABLE DMS(
   user2_id INTEGER NOT NULL
 );
 
-CREATE TABLE MESSAGES(
+CREATE TABLE CHANNEL_MESSAGES(
   message_id SERIAL PRIMARY KEY,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, /*includes time value unlike DATE*/
   content VARCHAR(10000) NOT NULL,
   posted_by VARCHAR NOT NULL, /*holds userid*/
-  in_channel INTEGER, /*holds channel_id (can be null)*/
-  in_dm INTEGER, /*holds dm_id (can be null)*/
+  in_channel INTEGER NOT NULL, /*holds channel_id*/
   CONSTRAINT fk_message_constraint FOREIGN KEY (in_channel) REFERENCES CHANNELS (channel_id) ON DELETE CASCADE --messages should be deleted automatically upon server/channel deletion
+);
+
+CREATE TABLE DM_MESSAGES(
+  message_id SERIAL PRIMARY KEY,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, /*includes time value unlike DATE*/
+  content VARCHAR(10000) NOT NULL,
+  posted_by VARCHAR NOT NULL, /*holds userid*/
+  in_channel INTEGER NOT NULL, /*holds channel_id*/
 );
 
 
@@ -97,22 +104,36 @@ CREATE TABLE MESSAGES(
   - emit "create_message" with message {posted: new Date().toJSON(), content: message, posted_by: userid, in_channel: NULL, in_dm: dm_id}
 */
 
---edit messages
+--edit DM messages
 UPDATE 
-  MESSAGES
+  DM_MESSAGES
 SET 
   content = <updated content>
 WHERE 
   message_id = <id of message being updated>
 
---delete messages
+--edit CHANNEL messages
+UPDATE 
+  CHANNEL_MESSAGES
+SET 
+  content = <updated content>
+WHERE 
+  message_id = <id of message being updated>
+
+--delete messages in DM
 DELETE FROM 
-  MESSAGES
+  DM_MESSAGES
+WHERE 
+  message_id = <id of message to be deleted>
+
+--delete messages in CHANNEL
+DELETE FROM 
+  CHANNEL_MESSAGES
 WHERE 
   message_id = <id of message to be deleted>
 
 --send message in DM
-INSERT INTO MESSAGES
+INSERT INTO DM_MESSAGES
   (
     content,
     posted_by,
@@ -126,7 +147,7 @@ VALUES
   )
 
 --send message in channel
-INSERT INTO MESSAGES
+INSERT INTO CHANNEL_MESSAGES
   (
     content,
     posted_by,
@@ -161,7 +182,7 @@ WHERE
 SELECT
   *
 FROM
-  MESSAGES m
+  DM_MESSAGES m
 WHERE
   m.in_dm = <id of the dm selected by user>
 
@@ -169,9 +190,9 @@ WHERE
 SELECT  
   *
 FROM  
-  MESSAGES m
+  CHANNEL_MESSAGES c
 WHERE 
-  m.in_channel = <channel id selected by user>
+  c.in_channel = <channel id selected by user>
 
 --potential way to gather all servers when user logs in (other way would be to test each server id within USERS serverList)
 SELECT  
