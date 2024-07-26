@@ -23,7 +23,8 @@ const DirectMessage = () => {
           channelId: friend.dm_id,
           channelName: `@${friend.username}`,
           channelType: 'dm',
-          loading, setLoading
+          loading, setLoading,
+          friend
         }} /> :
         <div className='grow text-center text-red-800 text-3xl'>LOADING...</div>
       }

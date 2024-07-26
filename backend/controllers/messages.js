@@ -7,7 +7,7 @@ const getSingleDMMessages = async (req, res) => {
     } = req;
 
     const messages = (await pool.query(
-        "SELECT * FROM MESSAGES WHERE in_dm = $1",
+        "SELECT * FROM DM_MESSAGES WHERE in_dm = $1",
         [Number(channelId)]
     )).rows.sort((a, b) => b.created_at < a.created_at ? 1 : -1);
     res.status(StatusCodes.OK).json(messages)

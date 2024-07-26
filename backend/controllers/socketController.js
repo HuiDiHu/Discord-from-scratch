@@ -115,8 +115,8 @@ const createMessage = async (socket, tempMessage) => {
     //TODO: store channel member list based on message.from.channel.
 
     const message = (await pool.query(
-        "INSERT INTO MESSAGES(created_at, content, posted_by, in_channel, in_dm) values($1,$2,$3,$4,$5) RETURNING *",
-        [tempMessage.created_at, tempMessage.content, tempMessage.posted_by, tempMessage.in_channel, tempMessage.in_dm]
+        "INSERT INTO DM_MESSAGES(created_at, content, posted_by, in_dm) values($1,$2,$3,$4) RETURNING *",
+        [tempMessage.created_at, tempMessage.content, tempMessage.posted_by, tempMessage.in_dm]
     )).rows[0]
 
     let membersQuery;

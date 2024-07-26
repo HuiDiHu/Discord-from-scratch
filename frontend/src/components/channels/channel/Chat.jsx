@@ -17,7 +17,7 @@ const Chat = ({ props }) => {
     const { messages } = useContext(MessagesContext)
     const { user } = useContext(AccountContext)
     return (
-        <div className='w-auto grow flex flex-col justify-end overflow-y-scroll'>
+        <div className='w-full grow flex flex-col justify-end overflow-y-scroll'>
             {messages
                 .filter(message => {
                     if (props.channelType === 'dm') {
@@ -28,13 +28,13 @@ const Chat = ({ props }) => {
                     return false;
                 })
                 .map((message, index) => (
-                    <span
+                    <p
                         key={props.channelType === 'dm' ? `dm.${message.in_dm}.${index}` : 
                             (props.channelType === 'channel' ? `ch.${message.in_channel}.${index}` : '')}
-                        className='text-wrap'
+                        className='text-wrap w-full'
                     >
                         {message.content}
-                    </span>
+                    </p>
                 ))
             }
         </div>
