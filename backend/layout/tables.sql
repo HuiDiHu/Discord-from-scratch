@@ -81,7 +81,7 @@ CREATE TABLE DM_MESSAGES(
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, /*includes time value unlike DATE*/
   content VARCHAR(10000) NOT NULL,
   posted_by VARCHAR NOT NULL, /*holds userid*/
-  in_channel INTEGER NOT NULL, /*holds channel_id*/
+  in_channel INTEGER NOT NULL /*holds channel_id*/
 );
 
 
