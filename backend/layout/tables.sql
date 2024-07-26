@@ -56,7 +56,7 @@ CREATE TABLE SERVERS(
 
 CREATE TABLE CHANNELS(
   channel_id SERIAL PRIMARY KEY,
-  in_server INTEGER NOT NULL
+  in_server INTEGER NOT NULL,
   channelName VARCHAR(20) NOT NULL,
   CONSTRAINT fk_channel_constraint FOREIGN KEY (in_server) REFERENCES SERVERS (server_id) ON DELETE CASCADE --if in_server does not match a server_id, the channel row is deleted automatically
 );
@@ -64,7 +64,7 @@ CREATE TABLE CHANNELS(
 CREATE TABLE DMS(
   dm_id SERIAL PRIMARY KEY,
   user1_id INTEGER NOT NULL, /*combine with user2_id to make array?*/ --sure! make sure both are not NULL
-  user2_id INTEGER NOT NULL, 
+  user2_id INTEGER NOT NULL
 );
 
 CREATE TABLE MESSAGES(
@@ -73,7 +73,7 @@ CREATE TABLE MESSAGES(
   content VARCHAR(10000) NOT NULL,
   posted_by VARCHAR NOT NULL, /*holds userid*/
   in_channel INTEGER, /*holds channel_id (can be null)*/
-  in_dm INTEGER /*holds dm_id (can be null)*/
+  in_dm INTEGER, /*holds dm_id (can be null)*/
   CONSTRAINT fk_message_constraint FOREIGN KEY (in_channel) REFERENCES CHANNELS (channel_id) ON DELETE CASCADE --messages should be deleted automatically upon server/channel deletion
 );
 
