@@ -23,4 +23,5 @@ SELECT
     *
 FROM 
     SERVERS 
-WHERE
+WHERE 
+    
