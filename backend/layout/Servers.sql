@@ -3,7 +3,6 @@
 1. Find User And Record Information
 2. Load Servers
 3. Load Friend List
-4. Load Dms
 
 (upon clicking server)
 1. Load Channels
@@ -18,10 +17,19 @@
 2. Load 2 Users Of Dm
 */
 
---load all the servers the user is a part of upon their login
+--potential way to gather all servers when user logs in (other way would be to test each server id within USERS serverList)
+SELECT  
+  * 
+FROM
+  SERVERS s 
+WHERE
+  <id of signed in user> IN s.serverMembers
+
+--load all the servers the user is a part of upon their login (better way)
 SELECT 
     *
 FROM 
-    SERVERS 
+    SERVERS s,
+    USERS u
 WHERE 
-    
+    s.

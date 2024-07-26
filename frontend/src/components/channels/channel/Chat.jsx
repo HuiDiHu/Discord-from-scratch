@@ -18,8 +18,8 @@ const Chat = ({ props }) => {
     const { user } = useContext(AccountContext)
     return (
         <div className='w-full grow flex flex-col justify-end overflow-y-scroll'>
-            {messages
-                .filter(message => {
+            {
+                messages.filter(message => {
                     if (props.channelType === 'dm') {
                         return message.in_dm === props.channelId
                     } else if (props.channelType === 'channel') {
@@ -27,15 +27,18 @@ const Chat = ({ props }) => {
                     }
                     return false;
                 })
-                .map((message, index) => (
-                    <p
-                        key={props.channelType === 'dm' ? `dm.${message.in_dm}.${index}` : 
-                            (props.channelType === 'channel' ? `ch.${message.in_channel}.${index}` : '')}
-                        className='text-wrap w-full'
-                    >
-                        {message.content}
-                    </p>
-                ))
+                    .map((message, index, array) => (
+                        <div
+                            key={props.channelType === 'dm' ? `dm.${message.in_dm}.${index}` :
+                                (props.channelType === 'channel' ? `ch.${message.in_channel}.${index}` : '')}
+                            className='text-wrap w-full flex'
+                        >
+                            {(index === 0 || array[index - 1].posted_by !== message.posted_by) ? 
+                                <span>{`@${message.posted_by}:`}</span> : <span>{"----------------------------------------"}</span>}
+                            {message.content}
+                            
+                        </div>
+                    ))
             }
         </div>
     )

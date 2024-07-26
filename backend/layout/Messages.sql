@@ -33,6 +33,22 @@ CREATE TABLE DM_MESSAGES(
 );
 */
 
+--get all messages upon clicking on a dm
+SELECT
+  *
+FROM
+  DM_MESSAGES m
+WHERE
+  m.in_dm = <id of the dm selected by user>
+
+--get all messages upon clicking on a channel
+SELECT  
+  *
+FROM  
+  CHANNEL_MESSAGES c
+WHERE 
+  c.in_channel = <channel id selected by user>
+
 --edit DM messages
 UPDATE 
   DM_MESSAGES

@@ -63,11 +63,7 @@ CREATE TABLE CHANNELS(
 
 CREATE TABLE DMS(
   dm_id SERIAL PRIMARY KEY,
-  members VARCHAR[] NOT NULL check (array_position(members, null) is null)
-  /*
-  user1_id INTEGER NOT NULL, /*combine with user2_id to make array?*/ --sure! make sure both are not NULL
-  user2_id INTEGER NOT NULL\
-  */
+  members VARCHAR[2] NOT NULL check (array_position(members, null) is null)
 );
 
 CREATE TABLE CHANNEL_MESSAGES(
@@ -109,55 +105,11 @@ CREATE TABLE DM_MESSAGES(
 
 
 
---create DM entry after user adds friend
-INSERT INTO
-  DMS
-VALUES 
-  (
-    <id of logged in user>,
-    <id of user being sent the message>
-  )
 
---gather all dms when user logs in
-SELECT
-  *
-FROM
-  DMS d 
-WHERE 
-  d.user1_id = <id of the signed in user>
-  OR d.user2_id = <id of the signed in user>
 
---get all messages upon clicking on a dm
-SELECT
-  *
-FROM
-  DM_MESSAGES m
-WHERE
-  m.in_dm = <id of the dm selected by user>
 
---get all messages upon clicking on a channel
-SELECT  
-  *
-FROM  
-  CHANNEL_MESSAGES c
-WHERE 
-  c.in_channel = <channel id selected by user>
 
---potential way to gather all servers when user logs in (other way would be to test each server id within USERS serverList)
-SELECT  
-  * 
-FROM
-  SERVERS s 
-WHERE
-  <id of signed in user> IN s.serverMembers
 
---get all channels when clicking on server
-SELECT 
-  *
-FROM
-  CHANNELS c
-WHERE
-  c.in_server = <id of clicked server>
 
 
 
