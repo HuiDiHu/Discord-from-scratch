@@ -41,7 +41,7 @@ const EditMessageContainer = ({ props }) => {
                 }}
                 value={message}
                 onKeyDown={(e) => {
-                    if (e.key === "Enter") handleSubmit();
+                    if (e.key === "Enter") handleSubmit(e);
                     if (e.key === "Escape") props.setIsEditing(false);
                 }}
 
@@ -56,7 +56,7 @@ const EditMessageContainer = ({ props }) => {
                 <span className='text-neutral-500'> | </span><span>enter to </span>
                 <span
                     className='text-sky-500 hover:underline cursor-pointer'
-                    onClick={handleSubmit}
+                    onClick={(e) => {handleSubmit(e)}}
                 >save</span>
             </p>
         </div>
