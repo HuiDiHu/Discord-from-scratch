@@ -66,6 +66,12 @@ CREATE TABLE DMS(
   members VARCHAR[2] NOT NULL check (array_position(members, null) is null)
 );
 
+CREATE TABLE GROUP_CHATS(
+  group_id SERIAL PRIMARY KEY,
+  members VARCHAR[] NOT NULL check (array_position(members, null) is null),
+  groupName VARCHAR(20) NOT NULL
+);
+
 CREATE TABLE CHANNEL_MESSAGES(
   message_id SERIAL PRIMARY KEY,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, /*includes time value unlike DATE*/
