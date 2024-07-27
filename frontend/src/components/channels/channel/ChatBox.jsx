@@ -19,7 +19,8 @@ const ChatBox = ({ props }) => {
         const messageObject = {
             created_at: new Date().getTime(),
             content: message,
-            posted_by: user.userid
+            posted_by: user.userid,
+            is_edited: 0
         }
         if (props.channelType === 'dm') messageObject.in_dm = props.channelId;
         if (props.channelType === 'channel') messageObject.in_channel = props.channelId;
@@ -30,7 +31,7 @@ const ChatBox = ({ props }) => {
         setMessage("")
     }
     return (
-        <div className='flex w-auto px-3 py-2 bg-[#313167] space-x-4 mx-4 mb-3'>
+        <div className='flex w-auto px-3 py-2 bg-[#313167] border-t space-x-4 mx-4 mb-3'>
             <BsPlusCircleFill 
                 className='h-6 w-6 cursor-pointer text-neutral-300'
                 onClick={() => {alert("Upload stuff and shits yn?")}}

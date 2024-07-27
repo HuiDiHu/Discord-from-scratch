@@ -4,7 +4,7 @@ import ChatBox from './channel/ChatBox'
 
 const Channel = ({ props }) => {
     return (
-        <div className='flex flex-col h-full grow bg-gradient-to-br from-[#203faf] to-[#5c7fd0]'>
+        <div className='flex flex-col h-full grow bg-gradient-to-r from-[#303338] to-[#313167]'>
             <ChannelHeader props={{
                 channelName: props.channelName,
                 channelType: props.channelType,

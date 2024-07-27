@@ -15,6 +15,7 @@ const UseSocketSetup = (setFriendList, setMessages) => {
         });
         //TODO: set up messages socket
         socket.on("create_message", (message) => {
+            //console.log(message)
             setMessages(prev => [...prev, message])
         });
         socket.on("connected", (connected, userid) => {
