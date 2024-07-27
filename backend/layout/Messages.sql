@@ -11,9 +11,9 @@ CREATE TABLE DMS(
   members VARCHAR[] NOT NULL check (array_position(members, null) is null)
   /*
   user1_id INTEGER NOT NULL, /*combine with user2_id to make array?*/ --sure! make sure both are not NULL
-  user2_id INTEGER NOT NULL\
-  */
+  user2_id INTEGER NOT NULL
 );
+*/
 
 CREATE TABLE CHANNEL_MESSAGES(
   message_id SERIAL PRIMARY KEY,
