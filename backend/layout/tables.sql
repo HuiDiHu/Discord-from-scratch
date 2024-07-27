@@ -69,6 +69,7 @@ CREATE TABLE DMS(
 CREATE TABLE CHANNEL_MESSAGES(
   message_id SERIAL PRIMARY KEY,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, /*includes time value unlike DATE*/
+  is_edited INTEGER DEFAULT 0,
   content VARCHAR(10000) NOT NULL,
   posted_by VARCHAR NOT NULL, /*holds userid*/
   in_channel INTEGER NOT NULL, /*holds channel_id*/
@@ -78,6 +79,7 @@ CREATE TABLE CHANNEL_MESSAGES(
 CREATE TABLE DM_MESSAGES(
   message_id SERIAL PRIMARY KEY,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, /*includes time value unlike DATE*/
+  is_edited INTEGER DEFAULT 0,
   content VARCHAR(10000) NOT NULL,
   posted_by VARCHAR NOT NULL, /*holds userid*/
   in_dm INTEGER NOT NULL /*holds channel_id*/
