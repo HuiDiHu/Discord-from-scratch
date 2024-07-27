@@ -10,7 +10,8 @@ const EditMessageContainer = ({ props }) => {
     const { user } = useContext(AccountContext)
     const { setMessages } = useContext(MessagesContext)
 
-    const handleSubmit = () => {
+    const handleSubmit = (e) => {
+        e.stopPropagation();
         props.setIsEditing(false)
         if (props.index < 0 || message === props.message.content) return;
         if (props.message.posted_by !== user.userid) {
