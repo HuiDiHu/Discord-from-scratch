@@ -10,7 +10,7 @@ CREATE TABLE DMS(
   dm_id SERIAL PRIMARY KEY,
   members VARCHAR[] NOT NULL check (array_position(members, null) is null)
   /*
-  user1_id INTEGER NOT NULL, /*combine with user2_id to make array?*/ --sure! make sure both are not NULL
+  user1_id INTEGER NOT NULL, 
   user2_id INTEGER NOT NULL
   */
 );
