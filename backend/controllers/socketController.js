@@ -33,7 +33,7 @@ const initializeUser = async (socket) => {
     }
     console.log(socket.user.username, "logged ON")
     const friendList = await getFriendList(friendDMIdList)
-    setTimeout(() => { socket.emit("friends", friendList) }, 100)
+    setTimeout(() => { socket.emit("friends", friendList) }, 500)
 };
 
 const addFriend = async (socket, temp, cb) => {
@@ -110,6 +110,21 @@ const onDisconnect = async (socket) => {
     }
 }
 
+const getDMMembersList = async (socket, in_dm) => {
+    let membersQuery;
+    if (in_dm !== null) {
+        membersQuery = await pool.query(
+            "SELECT members FROM DMS WHERE dm_id = $1",
+            [in_dm]
+        )
+    }
+    const members = [];
+    if (membersQuery.rowCount > 0) {
+        members.push(...(membersQuery.rows[0].members.filter(item => item !== socket.user.userid)))
+    }
+    return members;
+}
+
 const createMessage = async (socket, tempMessage) => {
     //TODO: add persistent messages from postgreSQL
     //TODO: store channel member list based on message.from.channel.
@@ -118,19 +133,34 @@ const createMessage = async (socket, tempMessage) => {
         "INSERT INTO DM_MESSAGES(created_at, content, posted_by, in_dm) values(to_timestamp($1),$2,$3,$4) RETURNING *",
         [tempMessage.created_at / 1000.0, tempMessage.content, tempMessage.posted_by, tempMessage.in_dm]
     )).rows[0]
+    socket.emit("create_message", message)
 
-    let membersQuery;
-    if (message.in_dm !== null) {
-        membersQuery = await pool.query(
-            "SELECT members FROM DMS WHERE dm_id = $1",
-            [message.in_dm]
-        )
-    }
-    const members = [];
-    if (membersQuery.rowCount > 0) {
-        members.push(...(membersQuery.rows[0].members.filter(item => item !== socket.user.userid)))
-    }
+    const members = await getDMMembersList(socket, message.in_dm)
     socket.to(members).emit("create_message", message)
+}
+
+const deleteMessage = async (socket, message_id, in_dm, in_channel) => {
+    if (in_dm !== null) {
+        await pool.query(
+            'DELETE FROM DM_MESSAGES WHERE message_id = $1',
+            [message_id]
+        )
+
+        const members = await getDMMembersList(socket, in_dm)
+        socket.to(members).emit("delete_message", message_id, in_dm, in_channel)
+    } else if (in_channel !== null) { }
+}
+
+const editMessage = async (socket, newMessage, index) => {
+    if (newMessage.in_dm !== null) {
+        await pool.query(
+            "UPDATE DM_MESSAGES SET content = $1, is_edited = $2 WHERE message_id = $3",
+            [newMessage.content, newMessage.is_edited, newMessage.message_id]
+        )
+
+        const members = await getDMMembersList(socket, newMessage.in_dm)
+        socket.to(members).emit("edit_message", newMessage, index)
+    } else if (newMessage.in_channel !== null) { }
 }
 
 module.exports = {
@@ -138,6 +168,8 @@ module.exports = {
     initializeUser,
     addFriend,
     onDisconnect,
-    createMessage
+    createMessage,
+    deleteMessage,
+    editMessage
 
 }

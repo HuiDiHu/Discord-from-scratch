@@ -16,10 +16,12 @@ const formatDate = (date) => {
 
 const HeaderMessageContainer = ({ props }) => {
     const [isEditing, setIsEditing] = useState(false)
+
     return (
-        <div 
+        <div
             className={`relative group w-full py-0.5 ${!isEditing && props.hoveredMessage === props.psudoId ? 'bg-gradient-to-r to-[#303338] from-[#313167]' : ''} flex items-start pr-10 mt-4`}
             onMouseOverCapture={() => props.setHoveredMessage(props.psudoId)}
+            onMouseLeave={() => props.setHoveredMessage(null)}
         >
             <img
                 className='w-10 h-10 rounded-full [clip-path:circle(45%_at_50%_50%)] ml-3 mr-2 cursor-pointer'
@@ -34,18 +36,19 @@ const HeaderMessageContainer = ({ props }) => {
                     </span>
                 </div>
 
-                {isEditing && <EditMessageContainer props={{ message: props.message, setIsEditing }} />}
+                {isEditing && <EditMessageContainer props={{ message: props.message, setIsEditing, index: props.index }} />}
 
                 {!isEditing &&
-                    <span className='text-wrap w-fit break-all text-sm font-light'>
+                    <span className='text-wrap w-fit break-all text-sm font-light whitespace-pre'>
                         {props.message.content}
+                        {props.message.is_edited ? <span className='text-neutral-500 text-[8px] ml-1 font-medium'>{'(edited)'}</span> : ''}
                     </span>
                 }
 
             </div>
             <div className={`absolute right-5 -top-4 ${!isEditing && props.hoveredMessage === props.psudoId ? 'flex' : 'hidden'}`}>
                 <button
-                    className={`group/copy relative p-2 bg-[#2a2d31] rounded-l-md ${props.by_user ? 'rounded-r-md' : ''} hover:bg-neutral-500`}
+                    className={`group/copy relative p-2 bg-[#2a2d31] rounded-l-md ${!props.by_user ? 'rounded-r-md' : ''} hover:bg-neutral-500`}
                     onClick={() => {
                         navigator.clipboard.writeText(props.message.content)
                     }}
@@ -56,7 +59,7 @@ const HeaderMessageContainer = ({ props }) => {
                     </div>
                 </button>
                 <button
-                    className={`group/edit relative ${props.by_user ? 'hidden' : ''} p-2 bg-[#2a2d31] hover:bg-neutral-500`}
+                    className={`group/edit relative ${!props.by_user ? 'hidden' : ''} p-2 bg-[#2a2d31] hover:bg-neutral-500`}
                     onClick={() => {
                         setIsEditing(true)
                     }}
@@ -67,8 +70,8 @@ const HeaderMessageContainer = ({ props }) => {
                     </div>
                 </button>
                 <button
-                    className={`group/delete relative ${props.by_user ? 'hidden' : ''} p-2 bg-[#2a2d31] rounded-r-md hover:bg-neutral-500`}
-                    onClick={() => { props.handleDeleteMessage() }}
+                    className={`group/delete relative ${!props.by_user ? 'hidden' : ''} p-2 bg-[#2a2d31] rounded-r-md hover:bg-neutral-500`}
+                    onClick={() => { props.handleDeleteMessage(props.message.message_id,  props.message.in_dm, props.message.in_channel, props.message.posted_by) }}
                 >
                     <MdDeleteForever className='h-5 w-5' />
                     <div className='absolute -top-8 -left-2.5 hidden group-hover/delete:block px-2 py-0.5 rounded-md bg-black'>
