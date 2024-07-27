@@ -18,7 +18,7 @@ const HeaderMessageContainer = ({ props }) => {
     const [isEditing, setIsEditing] = useState(false)
     return (
         <div 
-            className={`relative group w-full py-0.5 ${isEditing ? '' : 'hover:bg-gradient-to-r hover:to-[#303338] hover:from-[#313167]'} flex items-start pr-10 mt-4`}
+            className={`relative group w-full py-0.5 ${!isEditing && props.hoveredMessage === props.psudoId ? 'bg-gradient-to-r to-[#303338] from-[#313167]' : ''} flex items-start pr-10 mt-4`}
             onMouseOverCapture={() => props.setHoveredMessage(props.psudoId)}
         >
             <img
@@ -43,7 +43,7 @@ const HeaderMessageContainer = ({ props }) => {
                 }
 
             </div>
-            <div className={`absolute right-5 -top-4 hidden ${isEditing ? '' : ' group-hover:flex hover:flex'}`}>
+            <div className={`absolute right-5 -top-4 ${!isEditing && props.hoveredMessage === props.psudoId ? 'flex' : 'hidden'}`}>
                 <button
                     className={`group/copy relative p-2 bg-[#2a2d31] rounded-l-md ${props.by_user ? 'rounded-r-md' : ''} hover:bg-neutral-500`}
                     onClick={() => {

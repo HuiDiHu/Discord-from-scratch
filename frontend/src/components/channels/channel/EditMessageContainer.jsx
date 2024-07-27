@@ -25,7 +25,7 @@ const EditMessageContainer = ({ props }) => {
                 }}
                 
             />
-            <span className='border my-1 ml-2 mr-16 border-neutral-500'/>
+            <span className='border my-2 mr-16 border-neutral-500'/>
             <p className='flex text-[10px] whitespace-pre'>
                 <span>escape to </span>  
                 <span 
