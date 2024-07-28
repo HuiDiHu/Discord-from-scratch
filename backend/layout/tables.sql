@@ -43,7 +43,6 @@ CREATE TABLE USERS(
   passhash VARCHAR NOT NULL,
   userid VARCHAR NOT NULL UNIQUE, 
   profilePicture BYTEA, /*stands for bytearray. extra steps are required for inserting*/
-  serverList INTEGER[100] /*array to hold server_id*/ --THIS CAN BE DONE IN REDIS
 );
 
 CREATE TABLE SERVERS(
