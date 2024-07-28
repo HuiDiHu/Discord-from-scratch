@@ -51,9 +51,9 @@ CREATE TABLE GROUP_MESSAGES(
 SELECT
   *
 FROM
-  DM_MESSAGES m
+  DM_MESSAGES d
 WHERE
-  m.in_dm = <id of the dm selected by user>
+  d.in_dm = <id of the dm selected by user>
 
 --get all messages upon clicking on a channel
 SELECT  
@@ -63,6 +63,15 @@ FROM
 WHERE 
   c.in_channel = <channel id selected by user>
 
+--get all messages upon clicking on a group
+SELECT  
+  *
+FROM  
+  GROUP_MESSAGES g
+WHERE 
+  g.in_group = <group id selected by user>
+
+  
 --edit DM messages
 UPDATE 
   DM_MESSAGES
@@ -81,6 +90,16 @@ SET
 WHERE 
   message_id = <id of message being updated>
 
+--edit GROUP messages
+UPDATE 
+  GROUP_MESSAGES
+SET 
+  content = <updated content>,
+  is_edited = 1
+WHERE 
+  message_id = <id of message being updated>
+  
+
 --delete messages in DM
 DELETE FROM 
   DM_MESSAGES
@@ -93,6 +112,13 @@ DELETE FROM
 WHERE 
   message_id = <id of message to be deleted>
 
+--delete messages in GROUP
+DELETE FROM 
+  GROUP_MESSAGES
+WHERE 
+  message_id = <id of message to be deleted>
+
+  
 --send message in DM
 INSERT INTO DM_MESSAGES
   (
@@ -121,6 +147,21 @@ VALUES
     <id of channel the message was posted in>
   )
 
+--send message in group
+INSERT INTO GROUP_MESSAGES
+  (
+    content,
+    posted_by,
+    in_group 
+  )
+VALUES
+  (
+    <content>,
+    <id of user who posted message>,
+    <id of group the message was posted in>
+  )
+
+  
 --search for DM messages in the search bar based on user input
 SELECT  
     *
@@ -140,3 +181,13 @@ WHERE
     d.content LIKE '%<user input in the search bar>%'
     AND 
         d.in_channel = <id of the channel the user is searching in>
+
+--search for group messages in the search bar based on user input
+SELECT  
+    *
+FROM    
+    GROUP_MESSAGES g
+WHERE
+    g.content LIKE '%<user input in the search bar>%'
+    AND 
+        g.in_group = <id of the group the user is searching in>
