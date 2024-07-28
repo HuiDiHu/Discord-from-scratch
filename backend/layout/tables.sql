@@ -48,6 +48,7 @@ CREATE TABLE USERS(
 CREATE TABLE SERVERS(
   server_id SERIAL PRIMARY KEY,
   date_created DATE DEFAULT CURRENT_DATE, 
+  server_icon BYTEA,
   serverName VARCHAR(20) NOT NULL UNIQUE,
   serverOwner INTEGER NOT NULL, /*to hold user_id*/
   serverMembers INTEGER[1000] /*array to hold user_id*/

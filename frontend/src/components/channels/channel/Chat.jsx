@@ -1,5 +1,5 @@
 import React, { useContext, useState } from 'react'
-import { MessagesContext, MemberContext } from 'src/pages/Channels'
+import { MessagesContext, MemberContext, LoadingContext } from 'src/pages/Channels'
 import MessageContainer from './MessageContainer'
 import HeaderMessageContainer from './HeaderMessageContainer';
 import { AccountContext } from 'src/components/auth/UserContext'
@@ -9,7 +9,8 @@ import socket from 'src/socket'
 const FIVE_MIN = 5 * 60 * 1000;
 
 const Chat = ({ props }) => {
-    const { messages, setMessages, msgLoading } = useContext(MessagesContext)
+    const { msgLoading } = useContext(LoadingContext)
+    const { messages, setMessages } = useContext(MessagesContext)
     const { memberList } = useContext(MemberContext)
     const { user } = useContext(AccountContext)
     const [hoveredMessage, setHoveredMessage] = useState(null)

@@ -1,22 +1,15 @@
-import React, { useState } from 'react'
+import React, { useContext, useState } from 'react'
 import { useNavigate } from 'react-router-dom';
 import SideNavItem from "src/components/channels/SideNavItem"
 import logo from "assets/Dlogo.png"
 import { GoPlus } from "react-icons/go";
-
-const tempServerIconList = [
-    "GRAGAS",
-    "RIVEN",
-    "LISSANDRA",
-    "GAREN",
-    "YONE",
-    "MALPHITE",
-    "YUUMI",
-    "VAYNE"
-]
+import { ServerContext } from 'src/pages/Channels';
 
 const ServerSideNavBar = ({ props }) => {
+    const { serverList, setServerList } = useContext(ServerContext)
     const [hoveredPath, setHoveredPath] = useState("")
+
+
 
     const navigate = useNavigate();
     return (
@@ -43,12 +36,12 @@ const ServerSideNavBar = ({ props }) => {
                 </div>
             </div>
             <div className="w-full flex justify-end pr-2"><span className="border w-8"></span></div>
-            {tempServerIconList.map((item, index) => (
-                <SideNavItem key={index} props={{
-                    selectedPath: props.selectedPath, setSelectedPath: props.setSelectedPath,
-                    hoveredPath, setHoveredPath,
-                    serverId: index,
-                    icon: item
+            {serverList.map(item => (
+                <SideNavItem key={`sv:${item.server_id}`} props={{
+                    selectedPath: props.selectedPath, setSelectedPath: props.setSelectedPath, hoveredPath, setHoveredPath,
+                    server_id: item.server_id,
+                    icon: item.server_icon || 'GRAGAS',
+                    serverName: item.serverName
                 }}
                 />
             ))}

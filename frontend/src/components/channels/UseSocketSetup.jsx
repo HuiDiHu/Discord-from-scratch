@@ -2,16 +2,20 @@ import { useContext, useEffect } from 'react'
 import socket from 'src/socket'
 import { AccountContext } from 'src/components/auth/UserContext';
 
-const UseSocketSetup = (setFriendList, setMessages) => {
+const UseSocketSetup = (setFriendList, setServerList, setMessages, setSidebarLoading) => {
     const { setUser } = useContext(AccountContext)
     useEffect(() => {
+        setSidebarLoading(true)
+        //maybe make loading then make initialize send a callback for loading
         socket.connect();
+        //TODO: socket.on("servers", (serverList) => {})
         socket.on("friends", (friendList) => {
             setFriendList(friendList.sort((a, b) => {
                 if (a.connected === b.connected) return 0;
                 if (a.connected) return -1;
                 return 1;
             }))
+            setSidebarLoading(false)
         });
         //TODO: set up messages socket
         socket.on("create_message", (message) => {

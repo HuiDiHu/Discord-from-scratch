@@ -9,6 +9,8 @@ import UseSocketSetup from "src/components/channels/UseSocketSetup"
 export const FriendContext = createContext();
 export const MessagesContext = createContext();
 export const MemberContext = createContext();
+export const ServerContext = createContext();
+export const LoadingContext = createContext();
 
 const Channels = ({ props }) => {
     const path = window.location.pathname.substring(9);
@@ -25,30 +27,32 @@ const Channels = ({ props }) => {
                 return (<NotFoundPage />)
         }
     }
-    useEffect(() => {
-
-    }, [])
+    
     //TODO: add pendingList, setPendingList into FriendContext.Provder value
-    const [friendList, setFriendList] = useState([])
-    const [loadedDMs, setLoadedDMs] = useState([])
-    const [messages, setMessages] = useState([])
-    const [memberList, setMemberList] = useState([])
-    const [msgLoading, setMsgLoading] = useState(false)
-    UseSocketSetup(setFriendList, setMessages);
+    const [friendList, setFriendList] = useState([]); const [serverList, setServerList] = useState([]); //array of objects
+    const [loadedDMs, setLoadedDMs] = useState([]); const [loadedServers, setLoadedServers] = useState([]); //array of ids
+    const [messages, setMessages] = useState([]); const [channels, setChannels] = useState([]); //array of objects
+    const [memberList, setMemberList] = useState([]); //array of objects (set when new server or dm is being loaded)
+    const [msgLoading, setMsgLoading] = useState(false); const [sidebarLoading, setSidebarLoading] = useState(false);
+    UseSocketSetup(setFriendList, setServerList, setMessages, setSidebarLoading);
 
     return (
-        <FriendContext.Provider value={{ friendList, setFriendList }}>
-            <MemberContext.Provider value={{ memberList, setMemberList }}>
-                <div className="flex h-screen w-screen">
-                    <ServerSideNavBar props={{ selectedPath: curPath, setSelectedPath: setCurPath }} />
-                    <MessagesContext.Provider value={{ messages, setMessages, loadedDMs, setLoadedDMs, msgLoading, setMsgLoading }}>
-                        <div className="grow">
-                            {pageView()}
+        <LoadingContext.Provider value={{ msgLoading, setMsgLoading, sidebarLoading, setSidebarLoading }} >
+            <FriendContext.Provider value={{ friendList, setFriendList }}>
+                <ServerContext.Provider value={{ serverList, setServerList, loadedServers, setLoadedServers, channels, setChannels, }} >
+                    <MemberContext.Provider value={{ memberList, setMemberList }}>
+                        <div className="flex h-screen w-screen">
+                            <ServerSideNavBar props={{ selectedPath: curPath, setSelectedPath: setCurPath }} />
+                            <MessagesContext.Provider value={{ messages, setMessages, loadedDMs, setLoadedDMs }}>
+                                <div className="grow">
+                                    {pageView()}
+                                </div>
+                            </MessagesContext.Provider>
                         </div>
-                    </MessagesContext.Provider>
-                </div>
-            </MemberContext.Provider>
-        </FriendContext.Provider>
+                    </MemberContext.Provider>
+                </ServerContext.Provider>
+            </FriendContext.Provider>
+        </LoadingContext.Provider>
     )
 }
 

@@ -1,13 +1,15 @@
 import React, { useContext, useEffect, useState } from 'react'
 import axios from 'axios'
 import { useNavigate, useParams } from 'react-router-dom'
-import { FriendContext, MessagesContext, MemberContext } from 'src/pages/Channels'
+import { FriendContext, MessagesContext, MemberContext, LoadingContext } from 'src/pages/Channels'
 import { AccountContext } from 'src/components/auth/UserContext'
 import FriendIcon from './friends/FriendIcon'
 
 const FriendsAndDMSidebar = () => {
+    const { setMsgLoading } = useContext(LoadingContext)
     const { friendList } = useContext(FriendContext)
-    const { setMessages, loadedDMs, setLoadedDMs, setMsgLoading } = useContext(MessagesContext)
+    const { setMessages, loadedDMs, setLoadedDMs } = useContext(MessagesContext)
+     {}
     const { setMemberList } = useContext(MemberContext)
     const { user } = useContext(AccountContext)
     const navigate = useNavigate();
