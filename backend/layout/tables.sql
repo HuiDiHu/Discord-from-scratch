@@ -42,7 +42,7 @@ CREATE TABLE USERS(
   email VARCHAR(28) NOT NULL UNIQUE,
   passhash VARCHAR NOT NULL,
   userid VARCHAR NOT NULL UNIQUE, 
-  profilePicture BYTEA, /*stands for bytearray. extra steps are required for inserting*/
+  profilePicture BYTEA /*stands for bytearray. extra steps are required for inserting*/
 );
 
 CREATE TABLE SERVERS(
