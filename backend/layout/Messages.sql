@@ -3,17 +3,17 @@ CREATE TABLE CHANNELS(
   channel_id SERIAL PRIMARY KEY,
   in_server INTEGER NOT NULL,
   channelName VARCHAR(20) NOT NULL,
-  CONSTRAINT fk_channel_constraint FOREIGN KEY (in_server) REFERENCES SERVERS (server_id) ON DELETE CASCADE --if in_server does not match a server_id, the channel row is deleted automatically
+  CONSTRAINT fk_channel_constraint FOREIGN KEY (in_server) REFERENCES SERVERS (server_id) ON DELETE CASCADE 
 );
 
 CREATE TABLE CHANNEL_MESSAGES(
   message_id SERIAL PRIMARY KEY,
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, /*includes time value unlike DATE*/
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, 
   is_edited INTEGER DEFAULT 0,
   content VARCHAR(10000) NOT NULL,
-  posted_by VARCHAR NOT NULL, /*holds userid*/
-  in_channel INTEGER NOT NULL, /*holds channel_id*/
-  CONSTRAINT fk_message_constraint FOREIGN KEY (in_channel) REFERENCES CHANNELS (channel_id) ON DELETE CASCADE --messages should be deleted automatically upon server/channel deletion
+  posted_by VARCHAR NOT NULL, 
+  in_channel INTEGER NOT NULL, 
+  CONSTRAINT fk_message_constraint FOREIGN KEY (in_channel) REFERENCES CHANNELS (channel_id) ON DELETE CASCADE 
 );
 
 CREATE TABLE DMS(
@@ -23,11 +23,11 @@ CREATE TABLE DMS(
 
 CREATE TABLE DM_MESSAGES(
   message_id SERIAL PRIMARY KEY,
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, /*includes time value unlike DATE*/
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   is_edited INTEGER DEFAULT 0,
   content VARCHAR(10000) NOT NULL,
-  posted_by VARCHAR NOT NULL, /*holds userid*/
-  in_dm INTEGER NOT NULL /*holds channel_id*/
+  posted_by VARCHAR NOT NULL,
+  in_dm INTEGER NOT NULL
 );
 
 CREATE TABLE GROUP_CHATS(
@@ -38,12 +38,12 @@ CREATE TABLE GROUP_CHATS(
 
 CREATE TABLE GROUP_MESSAGES(
   message_id SERIAL PRIMARY KEY,
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, /*includes time value unlike DATE*/
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   is_edited INTEGER DEFAULT 0,
   content VARCHAR(10000) NOT NULL,
-  posted_by VARCHAR NOT NULL, /*holds userid*/
-  in_group INTEGER NOT NULL /*holds channel_id*/
-  CONSTRAINT fk_message_constraint FOREIGN KEY (in_group) REFERENCES GROUP_CHATS (group_id) ON DELETE CASCADE --messages should be deleted automatically upon group chat deletion
+  posted_by VARCHAR NOT NULL,
+  in_group INTEGER NOT NULL,
+  CONSTRAINT fk_message_constraint FOREIGN KEY (in_group) REFERENCES GROUP_CHATS (group_id) ON DELETE CASCADE
 );
 */
 
