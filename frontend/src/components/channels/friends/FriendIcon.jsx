@@ -10,7 +10,7 @@ const FriendIcon = ({ props }) => {
                 >
                 </img>
                 <div
-                    className={`absolute h-3 w-3 rounded-lg border-2 border-[#2a2d31] ${props.friend.connected ? "bg-green-500" : "bg-red-500"} transition-all duration-300 ease-in-out bottom-0 right-0`}
+                    className={`absolute h-3 w-3 rounded-lg border-2 border-[#2a2d31] ${props.friend.connected ? "bg-green-500" : "bg-red-500"} transition-all duration-300 ease-in-out bottom-0.5 right-0.5`}
                 />
             </div>
             <span className={`${props.selected ? 'text-white' : 'text-neutral-400'} text-md ml-2`}>{props.friend.username}</span>
