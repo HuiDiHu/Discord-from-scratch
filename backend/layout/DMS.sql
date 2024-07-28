@@ -32,20 +32,15 @@ CREATE TABLE DM_MESSAGES(
 );
 */
 
+--gather all dms when user logs in (handled by regis)
+
 --create DM entry after user adds friend (needs to be updated for array)
-INSERT INTO
-  DMS
+INSERT INTO DMS
+  (
+    members
+  )
 VALUES 
   (
-    <id of logged in user>,
-    <id of user being sent the message>
+    ARRAY['id of logged in user', 'id of user being sent the message']
   )
 
---gather all dms when user logs in (needs to be updated for array)
-SELECT
-  *
-FROM
-  DMS d 
-WHERE 
-  d.user1_id = <id of the signed in user>
-  OR d.user2_id = <id of the signed in user>
