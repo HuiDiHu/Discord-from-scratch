@@ -97,7 +97,7 @@ CREATE TABLE GROUP_MESSAGES(
   is_edited INTEGER DEFAULT 0,
   content VARCHAR(10000) NOT NULL,
   posted_by VARCHAR NOT NULL, /*holds userid*/
-  in_group INTEGER NOT NULL /*holds channel_id*/
+  in_group INTEGER NOT NULL, /*holds channel_id*/
   CONSTRAINT fk_message_constraint FOREIGN KEY (in_group) REFERENCES GROUP_CHATS (group_id) ON DELETE CASCADE --messages should be deleted automatically upon group chat deletion
 );
 
