@@ -68,7 +68,7 @@ CREATE TABLE DMS(
 
 CREATE TABLE GROUP_CHATS(
   group_id SERIAL PRIMARY KEY,
-  members VARCHAR[] NOT NULL check (array_position(members, null) is null),
+  members VARCHAR[10] NOT NULL check (array_position(members, null) is null),
   groupName VARCHAR(20) NOT NULL
 );
 
