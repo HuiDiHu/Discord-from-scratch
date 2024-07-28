@@ -41,7 +41,7 @@ CREATE TABLE USERS(
   username VARCHAR(28) NOT NULL,
   email VARCHAR(28) NOT NULL UNIQUE,
   passhash VARCHAR NOT NULL,
-  userid VARCHAR NOT NULL UNIQUE, 
+  userid VARCHAR NOT NULL UNIQUE, --PURPOSE?
   profilePicture BYTEA /*stands for bytearray. extra steps are required for inserting*/
 );
 
@@ -68,7 +68,7 @@ CREATE TABLE DMS(
 
 CREATE TABLE GROUP_CHATS(
   group_id SERIAL PRIMARY KEY,
-  members VARCHAR[10] NOT NULL check (array_position(members, null) is null),
+  members INTEGER[10] NOT NULL check (array_position(members, null) is null), --hold user id
   groupName VARCHAR(20) NOT NULL
 );
 
