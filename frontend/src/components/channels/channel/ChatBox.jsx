@@ -37,7 +37,7 @@ const ChatBox = ({ props }) => {
             />
             <textarea
                 className='h-6 max-h-72 w-[80%] resize-none text-sm bg-transparent outline-none cursor-text mt-0.5'
-                placeholder={`Message ${props.channelName}`}
+                placeholder={`Message ${props.channel_name}`}
                 autoComplete='off'
                 ref={textRef}
                 onChange={(e) => {

@@ -24,16 +24,30 @@ const initializeUser = async (socket) => {
         `userid:${socket.user.email}`,
         'userid', socket.user.userid,
     )
-    //friend rooms id
+    //friend rooms ids
     const friendDMIdList = await redisClient.lrange(
         `friends:${socket.user.userid}`, 0, -1
     )
     if (friendDMIdList.length > 0) {
         socket.to(friendDMIdList.map((item) => item.split('.')[0])).emit("connected", true, socket.user.userid)
     }
-    console.log(socket.user.username, "logged ON")
     const friendList = await getFriendList(friendDMIdList)
-    setTimeout(() => { socket.emit("friends", friendList) }, 500)
+
+    //server id list;
+    const serverIdList = await redisClient.lrange(
+        `servers:${socket.user.userid}`, 0, -1
+    )
+    //server lsit
+    const serverList = (await pool.query(
+        "SELECT * FROM SERVERS WHERE server_id = ANY ($1)",
+        [serverIdList]
+    )).rows;
+
+    setTimeout(() => { 
+        socket.emit("friends", friendList);
+        socket.emit("servers", serverList)
+        console.log(socket.user.username, "logged ON")
+    }, 250)
 };
 
 const addFriend = async (socket, temp, cb) => {

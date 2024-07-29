@@ -11,7 +11,7 @@ CREATE TABLE SERVERS(
 CREATE TABLE CHANNELS(
   channel_id SERIAL PRIMARY KEY,
   in_server INTEGER NOT NULL,
-  channelName VARCHAR(20) NOT NULL,
+  channel_name VARCHAR(20) NOT NULL,
   CONSTRAINT fk_channel_constraint FOREIGN KEY (in_server) REFERENCES SERVERS (server_id) ON DELETE CASCADE --if in_server does not match a server_id, the channel row is deleted automatically
 );
 
@@ -38,7 +38,7 @@ WHERE
 INSERT INTO CHANNELS
 (
   in_server,
-  channelName,
+  channel_name,
 )
 VALUES
 (
@@ -56,7 +56,7 @@ WHERE
 UPDATE 
   CHANNELS
 SET
-  channelName = <new name>
+  channel_name = <new name>
 WHERE 
   channel_id = <id of channel with name being changed>
 

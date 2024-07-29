@@ -1,5 +1,5 @@
 import React, { useContext } from 'react'
-import { FriendContext } from 'src/pages/Channels';
+import { FriendContext, LoadingContext } from 'src/pages/Channels';
 import FriendIcon from './FriendIcon';
 import { IoMdMore } from "react-icons/io";
 import { useNavigate } from 'react-router-dom';
@@ -17,7 +17,7 @@ const selectedTitle = (selectedSection) => {
 
 const FriendListContainer = ({ props }) => {
     const { friendList } = useContext(FriendContext)
-
+    const { setMsgLoading } = useContext(LoadingContext)
     const navigate = useNavigate();
     return (
         <div className='flex flex-col transition-all'>
@@ -29,7 +29,10 @@ const FriendListContainer = ({ props }) => {
                 <div
                     key={`friend_list:${friend.userid}`}
                     className='group relative flex flex-col w-full py-2 hover:bg-[#383c41] rounded-lg cursor-pointer'
-                    onClick={() => {navigate(`/channels/@me/${friend.userid}`)}}
+                    onClick={() => {
+                        setMsgLoading(true)
+                        navigate(`/channels/@me/${friend.userid}`)
+                    }}
                 >
                     <span className='absolute -top-0.5 left-2.5 w-[98%] border-y border-[#383c41]' />
                     <div className='flex justify-between items-center w-full pl-2 pr-3.5'>

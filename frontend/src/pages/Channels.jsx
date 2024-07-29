@@ -30,16 +30,16 @@ const Channels = ({ props }) => {
     
     //TODO: add pendingList, setPendingList into FriendContext.Provder value
     const [friendList, setFriendList] = useState([]); const [serverList, setServerList] = useState([]); //array of objects
-    const [loadedDMs, setLoadedDMs] = useState([]); const [loadedServers, setLoadedServers] = useState([]); //array of ids
+    const [loadedDMs, setLoadedDMs] = useState([]); const [loadedServers, setLoadedServers] = useState([]); const [loadedChannels, setLoadedChannels] = useState([]) //array of ids
     const [messages, setMessages] = useState([]); const [channels, setChannels] = useState([]); //array of objects
     const [memberList, setMemberList] = useState([]); //array of objects (set when new server or dm is being loaded)
-    const [msgLoading, setMsgLoading] = useState(false); const [sidebarLoading, setSidebarLoading] = useState(false);
-    UseSocketSetup(setFriendList, setServerList, setMessages, setSidebarLoading);
+    const [msgLoading, setMsgLoading] = useState(true); const [sidebarLoading, setSidebarLoading] = useState(true);
+    UseSocketSetup(setFriendList, setServerList, setMessages, setMemberList, setSidebarLoading);
 
     return (
         <LoadingContext.Provider value={{ msgLoading, setMsgLoading, sidebarLoading, setSidebarLoading }} >
             <FriendContext.Provider value={{ friendList, setFriendList }}>
-                <ServerContext.Provider value={{ serverList, setServerList, loadedServers, setLoadedServers, channels, setChannels, }} >
+                <ServerContext.Provider value={{ serverList, setServerList, loadedServers, setLoadedServers, loadedChannels, setLoadedChannels, channels, setChannels }} >
                     <MemberContext.Provider value={{ memberList, setMemberList }}>
                         <div className="flex h-screen w-screen">
                             <ServerSideNavBar props={{ selectedPath: curPath, setSelectedPath: setCurPath }} />

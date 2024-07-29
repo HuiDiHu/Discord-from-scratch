@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useContext, useLayoutEffect } from 'react'
 import axios from 'axios'
 import { useNavigate, useParams } from 'react-router-dom'
 import { FriendContext, MessagesContext, MemberContext, LoadingContext } from 'src/pages/Channels'
@@ -6,15 +6,15 @@ import { AccountContext } from 'src/components/auth/UserContext'
 import FriendIcon from './friends/FriendIcon'
 
 const FriendsAndDMSidebar = () => {
-    const { setMsgLoading } = useContext(LoadingContext)
+    const { msgLoading, setMsgLoading } = useContext(LoadingContext)
     const { friendList } = useContext(FriendContext)
     const { setMessages, loadedDMs, setLoadedDMs } = useContext(MessagesContext)
-     {}
+    { }
     const { setMemberList } = useContext(MemberContext)
     const { user } = useContext(AccountContext)
     const navigate = useNavigate();
     const { id } = useParams();
-    useEffect(() => {
+    useLayoutEffect(() => {
         setMsgLoading(true)
         if (!id || friendList.length === 0) {
             console.log("INVALID ID!")
@@ -50,9 +50,9 @@ const FriendsAndDMSidebar = () => {
     }, [friendList, id])
     return (
         <div className="flex flex-col min-w-[150px] md:min-w-[200px] lg:min-w-[235px] h-screen bg-[#2a2d31] overflow-y-scroll scrollbar-hide">
-            <button 
+            <button
                 className='m-2 px-auto py-2 bg-red-800 flex justify-center items-center'
-                onClick={() => {navigate('/channels/@me')}}
+                onClick={() => { navigate('/channels/@me') }}
             >
                 <span>Friends</span>
             </button>
@@ -63,10 +63,13 @@ const FriendsAndDMSidebar = () => {
                         key={friend.userid}
                         className={`flex items-center pointer-events-auto cursor-pointer p-1 rounded-md ${friend.userid === id ? 'bg-[#404248]' : 'hover:bg-[#36383c]'} transition-all duration-150 ease-in-out`}
                         onClick={() => {
-                            navigate(`/channels/@me/${friend.userid}`)
+                            if (friend.userid !== id) {
+                                setMsgLoading(true)
+                                navigate(`/channels/@me/${friend.userid}`)
+                            }
                         }}
                     >
-                        <FriendIcon props={{ friend, selected: friend.userid === id }}/>
+                        <FriendIcon props={{ friend, selected: friend.userid === id }} />
                     </li>
                 ))}
                 {friendList.length === 0 && (

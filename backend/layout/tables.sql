@@ -49,16 +49,16 @@ CREATE TABLE SERVERS(
   server_id SERIAL PRIMARY KEY,
   date_created DATE DEFAULT CURRENT_DATE, 
   server_icon BYTEA,
-  serverName VARCHAR(20) NOT NULL UNIQUE,
-  serverOwner INTEGER NOT NULL, /*to hold user_id*/
-  serverMembers INTEGER[1000] /*array to hold user_id*/
+  server_name VARCHAR(50) NOT NULL UNIQUE,
+  server_owner VARCHAR NOT NULL, /*to hold user_id*/
+  server_members VARCHAR[1000] /*array to hold user_id*/
 );
 
 CREATE TABLE CHANNELS(
   channel_id SERIAL PRIMARY KEY,
   in_server INTEGER NOT NULL,
-  channelName VARCHAR(20) NOT NULL,
-  CONSTRAINT fk_channel_constraint FOREIGN KEY (in_server) REFERENCES SERVERS (server_id) ON DELETE CASCADE --if in_server does not match a server_id, the channel row is deleted automatically
+  channel_name VARCHAR(30) NOT NULL,
+  CONSTRAINT fk_channel_constraint FOREIGN KEY (in_server) REFERENCES SERVERS (server_id) ON DELETE CASCADE /*if in_server does not match a server_id, the channel row is deleted automatically*/
 );
 
 CREATE TABLE DMS(

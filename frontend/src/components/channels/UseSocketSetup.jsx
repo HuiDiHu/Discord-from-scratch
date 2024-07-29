@@ -2,7 +2,7 @@ import { useContext, useEffect } from 'react'
 import socket from 'src/socket'
 import { AccountContext } from 'src/components/auth/UserContext';
 
-const UseSocketSetup = (setFriendList, setServerList, setMessages, setSidebarLoading) => {
+const UseSocketSetup = (setFriendList, setServerList, setMessages, setMemberList, setSidebarLoading) => {
     const { setUser } = useContext(AccountContext)
     useEffect(() => {
         setSidebarLoading(true)
@@ -17,6 +17,9 @@ const UseSocketSetup = (setFriendList, setServerList, setMessages, setSidebarLoa
             }))
             setSidebarLoading(false)
         });
+        socket.on("servers", (serverList) => {
+            setServerList(serverList)
+        })
         //TODO: set up messages socket
         socket.on("create_message", (message) => {
             //console.log(message)
@@ -41,6 +44,12 @@ const UseSocketSetup = (setFriendList, setServerList, setMessages, setSidebarLoa
                     return 1;
                 })
             )
+            setMemberList(prev => prev.map(member => {
+                if (member.userid === userid) {
+                    member.connected = connected;
+                }
+                return member
+            }))
         });
         socket.on("connect_error", () => {
             console.log("Websocket connection error... Logging user out")

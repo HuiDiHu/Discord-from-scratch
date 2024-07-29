@@ -2,7 +2,7 @@
 CREATE TABLE CHANNELS(
   channel_id SERIAL PRIMARY KEY,
   in_server INTEGER NOT NULL,
-  channelName VARCHAR(20) NOT NULL,
+  channel_name VARCHAR(20) NOT NULL,
   CONSTRAINT fk_channel_constraint FOREIGN KEY (in_server) REFERENCES SERVERS (server_id) ON DELETE CASCADE 
 );
 

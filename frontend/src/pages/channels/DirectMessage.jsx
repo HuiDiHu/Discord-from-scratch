@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useContext, useLayoutEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { AccountContext } from 'src/components/auth/UserContext'
 import { FriendContext } from 'src/pages/Channels'
@@ -12,7 +12,7 @@ const DirectMessage = () => {
 
   const [loading, setLoading] = useState(false)
   const [friend, setFriend] = useState()
-  useEffect(() => {
+  useLayoutEffect(() => {
     setFriend(friendList.find(item => item.userid === id))
   }, [friendList, id])
   return (
@@ -21,7 +21,7 @@ const DirectMessage = () => {
       {friend ?
         <Channel props={{
           channelId: friend.dm_id,
-          channelName: `@${friend.username}`,
+          channel_name: `@${friend.username}`,
           channelType: 'dm',
           loading, setLoading,
           friend

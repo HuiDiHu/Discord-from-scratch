@@ -17,13 +17,13 @@ CREATE TABLE SERVERS(
 CREATE TABLE CHANNELS(
   channel_id SERIAL PRIMARY KEY,
   in_server INTEGER NOT NULL,
-  channelName VARCHAR(20) NOT NULL,
+  channel_name VARCHAR(20) NOT NULL,
   CONSTRAINT fk_channel_constraint FOREIGN KEY (in_server) REFERENCES SERVERS (server_id) ON DELETE CASCADE --if in_server does not match a server_id, the channel row is deleted automatically
 );
 
 */
 
---gather all servers the user is in (handled by regis)
+--gather all servers the user is in (handled by redis)
 
 --create server with icon
 INSERT INTO SERVERS
