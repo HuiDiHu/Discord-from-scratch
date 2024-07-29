@@ -9,7 +9,9 @@ const ServerSideNavBar = ({ props }) => {
     const { serverList, setServerList } = useContext(ServerContext)
     const [hoveredPath, setHoveredPath] = useState("")
 
-
+    const handleAddServer = () => {
+        
+    }
 
     const navigate = useNavigate();
     return (
@@ -57,6 +59,7 @@ const ServerSideNavBar = ({ props }) => {
                     onMouseOutCapture={() => { setHoveredPath('') }}
                     onClick={() => {
                         props.setSelectedPath('/add_server')
+
                     }}
                 >
                     <GoPlus className={`h-8 w-8 ${(props.selectedPath.startsWith('/add_server') || hoveredPath.startsWith('/add_server')) ? "text-white" : "text-green-500"}`} />

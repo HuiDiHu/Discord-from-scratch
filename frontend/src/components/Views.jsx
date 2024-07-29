@@ -11,6 +11,7 @@ const Views = () => {
     const { user } = useContext(AccountContext);
     return user.loggedIn === null ? (<h1>Loading...</h1>) : (
         <Routes>
+            <Route path='/' element={<Login />} />
             <Route path='/login' element={<Login />} />
             <Route path='/signup' element={<Signup />} />
             <Route element={<PrivateRoutes />}>

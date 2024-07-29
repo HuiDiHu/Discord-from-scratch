@@ -14,6 +14,7 @@ const { sessionMiddleware, wrap } = require('./controllers/serverController')
 //routes
 const authRouter = require('./routes/auth')
 const messagesRouter = require('./routes/messages')
+const serversRouter = require('./routes/servers')
 
 //error handler
 const notFoundMiddleware = require('./middleware/not-found.js');
@@ -43,6 +44,7 @@ app.get('/', async (req, res) => {
 
 app.use('/api/v1/auth', authRouter)
 app.use('/api/v1/messages', messagesRouter)
+app.use('/api/v1/servers', serversRouter)
 
 app.use(notFoundMiddleware)
 app.use(errorHandlerMiddleware)
