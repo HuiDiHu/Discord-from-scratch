@@ -1,35 +1,104 @@
 /*TODO 
-(upon user login)
-1. Find User And Record Information
-2. Load Servers
-3. Load Friend List
 
 (upon clicking server)
 1. Load Channels
 2. Load Server Members
 3. Load Messages Of First Channel
 
-(upon clicking channel)
-1. Load Messages Of Clicked Channel
+CREATE TABLE SERVERS(
+  server_id SERIAL PRIMARY KEY,
+  date_created DATE DEFAULT CURRENT_DATE, 
+  server_icon BYTEA,
+  serverName VARCHAR(20) NOT NULL UNIQUE,
+  serverOwner INTEGER NOT NULL, /*to hold user_id*/
+  serverMembers INTEGER[1000] /*array to hold user_id*/
+);
 
-(upon clicking dm or user in friend list)
-1. Load Messages Of Dm
-2. Load 2 Users Of Dm
+CREATE TABLE CHANNELS(
+  channel_id SERIAL PRIMARY KEY,
+  in_server INTEGER NOT NULL,
+  channelName VARCHAR(20) NOT NULL,
+  CONSTRAINT fk_channel_constraint FOREIGN KEY (in_server) REFERENCES SERVERS (server_id) ON DELETE CASCADE --if in_server does not match a server_id, the channel row is deleted automatically
+);
+
 */
 
---potential way to gather all servers when user logs in (other way would be to test each server id within USERS serverList)
-SELECT  
-  * 
-FROM
-  SERVERS s 
-WHERE
-  <id of signed in user> IN s.serverMembers
+--gather all servers the user is in (handled by regis)
 
---load all the servers the user is a part of upon their login (better way)
-SELECT 
-    *
-FROM 
-    SERVERS s,
-    USERS u
+--create server with icon
+INSERT INTO SERVERS
+(
+  server_icon,
+  serverName,
+  serverOwner,
+  serverMembers
+)
+VALUES 
+(
+  <icon of server>,
+  <name of server>,
+  <id of server creator>,
+  ARRAY[<id of server creator>] --start with 1 index array holding id of server creator, then add other users later
+)
+
+--create server without icon
+INSERT INTO SERVERS
+(
+  serverName,
+  serverOwner,
+  serverMembers
+)
+VALUES 
+(
+  <name of server>,
+  <id of server creator>,
+  ARRAY[<id of server creator>] --start with 1 index array holding id of server creator, then add other users later
+)
+
+--change server name
+UPDATE 
+  SERVERS
+SET 
+  serverName = <name>
+WHERE
+  server_id = <id of server having name changed>
+
+--change server icon
+UPDATE 
+  SERVERS
+SET 
+  server_icon = <icon>
+WHERE
+  server_id = <id of server having icon changed>
+
+--add user/joining server
+UPDATE 
+  SERVERS 
+SET 
+  serverMembers = array_append(serverMembers, <id of new user>)
 WHERE 
-    s.
+  server_id = <id of server having name changed>
+
+--remove user/leaving server
+UPDATE 
+  SERVERS 
+SET 
+  serverMembers = array_remove(serverMembers, <id of new user>)
+WHERE 
+  server_id = <id of server having name changed>
+
+--changing server ownership
+UPDATE
+  SERVERS 
+SET 
+  serverOwner = <user id of new owner>
+WHERE
+  server_id = <id of server with ownership being transferred>
+
+--deleting server
+DELETE FROM 
+  SERVERS
+WHERE 
+  server_id = <id of server being deleted>
+
+
