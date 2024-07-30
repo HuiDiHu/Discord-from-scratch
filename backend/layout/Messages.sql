@@ -63,6 +63,16 @@ FROM
 WHERE 
   c.in_channel = <channel id selected by user>
 
+--get the most recent 50 messages upon clicking on a channel
+SELECT  
+  50
+FROM  
+  CHANNEL_MESSAGES c
+WHERE 
+  c.in_channel = <channel id selected by user>
+ORDER BY 
+  created_at DESC
+
 --get all messages upon clicking on a group
 SELECT  
   *
