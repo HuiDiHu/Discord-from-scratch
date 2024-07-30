@@ -43,9 +43,9 @@ const FriendsAndDMSidebar = () => {
                 setMsgLoading(false)
             })
             .catch((error) => {
-                setMsgLoading(false)
                 console.log(error)
                 navigate('/channels/@me')
+                setMsgLoading(false)
             })
     }, [friendList, id])
     return (

@@ -18,6 +18,7 @@ const Server = () => {
   useLayoutEffect(() => {
     if (server_id === null) return;
     if (server !== null && server.server_id === Number(server_id)) return;
+    console.log("HAIAHI")
     if (loadedServers.indexOf(Number(server_id)) !== -1) {
       setSelectedChannel(channels.find(item => item.in_server === Number(server_id)) || {});
       setSidebarLoading(false);

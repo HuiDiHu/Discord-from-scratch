@@ -26,7 +26,7 @@ const UseSocketSetup = (setFriendList, setServerList, setMessages, setMemberList
             setMessages(prev => [...prev, message])
         });
         socket.on("delete_message", (message_id, in_dm, in_channel) => {
-            setMessages(prev => prev.filter(item => !( item.message_id === message_id && ( (in_dm !== null && item.in_dm === in_dm) || (in_channel !== null && item.in_channel === in_channel) ) )))
+            setMessages(prev => prev.filter(item => !( item.message_id === message_id && ( (in_dm !== null && in_dm !== undefined && item.in_dm === in_dm) || (in_channel !== null && in_channel !== undefined && item.in_channel === in_channel) ) )))
         })
         socket.on("edit_message", (newMessage, index) => {
             setMessages(prev => prev.with(index, newMessage))

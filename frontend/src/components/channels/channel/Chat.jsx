@@ -26,10 +26,16 @@ const Chat = ({ props }) => {
                     item => !(item.message_id === message_id && item.in_dm === props.channelId)
                 )
             )
-            socket.emit("delete_message", message_id, in_dm, in_channel)
+        } else if (props.channelType === 'channel') {
+            setMessages(
+                messages.filter(
+                    item => !(item.message_id === message_id && item.in_channel === props.channelId)
+                )
+            )
         }
+        socket.emit("delete_message", message_id, in_dm, in_channel)
     }
-
+    
     return (
         <div className='w-full grow flex flex-col justify-end overflow-y-scroll pr-3'>
             {msgLoading ? <div> LOADING </div> :

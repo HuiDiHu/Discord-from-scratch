@@ -20,12 +20,13 @@ const ChatBox = ({ props }) => {
             created_at: new Date().getTime(),
             content: message,
             posted_by: user.userid,
-            is_edited: 0
+            is_edited: 0,
+            in_dm: null,
+            in_channel: null
         }
         if (props.channelType === 'dm') messageObject.in_dm = props.channelId;
         if (props.channelType === 'channel') messageObject.in_channel = props.channelId;
         socket.emit("create_message", messageObject);
-
         textRef.current.style.height = '24px'
         setMessage("")
     }

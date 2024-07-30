@@ -11,7 +11,7 @@ const EditMessageContainer = ({ props }) => {
     const { setMessages } = useContext(MessagesContext)
 
     const handleSubmit = (e) => {
-        e.stopPropagation();
+        e.stopPropagation(); e.preventDefault();
         props.setIsEditing(false)
         if (!message) return;
         if (props.index < 0 || message === props.message.content) return;
@@ -19,13 +19,12 @@ const EditMessageContainer = ({ props }) => {
             alert("You can only edit your own messages!")
             return;
         }
-        if (props.message.in_dm !== null) {
+        if ((props.message.in_dm !== null && props.message.in_dm !== undefined ) || (props.message.in_channel !== null && props.message.in_channel !== undefined)) {
             const newMessage = props.message;
             newMessage.content = message; newMessage.is_edited = 1;
-
             setMessages(prev => prev.with(props.index, newMessage))
             socket.emit("edit_message", newMessage, props.index)
-        } else if (props.message.in_channel !== null) {}
+        }
     }
     return (
         <div className='flex flex-col w-full bg-gradient-to-r py-3 px-4 pb-2 rounded-lg from-[#313167] to-[#303338]'>
