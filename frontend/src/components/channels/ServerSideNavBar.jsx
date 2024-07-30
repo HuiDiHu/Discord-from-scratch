@@ -34,7 +34,7 @@ const ServerSideNavBar = ({ props }) => {
                 </div>
             </div>
             <div className="w-full flex justify-end pr-2"><span className="border w-8"></span></div>
-            {serverList.map(item => (
+            {serverList !== null && serverList.map(item => (
                 <SideNavItem key={`sv:${item.server_id}`} props={{
                     selectedPath: props.selectedPath, setSelectedPath: props.setSelectedPath,
                     server_id: item.server_id,

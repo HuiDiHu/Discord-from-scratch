@@ -27,15 +27,17 @@ const EditMessageContainer = ({ props }) => {
             socket.emit("edit_message", newMessage, props.index)
         } else if (props.message.in_channel !== null) {}
     }
-
     return (
         <div className='flex flex-col w-full bg-gradient-to-r py-3 px-4 pb-2 rounded-lg from-[#313167] to-[#303338]'>
             <textarea
                 className='h-6 max-h-72 w-[95%] resize-none text-sm bg-transparent outline-none cursor-text'
                 autoFocus={true}
-                onFocus={() => setMessage(props.message.content)}
-                autoComplete='off'
                 ref={textRef}
+                onFocus={() => { 
+                    setMessage(props.message.content);
+                    setTimeout(() => {if (textRef.current !== undefined) textRef.current.style.height = `${textRef.current.scrollHeight}px`}, 10)
+                }}
+                autoComplete='off'
                 onChange={(e) => {
                     setMessage(e.target.value)
                     textRef.current.style.height = '24px'

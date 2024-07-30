@@ -56,9 +56,11 @@ const UseSocketSetup = (setFriendList, setServerList, setMessages, setMemberList
             setUser({ loggedIn: false })
         });
         return () => {
-            socket.off("initialize");
             socket.off("friends");
+            socket.off("servers");
             socket.off("create_message");
+            socket.off("delete_message");
+            socket.off("edit_message");
             socket.off("connected");
             socket.off("connect_error");
         };

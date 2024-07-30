@@ -30,7 +30,7 @@ const ChatBox = ({ props }) => {
         setMessage("")
     }
     return (
-        <div className='flex w-auto px-3 py-2 bg-[#313167] border-t space-x-4 mx-4 mb-3'>
+        <div className='flex w-auto px-3 py-2 bg-[#313167] border-t space-x-4 mx-4 mb-3 rounded-b-lg'>
             <BsPlusCircleFill 
                 className='h-6 w-6 cursor-pointer text-neutral-300'
                 onClick={() => {alert("Upload stuff and shits yn?")}}

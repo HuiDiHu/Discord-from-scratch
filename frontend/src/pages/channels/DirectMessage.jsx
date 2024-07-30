@@ -1,16 +1,14 @@
 import React, { useContext, useLayoutEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
-import { AccountContext } from 'src/components/auth/UserContext'
-import { FriendContext } from 'src/pages/Channels'
+import { FriendContext, LoadingContext } from 'src/pages/Channels'
 import FriendsAndDMSidebar from 'src/components/channels/FriendsAndDMSidebar'
 import Channel from 'src/components/channels/Channel'
 
 const DirectMessage = () => {
-  const { user } = useContext(AccountContext)
   const { friendList } = useContext(FriendContext)
+  const { msgLoading } = useContext(LoadingContext)
   const { id } = useParams();
 
-  const [loading, setLoading] = useState(false)
   const [friend, setFriend] = useState()
   useLayoutEffect(() => {
     setFriend(friendList.find(item => item.userid === id))
@@ -18,12 +16,11 @@ const DirectMessage = () => {
   return (
     <div className='flex w-full h-full'>
       <FriendsAndDMSidebar />
-      {friend ?
+      {friend && !msgLoading ?
         <Channel props={{
           channelId: friend.dm_id,
           channel_name: `@${friend.username}`,
           channelType: 'dm',
-          loading, setLoading,
           friend
         }} /> :
         <div className='grow text-center text-red-800 text-3xl'>LOADING...</div>

@@ -29,7 +29,7 @@ const Channels = ({ props }) => {
     }
     
     //TODO: add pendingList, setPendingList into FriendContext.Provder value
-    const [friendList, setFriendList] = useState([]); const [serverList, setServerList] = useState([]); //array of objects
+    const [friendList, setFriendList] = useState([]); const [serverList, setServerList] = useState(null); //array of objects
     const [loadedDMs, setLoadedDMs] = useState([]); const [loadedServers, setLoadedServers] = useState([]); const [loadedChannels, setLoadedChannels] = useState([]) //array of ids
     const [messages, setMessages] = useState([]); const [channels, setChannels] = useState([]); //array of objects
     const [memberList, setMemberList] = useState([]); //array of objects (set when new server or dm is being loaded)

@@ -20,9 +20,9 @@ const MessageContainer = ({ props }) => {
             {isEditing && <EditMessageContainer props={{ message: props.message, setIsEditing, index: props.index }} />}
 
             {!isEditing &&
-                <span className='text-wrap w-fit break-all text-sm font-light whitespace-pre'>
+                <span className='flex text-wrap w-fit break-all text-sm font-light whitespace-pre'>
                     {props.message.content}
-                    {props.message.is_edited ? <span className='text-neutral-500 text-[8px] ml-1 font-medium'>{'(edited)'}</span> : ''}
+                    {props.message.is_edited ? <span className='text-neutral-500 text-[8px] ml-1 font-medium pt-0.5'>{'(edited)'}</span> : ''}
                 </span>
             }
 

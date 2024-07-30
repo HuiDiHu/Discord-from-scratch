@@ -23,6 +23,26 @@ const createSingleServer = async (req, res) => {
     res.status(StatusCodes.CREATED).json({ server });
 }
 
+const getServerMembers = async (req, res) => {
+    if (!req.session.user || !req.session.user.userid) throw new UnauthenticatedError('You must log in first before creating a server.');
+    const {
+        params: { id: server_id }
+    } = req;
+
+    const memberIdList = (await pool.query(
+        "SELECT server_members FROM SERVERS WHERE server_id = $1",
+        [Number(server_id)]
+    )).rows[0].server_members;
+
+    const memberList = [];
+    for (let userid of memberIdList) {
+        memberList.push(await redisClient.hgetall(`user:${userid}`));
+    }
+
+    res.status(StatusCodes.OK).json({ members: memberList })
+}
+
 module.exports = {
-    createSingleServer
+    createSingleServer,
+    getServerMembers
 }
