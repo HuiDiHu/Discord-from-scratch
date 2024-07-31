@@ -55,6 +55,28 @@ FROM
 WHERE
   d.in_dm = <id of the dm selected by user>
 
+--get the most recent 50 messages upon clicking on a dm
+SELECT  
+  *
+FROM  
+  DM_MESSAGES d
+WHERE 
+  d.in_dm = <dm id selected by user>
+ORDER BY 
+  created_at DESC
+LIMIT 50
+
+--load the next 50 most recent messages upon clicking on a dm (after loading most recent 50)
+SELECT  
+  *
+FROM  
+  DM_MESSAGES d
+WHERE 
+  d.in_dm = <dm id selected by user>
+ORDER BY 
+  created_at DESC
+LIMIT 50 OFFSET 50 * <number of times the user scrolled to the top>
+
 --get all messages upon clicking on a channel
 SELECT  
   *
@@ -63,6 +85,28 @@ FROM
 WHERE 
   c.in_channel = <channel id selected by user>
 
+--get the most recent 50 messages upon clicking on a channel
+SELECT  
+  *
+FROM  
+  CHANNEL_MESSAGES c
+WHERE 
+  c.in_channel = <channel id selected by user>
+ORDER BY 
+  created_at DESC
+LIMIT 50
+
+--load the next 50 most recent messages upon clicking on a channel (after loading most recent 50)
+SELECT  
+  *
+FROM  
+  CHANNEL_MESSAGES c
+WHERE 
+  c.in_channel = <channel id selected by user>
+ORDER BY 
+  created_at DESC
+LIMIT 50 OFFSET 50 * <number of times the user scrolled to the top>
+
 --get all messages upon clicking on a group
 SELECT  
   *
@@ -70,6 +114,28 @@ FROM
   GROUP_MESSAGES g
 WHERE 
   g.in_group = <group id selected by user>
+
+--get the most recent 50 messages upon clicking on a group
+SELECT  
+  *
+FROM  
+  GROUP_MESSAGES g
+WHERE 
+  g.in_group = <group id selected by user>
+ORDER BY 
+  created_at DESC
+LIMIT 50
+
+--load the next 50 most recent messages upon clicking on a group (after loading most recent 50)
+SELECT  
+  *
+FROM  
+  GROUP_MESSAGES g
+WHERE 
+  g.in_group = <group id selected by user>
+ORDER BY 
+  created_at DESC
+LIMIT 50 OFFSET 50 * <number of times the user scrolled to the top>
 
   
 --edit DM messages

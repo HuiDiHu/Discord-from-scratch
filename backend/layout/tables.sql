@@ -101,6 +101,14 @@ CREATE TABLE GROUP_MESSAGES(
   CONSTRAINT fk_message_constraint FOREIGN KEY (in_group) REFERENCES GROUP_CHATS (group_id) ON DELETE CASCADE --messages should be deleted automatically upon group chat deletion
 );
 
+CREATE TABLE INVITE_LINKS(
+  invite_id SERIAL PRIMARY KEY,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  token VARCHAR(6) NOT NULL UNIQUE,
+  references_server INTEGER NOT NULL,
+  CONSTRAINT fk_server_constraint FOREIGN KEY (references_server) REFERENCES SERVERS (server_id) ON DELETE CASCADE
+)
+
 
 /* 
   TODO
