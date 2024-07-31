@@ -105,7 +105,7 @@ CREATE TABLE INVITE_LINKS(
   invite_id SERIAL PRIMARY KEY,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   token VARCHAR(6) NOT NULL UNIQUE,
-  references_server INTEGER NOT NULL
+  references_server INTEGER NOT NULL,
   CONSTRAINT fk_server_constraint FOREIGN KEY (references_server) REFERENCES SERVERS (server_id) ON DELETE CASCADE
 )
 
