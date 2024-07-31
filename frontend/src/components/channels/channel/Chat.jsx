@@ -35,7 +35,6 @@ const Chat = ({ props }) => {
         }
         socket.emit("delete_message", message_id, in_dm, in_channel)
     }
-    
     return (
         <div className='w-full grow flex flex-col justify-end overflow-y-scroll pr-3'>
             <br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br />

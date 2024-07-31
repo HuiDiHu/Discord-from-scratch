@@ -13,7 +13,7 @@ const ChatBox = ({ props }) => {
 
     const textRef = useRef()
     const handleSubmit = (e) => {
-        e.preventDefault();
+        e.stopPropagation(); e.preventDefault();
         if (!message.length) return;
         //TODO: add message length limit
         const messageObject = {

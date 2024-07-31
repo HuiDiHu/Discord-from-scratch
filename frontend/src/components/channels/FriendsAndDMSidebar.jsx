@@ -16,7 +16,6 @@ const FriendsAndDMSidebar = () => {
     const navigate = useNavigate();
     const { id } = useParams();
     useLayoutEffect(() => {
-        setMsgLoading(true)
         if (!id || friendList.length === 0) {
             console.log("INVALID ID!")
             return;
@@ -26,6 +25,7 @@ const FriendsAndDMSidebar = () => {
             console.log("FRIEND DOESN'T EXIST!")
             return;
         }
+        setMsgLoading(true)
         setMemberList([user, friend])
         if (loadedDMs.indexOf(friend.dm_id) !== -1) {
             setMsgLoading(false)

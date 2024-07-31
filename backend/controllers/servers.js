@@ -1,7 +1,7 @@
 const { StatusCodes } = require('http-status-codes')
 const pool = require('../db/connect')
 const redisClient = require('../redis')
-const { UnauthenticatedError, UnprocessableEntityError } = require('../errors')
+const { UnauthenticatedError, UnprocessableEntityError, BadRequestError, UnauthorizedError, NotFoundError } = require('../errors')
 
 const createSingleServer = async (req, res) => {
     if (!req.session.user || !req.session.user.userid) throw new UnauthenticatedError('You must log in first before creating a server.');
@@ -29,10 +29,12 @@ const getServerMembers = async (req, res) => {
         params: { id: server_id }
     } = req;
 
-    const memberIdList = (await pool.query(
+    let memberIdList = (await pool.query(
         "SELECT server_members FROM SERVERS WHERE server_id = $1",
         [Number(server_id)]
-    )).rows[0].server_members;
+    )).rows;
+    if (memberIdList.length === 0) throw new NotFoundError("Server not found.");
+    memberIdList = memberIdList[0].server_members;
 
     const memberList = [];
     for (let userid of memberIdList) {
@@ -42,7 +44,93 @@ const getServerMembers = async (req, res) => {
     res.status(StatusCodes.OK).json({ members: memberList })
 }
 
+function makeToken(length) {
+    let result = '';
+    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    const charactersLength = characters.length;
+    let counter = 0;
+    while (counter < length) {
+        result += characters.charAt(Math.floor(Math.random() * charactersLength));
+        counter += 1;
+    }
+    return result;
+}
+const ONE_DAY = 24 * 60 * 60 * 1000;
+
+const generateInviteToken = async (req, res) => {
+    const server_id = req.body.server_id;
+    let token;
+    do {
+        let tempToken = makeToken(6);
+        const tokenQuery = (await pool.query(
+            "SELECT created_at FROM INVITE_TOKENS t WHERE t.token = $1",
+            [tempToken]
+        )).rows;
+        if (tokenQuery.length === 0) {
+            token = tempToken;
+        } else {
+            const created_at = tokenQuery[0].created_at;
+            if (created_at && (new Date() - new Date(created_at)) > ONE_DAY) {
+                await pool.query(
+                    "DELETE FROM INVITE_TOKENS WHERE token = $1",
+                    [tempToken]
+                )
+                token = tempToken;
+            }
+        }
+    } while (!token)
+    await pool.query(
+        "INSERT INTO INVITE_TOKENS(token, references_server) VALUES($1,$2)",
+        [token, Number(server_id)]
+    )
+    res.status(StatusCodes.CREATED).json({ token });
+}
+
+const joinServer = async (req, res) => {
+    if (!req.session.user || !req.session.user.userid) throw new UnauthenticatedError('You must log in before accessing channels');
+    const {
+        params: { id: server_id }
+    } = req;
+    const token = req.body.token;
+    if (!token) throw new BadRequestError("Invalid invite link.");
+
+    const tokenQuery = (await pool.query(
+        "SELECT * FROM INVITE_TOKENS WHERE token = $1",
+        [token]
+    )).rows;
+    if (tokenQuery.length === 0) throw new BadRequestError("Invalid invite link.");
+
+    const created_at = tokenQuery[0].created_at;
+    if ((new Date() - new Date(created_at)) > ONE_DAY) {
+        await pool.query(
+            "DELETE FROM INVITE_TOKENS WHERE token = $1",
+            [token]
+        )
+        throw new BadRequestError("This invitation has expired.")
+    }
+    //check if user is already a member
+    let membersList = (await pool.query(
+        "SELECT server_members FROM SERVERS WHERE server_id = $1",
+        [tokenQuery[0].references_server]
+    )).rows;
+    if (membersList.length === 0) throw new NotFoundError("Server not found.")
+    membersList = membersList[0].server_members || [];
+
+    if (membersList.find(item => item === req.session.user.userid)) throw new UnauthorizedError("You are already a member of this server.");
+
+    await Promise.all([
+        pool.query(
+            `UPDATE SERVERS SET server_members = ARRAY_APPEND(server_members, $1) WHERE server_id = $2`,
+            [req.session.user.userid, tokenQuery[0].references_server]
+        ),
+        redisClient.lpush(`servers:${req.session.user.userid}`, tokenQuery[0].references_server)
+    ])
+    res.status(StatusCodes.OK).json({ server_id: tokenQuery[0].references_server })
+}
+
 module.exports = {
     createSingleServer,
-    getServerMembers
+    getServerMembers,
+    generateInviteToken,
+    joinServer
 }

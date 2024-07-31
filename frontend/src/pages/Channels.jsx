@@ -33,11 +33,10 @@ const Channels = ({ props }) => {
     const [loadedDMs, setLoadedDMs] = useState([]); const [loadedServers, setLoadedServers] = useState([]); const [loadedChannels, setLoadedChannels] = useState([]) //array of ids
     const [messages, setMessages] = useState([]); const [channels, setChannels] = useState([]); //array of objects
     const [memberList, setMemberList] = useState([]); //array of objects (set when new server or dm is being loaded)
-    const [msgLoading, setMsgLoading] = useState(true); const [sidebarLoading, setSidebarLoading] = useState(true);
-    UseSocketSetup(setFriendList, setServerList, setMessages, setMemberList, setSidebarLoading, setChannels, loadedServers);
-    
+    const [msgLoading, setMsgLoading] = useState(true); const [sidebarLoading, setSidebarLoading] = useState(true); const [membersLoading, setMembersLoading] = useState(true);
+    UseSocketSetup(setFriendList, setServerList, setMessages, setMemberList, setSidebarLoading, setChannels, setLoadedServers);
     return (
-        <LoadingContext.Provider value={{ msgLoading, setMsgLoading, sidebarLoading, setSidebarLoading }} >
+        <LoadingContext.Provider value={{ msgLoading, setMsgLoading, sidebarLoading, setSidebarLoading, membersLoading, setMembersLoading }} >
             <FriendContext.Provider value={{ friendList, setFriendList }}>
                 <ServerContext.Provider value={{ serverList, setServerList, loadedServers, setLoadedServers, loadedChannels, setLoadedChannels, channels, setChannels }} >
                     <MemberContext.Provider value={{ memberList, setMemberList }}>

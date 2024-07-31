@@ -1,5 +1,5 @@
 /*
-CREATE TABLE INVITE_LINKS(
+CREATE TABLE INVITE_TOKENS(
   invite_id SERIAL PRIMARY KEY,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   token VARCHAR(6) NOT NULL UNIQUE,
@@ -9,7 +9,7 @@ CREATE TABLE INVITE_LINKS(
 */
 
 --create new invite token
-INSERT INTO INVITE_LINKS
+INSERT INTO INVITE_TOKENS
 (
   token,
   references_server,
@@ -22,7 +22,7 @@ VALUES
 
 --delete invite token when the user tries to use it after it expires (after 1 day)
 DELETE FROM 
-  INVITE_LINKS
+  INVITE_TOKENS
 WHERE
   token = <user input>
 
@@ -30,6 +30,6 @@ WHERE
 SELECT 
   references_server
 FROM 
-  INVITE_LINKS
+  INVITE_TOKENS
 WHERE
   token = <user input>

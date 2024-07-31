@@ -130,9 +130,9 @@ const getServerMembersList = async (socket, server_id) => {
         [server_id]
     )).rows;
     if (membersList.length > 0) {
-        membersList = (membersList[0].members || []).filter(item => item !== socket.user.userid);
+        membersList = membersList[0].server_members.filter(item => item !== socket.user.userid);
     }
-    return membersList.filter(item => item !== socket.user.userid);
+    return membersList;
 }
 
 const getMembersList = async (socket, in_dm, in_channel) => {
@@ -156,6 +156,7 @@ const getMembersList = async (socket, in_dm, in_channel) => {
 }
 
 const createMessage = async (socket, tempMessage) => {
+    //console.log(tempMessage)
     let message, members;
     if (tempMessage.in_dm !== null) {
         message = (await pool.query(

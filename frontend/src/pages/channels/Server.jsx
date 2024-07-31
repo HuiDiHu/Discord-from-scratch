@@ -7,7 +7,7 @@ import Channel from 'src/components/channels/Channel'
 
 const Server = () => {
   const { id: server_id } = useParams();
-  const { msgLoading, setMsgLoading, setSidebarLoading } = useContext(LoadingContext);
+  const { msgLoading, setMsgLoading, setSidebarLoading, membersLoading, setMembersLoading } = useContext(LoadingContext);
   const { channels, serverList, loadedServers, setLoadedServers, setChannels } = useContext(ServerContext);
   const { setMemberList, memberList } = useContext(MemberContext)
 
@@ -18,6 +18,7 @@ const Server = () => {
   useLayoutEffect(() => {
     if (server_id === null) return;
     if (server !== null && server.server_id === Number(server_id)) return;
+    setMembersLoading(true);
     if (loadedServers.indexOf(Number(server_id)) !== -1) {
       setLoadedServers(prev => [ Number(server_id), ...prev.filter(item => item !== Number(server_id)) ])
       setSelectedChannel(channels.find(item => item.in_server === Number(server_id)) || {});
@@ -29,7 +30,8 @@ const Server = () => {
         })
         .get(`/api/v1/servers/members/${server_id}`)
         .then((res) => {
-          setMemberList(res.data.members)
+          setMemberList([...res.data.members]);
+          setMembersLoading(false);
           return;
         })
         .catch((error) => {
@@ -39,7 +41,7 @@ const Server = () => {
         })
       return;
     }
-    setSidebarLoading(true); setMsgLoading(true);
+    setSidebarLoading(true);
     axios
       .create({
         baseURL: import.meta.env.VITE_IS_DEV ? import.meta.env.VITE_SERVER_DEV_URL : import.meta.env.VITE_SERVER_URL,
@@ -52,11 +54,11 @@ const Server = () => {
         setChannels(prev => [...res.data.channelList, ...prev]);
         setMemberList([...res.data.members]);
         setLoadedServers(prev => [Number(server_id), ...prev]);
-        setSidebarLoading(false);
+        setSidebarLoading(false); setMembersLoading(false);
       })
       .catch((error) => {
         console.log(error)
-        setSidebarLoading(true);
+        setSidebarLoading(false); setMembersLoading(false);
         navigate('/channels/@me')
       })
   }, [server_id])
@@ -70,7 +72,7 @@ const Server = () => {
   return (
     <div className='flex w-full h-full'>
       <ChannelListContainer props={{ server, selectedChannel, setSelectedChannel }} />
-      {!msgLoading && memberList.length > 0 && selectedChannel.channel_id !== null ?
+      {!msgLoading && !membersLoading && selectedChannel.channel_id !== null ?
         <Channel props={{
           channelId: selectedChannel.channel_id,
           channel_name: selectedChannel.channel_name,

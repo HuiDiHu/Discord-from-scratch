@@ -1,9 +1,11 @@
 import { useContext, useEffect } from 'react'
 import socket from 'src/socket'
 import { AccountContext } from 'src/components/auth/UserContext';
+import { ServerContext } from 'src/pages/Channels';
 
-const UseSocketSetup = (setFriendList, setServerList, setMessages, setMemberList, setSidebarLoading, setChannels, loadedServers) => {
-    const { setUser } = useContext(AccountContext)
+const UseSocketSetup = (setFriendList, setServerList, setMessages, setMemberList, setSidebarLoading, setChannels, setLoadedServers) => {
+    const { setUser } = useContext(AccountContext);
+
     useEffect(() => {
         setSidebarLoading(true)
         //maybe make loading then make initialize send a callback for loading
@@ -20,10 +22,15 @@ const UseSocketSetup = (setFriendList, setServerList, setMessages, setMemberList
         socket.on("servers", (serverList) => {
             setServerList(serverList)
         });
-        //TODO: set up messages socket
         socket.on("create_message", (message) => {
-            //console.log(message)
-            setMessages(prev => [...prev, message])
+            //TODO: Figure out why sometimes dupe messages get sent and remove this stupid contraption after its fixed
+            setMessages(prev => {
+                if (!prev.find(item => item.message_id === message.message_id)) {
+                    return [...prev, message];
+                } else {
+                    return [...prev];
+                }
+            })
         });
         socket.on("delete_message", (message_id, in_dm, in_channel) => {
             setMessages(prev => prev.filter(item => !( item.message_id === message_id && ( (in_dm !== null && in_dm !== undefined && item.in_dm === in_dm) || (in_channel !== null && in_channel !== undefined && item.in_channel === in_channel) ) )))
@@ -32,10 +39,13 @@ const UseSocketSetup = (setFriendList, setServerList, setMessages, setMemberList
             setMessages(prev => prev.with(index, newMessage))
         });
         socket.on("created_channel", (server_id, channel) => {
-            if (loadedServers.find(server_id)) {
-                setChannels(prev => [...prev, channel])
-            }
-        })
+            setLoadedServers(prev => {
+                if (prev.find(item => item === server_id)) {
+                    setChannels(prev => [...prev, channel])
+                }
+                return prev;
+            })
+        });
         socket.on("connected", (connected, userid) => {
             setFriendList(prev =>
                 prev.map((friend) => {
@@ -66,6 +76,7 @@ const UseSocketSetup = (setFriendList, setServerList, setMessages, setMemberList
             socket.off("create_message");
             socket.off("delete_message");
             socket.off("edit_message");
+            socket.off("created_channel");
             socket.off("connected");
             socket.off("connect_error");
         };

@@ -1,7 +1,10 @@
+import { useContext } from 'react';
 import { useNavigate } from 'react-router-dom'
+import { LoadingContext } from 'src/pages/Channels';
 
 const SideNavItem = ({ props }) => {
     const navigate = useNavigate();
+    //const { setMsgLoading } = useContext(LoadingContext)
     return (
         <div className="group relative flex items-center space-x-2 cursor-pointer">
             <span
