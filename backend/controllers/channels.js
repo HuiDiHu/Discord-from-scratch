@@ -27,6 +27,18 @@ const getAllChannelsAndMembersWithServerId = async (req, res) => {
     res.status(StatusCodes.OK).json({ members, channelList: channelListQuery.rows });
 }
 
+const createSingleChannelWithServerId = async (req, res) => {
+    const { server_id, channel_name } = req.body;
+    if (!channel_name) throw new UnprocessableEntityError("You cannot create a channel without a channel name.");
+    const channel = (await pool.query(
+        "INSERT INTO CHANNELS(in_server, channel_name) values($1,$2) RETURNING *",
+        [Number(server_id), channel_name]
+    )).rows[0];
+    
+    res.status(StatusCodes.CREATED).json({ channel });
+}
+
 module.exports = {
-    getAllChannelsAndMembersWithServerId
+    getAllChannelsAndMembersWithServerId,
+    createSingleChannelWithServerId
 }

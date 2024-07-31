@@ -4,6 +4,7 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { FriendContext, MessagesContext, MemberContext, LoadingContext } from 'src/pages/Channels'
 import { AccountContext } from 'src/components/auth/UserContext'
 import FriendIcon from './friends/FriendIcon'
+import { GiUnfriendlyFire } from "react-icons/gi";
 
 const FriendsAndDMSidebar = () => {
     const { msgLoading, setMsgLoading } = useContext(LoadingContext)
@@ -51,9 +52,10 @@ const FriendsAndDMSidebar = () => {
     return (
         <div className="flex flex-col min-w-[150px] md:min-w-[200px] lg:min-w-[235px] h-screen bg-[#2a2d31] overflow-y-scroll scrollbar-hide">
             <button
-                className='m-2 px-auto py-2 bg-red-800 flex justify-center items-center'
+                className={`flex m-2 px-auto py-2 px-5 space-x-2 justify-start items-center ${ id === undefined ? 'bg-[#404248]' : 'hover:bg-[#36383c]'} rounded-lg`}
                 onClick={() => { navigate('/channels/@me') }}
             >
+                <GiUnfriendlyFire className='mr-2 h-6 w-6'/>
                 <span>Friends</span>
             </button>
             <span className='border' />

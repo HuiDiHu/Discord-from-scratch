@@ -58,9 +58,8 @@ const {
     initializeUser,
     addFriend,
     onDisconnect,
-    createMessage,
-    deleteMessage,
-    editMessage
+    createMessage, deleteMessage, editMessage,
+    createdChannel
 } = require('./controllers/socketController');
 
 io.use(wrap(sessionMiddleware));
@@ -74,6 +73,7 @@ io.on("connect", socket => {
         socket.on('create_message', (message) => createMessage(socket, message));
         socket.on('delete_message', (message_id, in_dm, in_channel) => deleteMessage(socket, message_id, in_dm, in_channel))
         socket.on('edit_message', (newMessage, index) => editMessage(socket, newMessage, index))
+        socket.on('created_channel', (server_id, channel) => createdChannel(socket, Number(server_id), channel))
     }
 
 });

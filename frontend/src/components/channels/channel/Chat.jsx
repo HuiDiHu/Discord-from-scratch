@@ -38,6 +38,7 @@ const Chat = ({ props }) => {
     
     return (
         <div className='w-full grow flex flex-col justify-end overflow-y-scroll pr-3'>
+            <br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br />
             {msgLoading ? <div> LOADING </div> :
                 messages.filter(message => {
                     if (props.channelType === 'dm') {

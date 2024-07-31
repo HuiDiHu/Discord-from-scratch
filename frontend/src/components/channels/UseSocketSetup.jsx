@@ -2,7 +2,7 @@ import { useContext, useEffect } from 'react'
 import socket from 'src/socket'
 import { AccountContext } from 'src/components/auth/UserContext';
 
-const UseSocketSetup = (setFriendList, setServerList, setMessages, setMemberList, setSidebarLoading, loadedServers) => {
+const UseSocketSetup = (setFriendList, setServerList, setMessages, setMemberList, setSidebarLoading, setChannels, loadedServers) => {
     const { setUser } = useContext(AccountContext)
     useEffect(() => {
         setSidebarLoading(true)
@@ -19,7 +19,7 @@ const UseSocketSetup = (setFriendList, setServerList, setMessages, setMemberList
         });
         socket.on("servers", (serverList) => {
             setServerList(serverList)
-        })
+        });
         //TODO: set up messages socket
         socket.on("create_message", (message) => {
             //console.log(message)
@@ -27,9 +27,14 @@ const UseSocketSetup = (setFriendList, setServerList, setMessages, setMemberList
         });
         socket.on("delete_message", (message_id, in_dm, in_channel) => {
             setMessages(prev => prev.filter(item => !( item.message_id === message_id && ( (in_dm !== null && in_dm !== undefined && item.in_dm === in_dm) || (in_channel !== null && in_channel !== undefined && item.in_channel === in_channel) ) )))
-        })
+        });
         socket.on("edit_message", (newMessage, index) => {
             setMessages(prev => prev.with(index, newMessage))
+        });
+        socket.on("created_channel", (server_id, channel) => {
+            if (loadedServers.find(server_id)) {
+                setChannels(prev => [...prev, channel])
+            }
         })
         socket.on("connected", (connected, userid) => {
             setFriendList(prev =>

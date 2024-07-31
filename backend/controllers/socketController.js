@@ -124,25 +124,35 @@ const onDisconnect = async (socket) => {
     }
 }
 
+const getServerMembersList = async (socket, server_id) => {
+    let membersList = (await pool.query(
+        "SELECT server_members FROM SERVERS WHERE server_id = $1",
+        [server_id]
+    )).rows;
+    if (membersList.length > 0) {
+        membersList = (membersList[0].members || []).filter(item => item !== socket.user.userid);
+    }
+    return membersList.filter(item => item !== socket.user.userid);
+}
+
 const getMembersList = async (socket, in_dm, in_channel) => {
-    let membersQuery;
+    let membersList = [];
     if (in_dm !== null && in_dm !== undefined) {
-        membersQuery = (await pool.query(
+        membersList = (await pool.query(
             "SELECT members FROM DMS WHERE dm_id = $1",
             [Number(in_dm)]
-        )).rows[0].members || [];
+        )).rows;
+        if (membersList.length > 0) {
+            membersList = (membersList[0].members || []).filter(item => item !== socket.user.userid);
+        }
     } else if (in_channel !== null && in_channel !== undefined) {
         const server_id = (await pool.query(
             "SELECT in_server FROM CHANNELS WHERE channel_id = $1",
             [Number(in_channel)]
         )).rows[0].in_server;
-        membersQuery = (await pool.query(
-            "SELECT server_members FROM SERVERS WHERE server_id = $1",
-            [server_id]
-        )).rows[0].server_members || [];
+        membersList = await getServerMembersList(socket, server_id);
     }
-
-    return membersQuery.filter(item => item !== socket.user.userid);
+    return membersList;
 }
 
 const createMessage = async (socket, tempMessage) => {
@@ -195,6 +205,13 @@ const editMessage = async (socket, newMessage, index) => {
     socket.to(members).emit("edit_message", newMessage, index)
 }
 
+const createdChannel = async (socket, server_id, channel) => {
+    if (server_id !== null && server_id !== undefined && channel !== null && channel !== undefined) {
+        const members = await getServerMembersList(socket, server_id);
+        socket.to(members).emit("created_channel", server_id, channel);
+    }
+}
+
 module.exports = {
     authorizeUser,
     initializeUser,
@@ -202,6 +219,6 @@ module.exports = {
     onDisconnect,
     createMessage,
     deleteMessage,
-    editMessage
-
+    editMessage,
+    createdChannel
 }
