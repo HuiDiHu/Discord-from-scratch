@@ -1,10 +1,6 @@
-import { set } from 'date-fns';
-import React, { useContext } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { LoadingContext } from 'src/pages/Channels';
 
 const SideNavItem = ({ props }) => {
-    const { setMsgLoading, setSidebarLoading } = useContext(LoadingContext)
     const navigate = useNavigate();
     return (
         <div className="group relative flex items-center space-x-2 cursor-pointer">
@@ -19,7 +15,6 @@ const SideNavItem = ({ props }) => {
                 onClick={() => {
                     if (props.selectedPath !== `/server/${props.server_id}`) {
                         props.setSelectedPath(`/server/${props.server_id}`);
-                        setMsgLoading(true); setSidebarLoading(true);
                         navigate(`/channels/server/${props.server_id}`)
                     }
                 }}

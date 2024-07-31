@@ -18,10 +18,9 @@ const Server = () => {
   useLayoutEffect(() => {
     if (server_id === null) return;
     if (server !== null && server.server_id === Number(server_id)) return;
-    console.log("HAIAHI")
     if (loadedServers.indexOf(Number(server_id)) !== -1) {
+      setLoadedServers(prev => [ Number(server_id), ...prev.filter(item => item !== Number(server_id)) ])
       setSelectedChannel(channels.find(item => item.in_server === Number(server_id)) || {});
-      setSidebarLoading(false);
       console.log("SERVER ALREADY LOADED!")
       axios
         .create({
@@ -52,11 +51,12 @@ const Server = () => {
         setSelectedChannel(res.data.channelList[0]);
         setChannels(prev => [...res.data.channelList, ...prev]);
         setMemberList([...res.data.members]);
-        setLoadedServers(prev => [...prev, Number(server_id)]);
+        setLoadedServers(prev => [Number(server_id), ...prev]);
         setSidebarLoading(false);
       })
       .catch((error) => {
         console.log(error)
+        setSidebarLoading(true);
         navigate('/channels/@me')
       })
   }, [server_id])

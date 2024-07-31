@@ -34,7 +34,7 @@ const Channels = ({ props }) => {
     const [messages, setMessages] = useState([]); const [channels, setChannels] = useState([]); //array of objects
     const [memberList, setMemberList] = useState([]); //array of objects (set when new server or dm is being loaded)
     const [msgLoading, setMsgLoading] = useState(true); const [sidebarLoading, setSidebarLoading] = useState(true);
-    UseSocketSetup(setFriendList, setServerList, setMessages, setMemberList, setSidebarLoading);
+    UseSocketSetup(setFriendList, setServerList, setMessages, setMemberList, setSidebarLoading, loadedServers);
 
     return (
         <LoadingContext.Provider value={{ msgLoading, setMsgLoading, sidebarLoading, setSidebarLoading }} >

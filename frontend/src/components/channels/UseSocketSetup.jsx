@@ -2,7 +2,7 @@ import { useContext, useEffect } from 'react'
 import socket from 'src/socket'
 import { AccountContext } from 'src/components/auth/UserContext';
 
-const UseSocketSetup = (setFriendList, setServerList, setMessages, setMemberList, setSidebarLoading) => {
+const UseSocketSetup = (setFriendList, setServerList, setMessages, setMemberList, setSidebarLoading, loadedServers) => {
     const { setUser } = useContext(AccountContext)
     useEffect(() => {
         setSidebarLoading(true)
