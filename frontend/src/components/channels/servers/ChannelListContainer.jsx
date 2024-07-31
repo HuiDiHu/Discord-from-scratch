@@ -11,7 +11,10 @@ const ChannelListContainer = ({ props }) => {
   const navigate = useNavigate();
   useLayoutEffect(() => {
     if (channels.length === 0 || props.selectedChannel.channel_id === null) return;
-    if (loadedChannels.find(item => item === props.selectedChannel.channel_id)) return;
+    if (loadedChannels.find(item => item === props.selectedChannel.channel_id)) {
+      setMsgLoading(false);
+      return;
+    };
     setMsgLoading(true);
     //load messages
     axios
