@@ -12,7 +12,7 @@ const {
 
 router.route('/create').post(createSingleServer)
 router.route('/members/:id').get(getServerMembers)
-router.route('/token').get(verifyServerOwnership, generateInviteToken)
+router.route('/token/:id').get(verifyServerOwnership, generateInviteToken)
 router.route('/join/:id').put(joinServer)
 
 module.exports = router

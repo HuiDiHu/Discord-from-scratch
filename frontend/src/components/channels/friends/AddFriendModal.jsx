@@ -55,7 +55,7 @@ const AddFriendModal = ({ props }) => {
                             onKeyDown={(e) => { e.key === "Enter" && handleAddFriend() }}
                         />
                     </div>
-                    <div className='h-6 bg-red'>
+                    <div className='h-6'>
                         <span className='text-red-600 text-xs ml-1'>{friendIdErrMsg}</span>
                     </div>
                 </>

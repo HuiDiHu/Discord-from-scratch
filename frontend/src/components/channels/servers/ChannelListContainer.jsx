@@ -3,14 +3,16 @@ import React, { useContext, useLayoutEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { ServerContext, LoadingContext, MessagesContext } from 'src/pages/Channels'
 import { PiDiamondsFourDuotone } from "react-icons/pi";
+import { MdGroupAdd } from "react-icons/md";
 import socket from 'src/socket';
+import GenerateTokenModal from './GenerateTokenModal';
 
 const ChannelListContainer = ({ props }) => {
   const { channels, setChannels, loadedChannels, setLoadedChannels } = useContext(ServerContext)
   const { sidebarLoading, setSidebarLoading, setMsgLoading } = useContext(LoadingContext)
   const { setMessages } = useContext(MessagesContext)
 
-  const [addingChannel, setAddingChannel] = useState(false);
+  const [addingChannel, setAddingChannel] = useState(false); const [generateTokenModalOpen, setGenerateTokenModalOpen] = useState(false);
   const [newChannelName, setNewChannelName] = useState("");
 
   const navigate = useNavigate();
@@ -70,7 +72,10 @@ const ChannelListContainer = ({ props }) => {
         <>
           <div className='flex justify-between items-center w-full py-[11.5px] px-4 border-b border-black'>
             <span className='max-w-[80%] h-fit truncate text-md'>{props.server.server_name}</span>
-            <div className='h-5 w-5 bg-red-800'></div>
+            <MdGroupAdd 
+              className='h-5 w-5 text-neutral-400 cursor-pointer hover:text-white'
+              onClick={() => {setGenerateTokenModalOpen(true)}}
+            />
           </div>
           <div className='flex flex-col w-full h-[90%] overflow-y-scroll scrollbar-hide pb-10'>
             <br />
@@ -122,6 +127,7 @@ const ChannelListContainer = ({ props }) => {
           <div className='grow bg-red-800'>
 
           </div>
+          {generateTokenModalOpen && <GenerateTokenModal props={{ setGenerateTokenModalOpen }} />}
         </>
       }
     </div>

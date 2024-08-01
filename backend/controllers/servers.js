@@ -58,7 +58,9 @@ function makeToken(length) {
 const ONE_DAY = 24 * 60 * 60 * 1000;
 
 const generateInviteToken = async (req, res) => {
-    const server_id = req.body.server_id;
+    const {
+        params: { id: server_id }
+    } = req;
     let token;
     do {
         let tempToken = makeToken(6);

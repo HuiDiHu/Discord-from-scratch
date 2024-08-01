@@ -88,11 +88,6 @@ const UseSocketSetup = (setFriendList, setServerList, setMessages, setMemberList
         return () => {
             socket.off("friends");
             socket.off("servers");
-            socket.off("create_message");
-            socket.off("delete_message");
-            socket.off("edit_message");
-            socket.off("created_channel");
-            socket.off("joined_server");
             socket.off("connected");
             socket.off("connect_error");
         };

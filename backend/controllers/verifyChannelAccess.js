@@ -62,7 +62,6 @@ const verifyServerOwnership = async (req, res, next) => {
         throw new UnauthorizedError("You are not authorized to access this server.");
     }
     const server_id = req.body.server_id || req.params.id;
-
     if (server_id === null || server_id === undefined) throw new NotFoundError("Server not found.");
 
     const ownerQuery = await pool.query(

@@ -14,7 +14,7 @@ const ChannelHeader = ({ props }) => {
           <div className='flex'>
             <span className='text-md font-medium'>{props.channel_name}</span>
           </div>
-          <div className='h-5 w-5 bg-red-600'></div>
+          <div className='h-5 w-5 bg-red-800'></div>
         </div>
       }
     </div>

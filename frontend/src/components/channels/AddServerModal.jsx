@@ -96,7 +96,7 @@ const AddServerModal = ({ props }) => {
                             onKeyDown={(e) => { e.key === "Enter" && handleAddServer() }}
                         />
                     </div>
-                    <div className='h-6 bg-red'>
+                    <div className='h-6'>
                         <span className='text-red-600 text-xs ml-1'>{serverNameErrMsg}</span>
                     </div>
                     <div className='w-full flex justify-end'>
@@ -135,7 +135,7 @@ const AddServerModal = ({ props }) => {
                             Join
                         </button>
                     </div>
-                    <div className='h-6 bg-red'>
+                    <div className='h-6'>
                         <span className='text-red-600 text-xs ml-1'>{inviteTokenErrMsg}</span>
                     </div>
                 </>
