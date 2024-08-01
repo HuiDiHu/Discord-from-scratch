@@ -43,6 +43,9 @@ CREATE TABLE USERS(
   passhash VARCHAR NOT NULL,
   userid VARCHAR NOT NULL UNIQUE, --PURPOSE?
   profilePicture BYTEA /*stands for bytearray. extra steps are required for inserting*/
+  /*
+  profilePictureLink TEXT
+  */
 );
 
 CREATE TABLE SERVERS(
