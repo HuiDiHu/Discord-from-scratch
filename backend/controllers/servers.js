@@ -89,16 +89,14 @@ const generateInviteToken = async (req, res) => {
 const joinServer = async (req, res) => {
     if (!req.session.user || !req.session.user.userid) throw new UnauthenticatedError('You must log in before accessing channels');
     const {
-        params: { id: server_id }
+        params: { id: token }
     } = req;
-    const token = req.body.token;
-    if (!token) throw new BadRequestError("Invalid invite link.");
-
+    
     const tokenQuery = (await pool.query(
         "SELECT * FROM INVITE_TOKENS WHERE token = $1",
         [token]
     )).rows;
-    if (tokenQuery.length === 0) throw new BadRequestError("Invalid invite link.");
+    if (tokenQuery.length === 0) throw new BadRequestError("Invalid invite token.");
 
     const created_at = tokenQuery[0].created_at;
     if ((new Date() - new Date(created_at)) > ONE_DAY) {
@@ -109,14 +107,14 @@ const joinServer = async (req, res) => {
         throw new BadRequestError("This invitation has expired.")
     }
     //check if user is already a member
-    let membersList = (await pool.query(
-        "SELECT server_members FROM SERVERS WHERE server_id = $1",
+    let server = (await pool.query(
+        "SELECT * FROM SERVERS WHERE server_id = $1",
         [tokenQuery[0].references_server]
     )).rows;
-    if (membersList.length === 0) throw new NotFoundError("Server not found.")
-    membersList = membersList[0].server_members || [];
+    if (server.length === 0) throw new NotFoundError("Server not found.")
+    server = server[0];
 
-    if (membersList.find(item => item === req.session.user.userid)) throw new UnauthorizedError("You are already a member of this server.");
+    if (server.server_members.find(item => item === req.session.user.userid)) throw new UnauthorizedError("You are already a member of this server.");
 
     await Promise.all([
         pool.query(
@@ -125,7 +123,7 @@ const joinServer = async (req, res) => {
         ),
         redisClient.lpush(`servers:${req.session.user.userid}`, tokenQuery[0].references_server)
     ])
-    res.status(StatusCodes.OK).json({ server_id: tokenQuery[0].references_server })
+    res.status(StatusCodes.OK).json({ server })
 }
 
 module.exports = {

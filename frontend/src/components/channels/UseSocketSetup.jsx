@@ -1,11 +1,12 @@
 import { useContext, useEffect } from 'react'
 import socket from 'src/socket'
 import { AccountContext } from 'src/components/auth/UserContext';
-import { ServerContext } from 'src/pages/Channels';
+import { useNavigate } from 'react-router-dom';
 
 const UseSocketSetup = (setFriendList, setServerList, setMessages, setMemberList, setSidebarLoading, setChannels, setLoadedServers) => {
-    const { setUser } = useContext(AccountContext);
+    const { user, setUser } = useContext(AccountContext);
 
+    const navigate = useNavigate();
     useEffect(() => {
         setSidebarLoading(true)
         //maybe make loading then make initialize send a callback for loading
@@ -46,6 +47,20 @@ const UseSocketSetup = (setFriendList, setServerList, setMessages, setMemberList
                 return prev;
             })
         });
+        socket.on("joined_server", (targetUser, server) => {
+            if (targetUser.userid === user.userid) {
+                setServerList(prev => [...prev, server]);
+                navigate(`/channels/server/${server.server_id}`)
+            } else {
+                console.log("NEW MEMBER JOINED!", targetUser);
+                setLoadedServers(prev => {
+                    if (prev.length > 0 && prev[0] === server.server_id) {
+                        setMemberList(prev => [...prev, targetUser]);
+                    }
+                    return prev;
+                })
+            }
+        });
         socket.on("connected", (connected, userid) => {
             setFriendList(prev =>
                 prev.map((friend) => {
@@ -77,6 +92,7 @@ const UseSocketSetup = (setFriendList, setServerList, setMessages, setMemberList
             socket.off("delete_message");
             socket.off("edit_message");
             socket.off("created_channel");
+            socket.off("joined_server");
             socket.off("connected");
             socket.off("connect_error");
         };

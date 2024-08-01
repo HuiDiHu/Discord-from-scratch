@@ -213,6 +213,14 @@ const createdChannel = async (socket, server_id, channel) => {
     }
 }
 
+const joinedServer = async (socket, user, server) => {
+    if (user && server) {
+        const members = await getServerMembersList(socket, server.server_id);
+        socket.emit("joined_server", user, {...server, server_members: [user, ...members]});
+        socket.to(members).emit("joined_server", user,  {...server, server_members: [user, ...members]});
+    }
+}
+
 module.exports = {
     authorizeUser,
     initializeUser,
@@ -221,5 +229,6 @@ module.exports = {
     createMessage,
     deleteMessage,
     editMessage,
-    createdChannel
+    createdChannel,
+    joinedServer
 }
