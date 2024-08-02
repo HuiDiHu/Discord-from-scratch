@@ -40,7 +40,12 @@ const FriendsAndDMSidebar = () => {
             .get(`/api/v1/messages/channels/@me/${friend.dm_id}`)
             .then((res) => {
                 setLoadedDMs(prev => [...prev, friend.dm_id])
-                setMessages(prev => [...res.data, ...prev])
+                const uniqueMsgs = []
+                const tempMessages = messages.map(item => item.message_id);
+                res.data.forEach((msg) => {
+                    if (tempMessages.indexOf(msg.message_id) === -1) uniqueMsgs.push(msg);
+                })
+                setMessages(prev => [...uniqueMsgs, ...prev])
                 setMsgLoading(false)
             })
             .catch((error) => {
@@ -52,10 +57,10 @@ const FriendsAndDMSidebar = () => {
     return (
         <div className="flex flex-col min-w-[150px] md:min-w-[200px] lg:min-w-[235px] h-screen bg-[#2a2d31] overflow-y-scroll scrollbar-hide">
             <button
-                className={`flex m-2 px-auto py-2 px-5 space-x-2 justify-start items-center ${ id === undefined ? 'bg-[#404248]' : 'hover:bg-[#36383c]'} rounded-lg`}
+                className={`flex m-2 px-auto py-2 px-5 space-x-2 justify-start items-center ${id === undefined ? 'bg-[#404248]' : 'hover:bg-[#36383c]'} rounded-lg`}
                 onClick={() => { navigate('/channels/@me') }}
             >
-                <GiUnfriendlyFire className='mr-2 h-6 w-6'/>
+                <GiUnfriendlyFire className='mr-2 h-6 w-6' />
                 <span>Friends</span>
             </button>
             <span className='border' />

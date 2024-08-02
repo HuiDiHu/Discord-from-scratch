@@ -10,7 +10,7 @@ import GenerateTokenModal from './GenerateTokenModal';
 const ChannelListContainer = ({ props }) => {
   const { channels, setChannels, loadedChannels, setLoadedChannels } = useContext(ServerContext)
   const { sidebarLoading, setSidebarLoading, setMsgLoading } = useContext(LoadingContext)
-  const { setMessages } = useContext(MessagesContext)
+  const { messages, setMessages } = useContext(MessagesContext)
 
   const [addingChannel, setAddingChannel] = useState(false); const [generateTokenModalOpen, setGenerateTokenModalOpen] = useState(false);
   const [newChannelName, setNewChannelName] = useState("");
@@ -33,7 +33,12 @@ const ChannelListContainer = ({ props }) => {
       .get(`/api/v1/messages/channels/${props.selectedChannel.channel_id}`)
       .then((res) => {
         setLoadedChannels(prev => [props.selectedChannel.channel_id, ...prev]);
-        setMessages(prev => [...res.data, ...prev]);
+        const uniqueMsgs = []
+        const tempMessages = messages.map(item => item.message_id);
+        res.data.forEach((msg) => {
+          if (tempMessages.indexOf(msg.message_id) === -1) uniqueMsgs.push(msg);
+        })
+        setMessages(prev => [...uniqueMsgs, ...prev])
         setMsgLoading(false);
       })
       .catch((error) => {

@@ -51,7 +51,12 @@ const Server = () => {
       .then((res) => {
         console.log("LOADING SERVER")
         setSelectedChannel(res.data.channelList[0]);
-        setChannels(prev => [...res.data.channelList, ...prev]);
+        const uniqueChs = []
+        const tempChannelIdList = channels.map(item => item.channel_id);
+        res.data.channelList.forEach((ch) => {
+          if (tempChannelIdList.indexOf(ch.channel_id) === -1) uniqueChs.push(ch);
+        })
+        setChannels(prev => [...uniqueChs, ...prev]);
         setMemberList([...res.data.members]);
         setLoadedServers(prev => [Number(server_id), ...prev]);
         setSidebarLoading(false); setMembersLoading(false);
