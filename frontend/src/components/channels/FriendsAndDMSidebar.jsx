@@ -9,7 +9,7 @@ import { GiUnfriendlyFire } from "react-icons/gi";
 const FriendsAndDMSidebar = () => {
     const { msgLoading, setMsgLoading } = useContext(LoadingContext)
     const { friendList } = useContext(FriendContext)
-    const { setMessages, loadedDMs, setLoadedDMs } = useContext(MessagesContext)
+    const { messages, setMessages, loadedDMs, setLoadedDMs } = useContext(MessagesContext)
     { }
     const { setMemberList } = useContext(MemberContext)
     const { user } = useContext(AccountContext)
