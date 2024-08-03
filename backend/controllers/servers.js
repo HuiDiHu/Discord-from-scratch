@@ -39,8 +39,8 @@ const getServerMembers = async (req, res) => {
     const memberList = [];
     for (let userid of memberIdList) {
         memberList.push(await redisClient.hgetall(`user:${userid}`));
+        memberList[memberList.length - 1].connected = memberList[memberList.length - 1].connected === 'true';
     }
-
     res.status(StatusCodes.OK).json({ members: memberList })
 }
 

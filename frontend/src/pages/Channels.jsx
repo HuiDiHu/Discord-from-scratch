@@ -34,12 +34,13 @@ const Channels = ({ props }) => {
     const [messages, setMessages] = useState([]); const [channels, setChannels] = useState([]); //array of objects
     const [memberList, setMemberList] = useState([]); //array of objects (set when new server or dm is being loaded)
     const [msgLoading, setMsgLoading] = useState(true); const [sidebarLoading, setSidebarLoading] = useState(true); const [membersLoading, setMembersLoading] = useState(true);
+    const [memberListOpen, setMemberListOpen] = useState(false);
     UseSocketSetup(setFriendList, setServerList, setMessages, setMemberList, setSidebarLoading, setChannels, setLoadedServers);
     return (
         <LoadingContext.Provider value={{ msgLoading, setMsgLoading, sidebarLoading, setSidebarLoading, membersLoading, setMembersLoading }} >
             <FriendContext.Provider value={{ friendList, setFriendList }}>
                 <ServerContext.Provider value={{ serverList, setServerList, loadedServers, setLoadedServers, loadedChannels, setLoadedChannels, channels, setChannels }} >
-                    <MemberContext.Provider value={{ memberList, setMemberList }}>
+                    <MemberContext.Provider value={{ memberList, setMemberList, memberListOpen, setMemberListOpen }}>
                         <div className="flex h-screen w-screen">
                             <ServerSideNavBar props={{ selectedPath: curPath, setSelectedPath: setCurPath }} />
                             <MessagesContext.Provider value={{ messages, setMessages, loadedDMs, setLoadedDMs }}>

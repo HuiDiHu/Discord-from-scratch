@@ -34,7 +34,7 @@ const UseSocketSetup = (setFriendList, setServerList, setMessages, setMemberList
             })
         });
         socket.on("delete_message", (message_id, in_dm, in_channel) => {
-            setMessages(prev => prev.filter(item => !( item.message_id === message_id && ( (in_dm !== null && in_dm !== undefined && item.in_dm === in_dm) || (in_channel !== null && in_channel !== undefined && item.in_channel === in_channel) ) )))
+            setMessages(prev => prev.filter(item => !(item.message_id === message_id && ((in_dm !== null && in_dm !== undefined && item.in_dm === in_dm) || (in_channel !== null && in_channel !== undefined && item.in_channel === in_channel)))))
         });
         socket.on("edit_message", (newMessage, index) => {
             setMessages(prev => prev.with(index, newMessage))
@@ -70,24 +70,34 @@ const UseSocketSetup = (setFriendList, setServerList, setMessages, setMemberList
                     return friend
                 }).sort((a, b) => {
                     if (a.connected === b.connected) return 0;
-                    if (a.connected) return -1;
-                    return 1;
+                    return a.connected ? -1 : 1;
                 })
             )
-            setMemberList(prev => prev.map(member => {
-                if (member.userid === userid) {
-                    member.connected = connected;
-                }
-                return member
-            }))
+            setMemberList(prev =>
+                prev.map((member) => {
+                    if (member.userid === userid) {
+                        member.connected = connected;
+                    }
+                    return member
+                }).sort((a, b) => {
+                    if (a.connected === b.connected) return 0;
+                    return a.connected ? -1 : 1;
+                })
+            )
         });
         socket.on("connect_error", () => {
             console.log("Websocket connection error... Logging user out")
             setUser({ loggedIn: false })
         });
         return () => {
+            console.log("Closing Sockets...")
             socket.off("friends");
             socket.off("servers");
+            socket.off("create_message");
+            socket.off("delete_message");
+            socket.off("edit_message");
+            socket.off("created_channel");
+            socket.off("joined_server");
             socket.off("connected");
             socket.off("connect_error");
         };

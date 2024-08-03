@@ -92,7 +92,8 @@ const addFriend = async (socket, temp, cb) => {
 
     //TODO: lpush to pending instead of friends
     await redisClient.lpush(`friends:${socket.user.userid}`, [friendId, dm_id].join('.'));
-    const friend = await redisClient.hgetall(`user:${friendId}`); friend.connected = friend.connected === 'true' ? true : false;
+    const friend = await redisClient.hgetall(`user:${friendId}`); friend.connected = friend.connected === 'true';
+    console.log(friend)
     socket.to(friend.userid).emit("connected", true, socket.user.userid)
 
     cb({ done: true, friend: { ...friend, dm_id } })
@@ -104,7 +105,7 @@ const getFriendList = async (friendDMIdList) => {
         const friend = await redisClient.hgetall(
             `user:${friendDMId.split('.')[0]}`
         )
-        friend.connected = friend.connected === 'true' ? true : false;
+        friend.connected = friend.connected === 'true';
         friendList.push({ ...friend, dm_id: Number(friendDMId.split('.')[1]) })
     }
     return friendList;

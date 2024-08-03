@@ -7,9 +7,9 @@ import Channel from 'src/components/channels/Channel'
 
 const Server = () => {
   const { id: server_id } = useParams();
-  const { msgLoading, setMsgLoading, setSidebarLoading, membersLoading, setMembersLoading } = useContext(LoadingContext);
+  const { msgLoading, setSidebarLoading, membersLoading, setMembersLoading } = useContext(LoadingContext);
   const { channels, serverList, loadedServers, setLoadedServers, setChannels } = useContext(ServerContext);
-  const { setMemberList, memberList } = useContext(MemberContext)
+  const { setMemberList } = useContext(MemberContext)
 
   const [selectedChannel, setSelectedChannel] = useState({ channel_id: null })
   const [server, setServer] = useState(null);
