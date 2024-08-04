@@ -14,6 +14,29 @@ const Channel = ({ props }) => {
     const { messages, setMessages, loadedDMs, setLoadedDMs, usersLoaded, setUsersLoaded } = useContext(MessagesContext)
 
     const navigate = useNavigate();
+
+    //remember to modify usersLoaded when ever someone sends an message
+
+    //this will only be called for server channels
+    const loadNewMessageUsers = (newMessages) => {
+        const tempUserIds = new Set(usersLoaded.map(item => item.userid));
+        const newUserIds = [... new Set(newMessages.map(item => item.posted_by).filter(uuid => !tempUserIds.has(uuid)))]
+        axios
+            .create({
+                baseURL: import.meta.env.VITE_IS_DEV ? import.meta.env.VITE_SERVER_DEV_URL : import.meta.env.VITE_SERVER_URL,
+                withCredentials: true
+            })
+            .post('/api/v1/user/multiple', { useridList: newUserIds })
+            .then((res) => {
+                setUsersLoaded(prev => [...res.data, ...prev])
+                setMsgLoading(false);
+            })
+            .catch((error) => {
+                console.log(error)
+                navigate('/channels/@me')
+            })
+    }
+
     useEffect(() => {
         if (msgLoading) {
             if (props.channelType === 'dm') {
@@ -52,7 +75,7 @@ const Channel = ({ props }) => {
                             if (tempMessages.indexOf(msg.message_id) === -1) uniqueMsgs.push(msg);
                         })
                         setMessages(prev => [...uniqueMsgs, ...prev])
-                        setMsgLoading(false);
+                        loadNewMessageUsers(uniqueMsgs);
                     })
                     .catch((error) => {
                         console.log(error)
@@ -89,7 +112,7 @@ const Channel = ({ props }) => {
                             channelType: props.channelType,
                             friend: props.friend
                         }} />
-                        <div className='flex h-full'>
+                        <div className='flex h-[calc(100%-3rem)]'>
                             <div className='flex flex-col h-full grow'>
                                 <Chat props={{
                                     channelId: props.channelId,

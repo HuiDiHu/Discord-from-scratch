@@ -3,15 +3,32 @@ import socket from 'src/socket'
 import { AccountContext } from 'src/components/auth/UserContext';
 import { useNavigate } from 'react-router-dom';
 
-const UseSocketSetup = (setFriendList, setServerList, setMessages, setMemberList, setChannels, setLoadedServers) => {
+const UseSocketSetup = (setFriendList, setServerList, setMessages, setMemberList, setChannels, setLoadedServers, setUsersLoaded) => {
     const { user, setUser } = useContext(AccountContext);
 
     const navigate = useNavigate();
+
+    const disconnectedAll = () => {
+        console.log("Closing Sockets...")
+        socket.off("friends");
+        socket.off("servers");
+        socket.off("create_message");
+        socket.off("delete_message");
+        socket.off("edit_message");
+        socket.off("created_channel");
+        socket.off("joined_server");
+        socket.off("connected");
+        socket.off("connect_error");
+        socket.disconnect();
+    }
+
     useEffect(() => {
         //maybe make loading then make initialize send a callback for loading
+        if (socket.connected) disconnectedAll();
         socket.connect();
         //TODO: socket.on("servers", (serverList) => {})
         socket.on("friends", (friendList) => {
+            console.log("RECIEVED!")
             if (friendList === null || friendList === undefined) {
                 console.log("NULL friendlist")
                 setFriendList([]);
@@ -26,7 +43,7 @@ const UseSocketSetup = (setFriendList, setServerList, setMessages, setMemberList
         socket.on("servers", (serverList) => {
             setServerList(serverList)
         });
-        socket.on("create_message", (message) => {
+        socket.on("create_message", (message, author) => {
             //TODO: Figure out why sometimes dupe messages get sent and remove this stupid contraption after its fixed
             setMessages(prev => {
                 if (!prev.find(item => item.message_id === message.message_id)) {
@@ -34,6 +51,12 @@ const UseSocketSetup = (setFriendList, setServerList, setMessages, setMemberList
                 } else {
                     return [...prev];
                 }
+            })
+            setUsersLoaded(prev => {
+                if (prev.findIndex(item => item.userid === author.userid) === -1) {
+                    return [author, ...prev];
+                }
+                return prev;
             })
         });
         socket.on("delete_message", (message_id, in_dm, in_channel) => {
@@ -93,16 +116,7 @@ const UseSocketSetup = (setFriendList, setServerList, setMessages, setMemberList
             setUser({ loggedIn: false })
         });
         return () => {
-            console.log("Closing Sockets...")
-            socket.off("friends");
-            socket.off("servers");
-            socket.off("create_message");
-            socket.off("delete_message");
-            socket.off("edit_message");
-            socket.off("created_channel");
-            socket.off("joined_server");
-            socket.off("connected");
-            socket.off("connect_error");
+            disconnectedAll();
         };
     }, [])
 };

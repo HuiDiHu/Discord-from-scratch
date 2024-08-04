@@ -16,6 +16,7 @@ const authRouter = require('./routes/auth')
 const messagesRouter = require('./routes/messages')
 const serversRouter = require('./routes/servers')
 const channelsRouter = require('./routes/channels')
+const userRouter = require('./routes/user')
 
 //error handler
 const notFoundMiddleware = require('./middleware/not-found.js');
@@ -47,6 +48,7 @@ app.use('/api/v1/auth', authRouter)
 app.use('/api/v1/messages', messagesRouter)
 app.use('/api/v1/servers', serversRouter)
 app.use('/api/v1/channels', channelsRouter)
+app.use('/api/v1/user', userRouter)
 
 app.use(notFoundMiddleware)
 app.use(errorHandlerMiddleware)

@@ -25,12 +25,12 @@ const HeaderMessageContainer = ({ props }) => {
         >
             <img
                 className='w-10 h-10 rounded-full [clip-path:circle(45%_at_50%_50%)] ml-3 mr-2 cursor-pointer'
-                src={`../../../../assets/tempIcons/${props.member.profile || 'GRAGAS'}.png`}
-                onClick={() => { alert(`${props.member.username}'s profile...`) }}
+                src={`../../../../assets/tempIcons/${props.author.profile || 'GRAGAS'}.png`}
+                onClick={() => { alert(`${props.author.username}'s profile...`) }}
             />
             <div className='w-full flex flex-col'>
                 <div className='flex space-x-2'>
-                    <span>{props.member.username}</span>
+                    <span>{props.author.username}</span>
                     <span className='text-neutral-400 flex items-center justify-center text-xs mt-0.5 whitespace-pre'>
                         {formatDate(new Date(props.message.created_at))}
                     </span>

@@ -17,7 +17,7 @@ const Server = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (membersLoading) {
+    if (membersLoading && serverList !== null) {
       if (!sidebarLoading) {
         axios
           .create({
@@ -62,7 +62,7 @@ const Server = () => {
           })
       }
     }
-  }, [membersLoading, sidebarLoading])
+  }, [serverList !== null, membersLoading, sidebarLoading])
 
   useLayoutEffect(() => {
     if (server_id === null) {

@@ -9,7 +9,7 @@ import NotFoundPage from 'src/pages/NotFoundPage';
 
 const Views = () => {
     const { user } = useContext(AccountContext);
-    return user.loggedIn === null ? (<h1>Loading...</h1>) : (
+    return user.loggedIn === null ? (<div className='h-screen w-screen bg-neutral-600'><h1>Loading..............</h1></div>) : (
         <Routes>
             <Route path='/' element={<Login />} />
             <Route path='/login' element={<Login />} />

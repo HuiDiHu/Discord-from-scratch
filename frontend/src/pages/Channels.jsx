@@ -36,7 +36,7 @@ const Channels = ({ props }) => {
     const [usersLoaded, setUsersLoaded] = useState([]); //array of user objects
     const [msgLoading, setMsgLoading] = useState(true); const [sidebarLoading, setSidebarLoading] = useState(true); const [membersLoading, setMembersLoading] = useState(true);
     const [memberListOpen, setMemberListOpen] = useState(false);
-    UseSocketSetup(setFriendList, setServerList, setMessages, setMemberList, setChannels, setLoadedServers);
+    UseSocketSetup(setFriendList, setServerList, setMessages, setMemberList, setChannels, setLoadedServers, setUsersLoaded);
     return (
         <LoadingContext.Provider value={{ msgLoading, setMsgLoading, sidebarLoading, setSidebarLoading, membersLoading, setMembersLoading }} >
             <FriendContext.Provider value={{ friendList, setFriendList }}>

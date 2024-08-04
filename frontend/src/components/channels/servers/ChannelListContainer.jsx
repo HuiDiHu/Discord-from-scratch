@@ -94,7 +94,7 @@ const ChannelListContainer = ({ props }) => {
               />
             </div>
           </div>
-          <div className='grow bg-red-800'>
+          <div className='min-h-12 grow bg-red-800'>
 
           </div>
           {generateTokenModalOpen && <GenerateTokenModal props={{ setGenerateTokenModalOpen }} />}

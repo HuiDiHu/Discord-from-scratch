@@ -1,5 +1,5 @@
 import React, { useContext, useState } from 'react'
-import { MessagesContext, MemberContext, LoadingContext } from 'src/pages/Channels'
+import { MessagesContext, LoadingContext } from 'src/pages/Channels'
 import MessageContainer from './MessageContainer'
 import HeaderMessageContainer from './HeaderMessageContainer';
 import { AccountContext } from 'src/components/auth/UserContext'
@@ -10,8 +10,7 @@ const FIVE_MIN = 5 * 60 * 1000;
 
 const Chat = ({ props }) => {
     const { msgLoading } = useContext(LoadingContext)
-    const { messages, setMessages } = useContext(MessagesContext)
-    const { memberList } = useContext(MemberContext)
+    const { messages, setMessages, usersLoaded} = useContext(MessagesContext)
     const { user } = useContext(AccountContext)
     const [hoveredMessage, setHoveredMessage] = useState(null)
 
@@ -55,7 +54,7 @@ const Chat = ({ props }) => {
                                     (props.channelType === 'channel' ? `ch.${message.message_id}` : index)}
                                 props={{
                                     message,
-                                    member: memberList.find(item => item.userid === message.posted_by),
+                                    author: usersLoaded.find(item => item.userid === message.posted_by),
                                     by_user: message.posted_by === user.userid,
                                     hoveredMessage, setHoveredMessage,
                                     handleDeleteMessage, index,

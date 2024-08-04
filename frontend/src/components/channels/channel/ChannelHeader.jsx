@@ -6,7 +6,7 @@ import { BsPeopleFill } from "react-icons/bs";
 const ChannelHeader = ({ props }) => {
   const { memberListOpen, setMemberListOpen } = useContext(MemberContext)
   return (
-    <div className='min-h-12 w-auto bg-[#313167ff] border-b border-black'>
+    <div className='min-h-12 w-auto bg-[#313167ff] border-b border-black my-auto'>
       {props.channelType === 'dm' &&
         <div className="h-full flex items-center ml-2">
           <FriendIcon props={{ friend: { ...props.friend, username: `@${props.friend.username}` }, selected: true }} />

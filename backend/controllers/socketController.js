@@ -43,11 +43,10 @@ const initializeUser = async (socket) => {
         [serverIdList]
     )).rows;
 
-    setTimeout(() => {
-        socket.emit("friends", friendList);
-        socket.emit("servers", serverList)
-        console.log(socket.user.username, "logged ON")
-    }, 350)
+    socket.emit("friends", friendList);
+    socket.emit("servers", serverList)
+    console.log(socket.user.username, "logged ON")
+
 };
 
 const addFriend = async (socket, temp, cb) => {
@@ -156,6 +155,8 @@ const getMembersList = async (socket, in_dm, in_channel) => {
     return membersList;
 }
 
+const { getAuthor } = require('../controllers/user')
+
 const createMessage = async (socket, tempMessage) => {
     //console.log(tempMessage)
     let message, members;
@@ -170,9 +171,11 @@ const createMessage = async (socket, tempMessage) => {
             [tempMessage.created_at / 1000.0, tempMessage.content, tempMessage.posted_by, tempMessage.in_channel]
         )).rows[0];
     }
-    socket.emit("create_message", message)
+    let author = await getAuthor(message.posted_by)
+
+    socket.emit("create_message", message, author)
     members = await getMembersList(socket, message.in_dm, message.in_channel)
-    socket.to(members).emit("create_message", message)
+    socket.to(members).emit("create_message", message, author)
 }
 
 const deleteMessage = async (socket, message_id, in_dm, in_channel) => {
@@ -185,7 +188,7 @@ const deleteMessage = async (socket, message_id, in_dm, in_channel) => {
         await pool.query(
             "DELETE FROM CHANNEL_MESSAGES WHERE message_id = $1",
             [message_id]
-        )        
+        )
     }
     const members = await getMembersList(socket, in_dm, in_channel)
     socket.to(members).emit("delete_message", message_id, in_dm, in_channel)
@@ -217,8 +220,8 @@ const createdChannel = async (socket, server_id, channel) => {
 const joinedServer = async (socket, user, server) => {
     if (user && server) {
         const members = await getServerMembersList(socket, server.server_id);
-        socket.emit("joined_server", user, {...server, server_members: [user, ...members]});
-        socket.to(members).emit("joined_server", user,  {...server, server_members: [user, ...members]});
+        socket.emit("joined_server", user, { ...server, server_members: [user, ...members] });
+        socket.to(members).emit("joined_server", user, { ...server, server_members: [user, ...members] });
     }
 }
 
