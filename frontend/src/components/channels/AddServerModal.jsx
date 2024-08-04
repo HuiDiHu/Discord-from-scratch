@@ -9,7 +9,6 @@ import { useNavigate } from 'react-router-dom';
 const AddServerModal = ({ props }) => {
     const { user } = useContext(AccountContext);
     const { setServerList } = useContext(ServerContext);
-    const { setMsgLoading, setSidebarLoading } = useContext(LoadingContext);
 
     const [serverName, setServerName] = useState(`${user.username}'s server`);
     const [serverNameErrMsg, setServerNameErrMsg] = useState("");
@@ -29,7 +28,6 @@ const AddServerModal = ({ props }) => {
             .post('/api/v1/servers/create', { server_name: serverName })
             .then((res) => {
                 setServerList(prev => [...prev, res.data.server])
-                setMsgLoading(true); setSidebarLoading(true);
                 props.setIsAddServerOpen(false)
                 props.setSelectedPath(`/server/${res.data.server.server_id}`)
                 navigate(`/channels/server/${res.data.server.server_id}`)
@@ -50,7 +48,6 @@ const AddServerModal = ({ props }) => {
             .put(`/api/v1/servers/join/${inviteToken}`)
             .then((res) => {
                 //send socket request to other members
-                setMsgLoading(true); setSidebarLoading(true);
                 props.setIsAddServerOpen(false)
                 props.setSelectedPath(`/server/${res.data.server.server_id}`)
                 const { server_members, ...targetServer } = res.data.server;

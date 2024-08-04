@@ -29,13 +29,14 @@ const Channels = ({ props }) => {
     }
     
     //TODO: add pendingList, setPendingList into FriendContext.Provder value
-    const [friendList, setFriendList] = useState([]); const [serverList, setServerList] = useState(null); //array of objects
+    const [friendList, setFriendList] = useState(null); const [serverList, setServerList] = useState(null); //array of objects
     const [loadedDMs, setLoadedDMs] = useState([]); const [loadedServers, setLoadedServers] = useState([]); const [loadedChannels, setLoadedChannels] = useState([]) //array of ids
     const [messages, setMessages] = useState([]); const [channels, setChannels] = useState([]); //array of objects
     const [memberList, setMemberList] = useState([]); //array of objects (set when new server or dm is being loaded)
+    const [usersLoaded, setUsersLoaded] = useState([]); //array of user objects
     const [msgLoading, setMsgLoading] = useState(true); const [sidebarLoading, setSidebarLoading] = useState(true); const [membersLoading, setMembersLoading] = useState(true);
     const [memberListOpen, setMemberListOpen] = useState(false);
-    UseSocketSetup(setFriendList, setServerList, setMessages, setMemberList, setSidebarLoading, setChannels, setLoadedServers);
+    UseSocketSetup(setFriendList, setServerList, setMessages, setMemberList, setChannels, setLoadedServers);
     return (
         <LoadingContext.Provider value={{ msgLoading, setMsgLoading, sidebarLoading, setSidebarLoading, membersLoading, setMembersLoading }} >
             <FriendContext.Provider value={{ friendList, setFriendList }}>
@@ -43,7 +44,7 @@ const Channels = ({ props }) => {
                     <MemberContext.Provider value={{ memberList, setMemberList, memberListOpen, setMemberListOpen }}>
                         <div className="flex h-screen w-screen">
                             <ServerSideNavBar props={{ selectedPath: curPath, setSelectedPath: setCurPath }} />
-                            <MessagesContext.Provider value={{ messages, setMessages, loadedDMs, setLoadedDMs }}>
+                            <MessagesContext.Provider value={{ messages, setMessages, loadedDMs, setLoadedDMs, usersLoaded, setUsersLoaded }}>
                                 <div className="grow">
                                     {pageView()}
                                 </div>

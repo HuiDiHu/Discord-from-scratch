@@ -3,22 +3,25 @@ import socket from 'src/socket'
 import { AccountContext } from 'src/components/auth/UserContext';
 import { useNavigate } from 'react-router-dom';
 
-const UseSocketSetup = (setFriendList, setServerList, setMessages, setMemberList, setSidebarLoading, setChannels, setLoadedServers) => {
+const UseSocketSetup = (setFriendList, setServerList, setMessages, setMemberList, setChannels, setLoadedServers) => {
     const { user, setUser } = useContext(AccountContext);
 
     const navigate = useNavigate();
     useEffect(() => {
-        setSidebarLoading(true)
         //maybe make loading then make initialize send a callback for loading
         socket.connect();
         //TODO: socket.on("servers", (serverList) => {})
         socket.on("friends", (friendList) => {
+            if (friendList === null || friendList === undefined) {
+                console.log("NULL friendlist")
+                setFriendList([]);
+                return;
+            }
             setFriendList(friendList.sort((a, b) => {
                 if (a.connected === b.connected) return 0;
                 if (a.connected) return -1;
                 return 1;
             }))
-            setSidebarLoading(false)
         });
         socket.on("servers", (serverList) => {
             setServerList(serverList)

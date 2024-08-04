@@ -47,7 +47,7 @@ const initializeUser = async (socket) => {
         socket.emit("friends", friendList);
         socket.emit("servers", serverList)
         console.log(socket.user.username, "logged ON")
-    }, 250)
+    }, 350)
 };
 
 const addFriend = async (socket, temp, cb) => {

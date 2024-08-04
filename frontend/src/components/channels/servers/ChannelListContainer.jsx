@@ -1,52 +1,17 @@
 import axios from 'axios'
-import React, { useContext, useLayoutEffect, useRef, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { ServerContext, LoadingContext, MessagesContext } from 'src/pages/Channels'
+import React, { useContext, useRef, useState } from 'react'
+import { ServerContext, LoadingContext } from 'src/pages/Channels'
 import { PiDiamondsFourDuotone } from "react-icons/pi";
 import { MdGroupAdd } from "react-icons/md";
 import socket from 'src/socket';
 import GenerateTokenModal from './GenerateTokenModal';
 
 const ChannelListContainer = ({ props }) => {
-  const { channels, setChannels, loadedChannels, setLoadedChannels } = useContext(ServerContext)
-  const { sidebarLoading, setSidebarLoading, setMsgLoading } = useContext(LoadingContext)
-  const { messages, setMessages } = useContext(MessagesContext)
+  const { channels, setChannels } = useContext(ServerContext)
+  const { sidebarLoading } = useContext(LoadingContext)
 
   const [addingChannel, setAddingChannel] = useState(false); const [generateTokenModalOpen, setGenerateTokenModalOpen] = useState(false);
   const [newChannelName, setNewChannelName] = useState("");
-
-  const navigate = useNavigate();
-  useLayoutEffect(() => {
-    if (channels.length === 0 || props.selectedChannel.channel_id === null) return;
-    setSidebarLoading(false);
-    if (loadedChannels.find(item => item === props.selectedChannel.channel_id)) {
-      setMsgLoading(false);
-      return;
-    }
-    setMsgLoading(true);
-    //load messages
-    axios
-      .create({
-        baseURL: import.meta.env.VITE_IS_DEV ? import.meta.env.VITE_SERVER_DEV_URL : import.meta.env.VITE_SERVER_URL,
-        withCredentials: true
-      })
-      .get(`/api/v1/messages/channels/${props.selectedChannel.channel_id}`)
-      .then((res) => {
-        setLoadedChannels(prev => [props.selectedChannel.channel_id, ...prev]);
-        const uniqueMsgs = []
-        const tempMessages = messages.map(item => item.message_id);
-        res.data.forEach((msg) => {
-          if (tempMessages.indexOf(msg.message_id) === -1) uniqueMsgs.push(msg);
-        })
-        setMessages(prev => [...uniqueMsgs, ...prev])
-        setMsgLoading(false);
-      })
-      .catch((error) => {
-        console.log(error)
-        navigate('/channels/@me')
-        setMsgLoading(false)
-      })
-  }, [channels, props.selectedChannel.channel_id])
 
   const handleAddChannel = (e) => {
     e.stopPropagation();
