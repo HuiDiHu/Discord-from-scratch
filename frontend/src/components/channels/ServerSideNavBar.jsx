@@ -1,5 +1,5 @@
 import React, { useContext, useState } from 'react'
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import SideNavItem from "src/components/channels/SideNavItem"
 import AddServerModal from 'src/components/channels/AddServerModal';
 import logo from "assets/Dlogo.png"
@@ -7,16 +7,17 @@ import { GoPlus } from "react-icons/go";
 import { ServerContext } from 'src/pages/Channels';
 
 
-
 const ServerSideNavBar = ({ props }) => {
     const { serverList } = useContext(ServerContext)
     const [isAddServerOpen, setIsAddServerOpen] = useState(false)
+
+    const { id } = useParams();
     const navigate = useNavigate();
     return (
         <div className="relative min-w-fit flex flex-col overflow-y-scroll py-5 pr-2 space-y-2 items-center scrollbar-hide">
             <div className="group/home flex items-center space-x-2">
                 <span
-                    className={`${props.selectedPath.startsWith('/@me') ? 'h-8' : 'h-1 group-hover/home:h-4'} 
+                    className={`${( props.selectedPath.startsWith('/@me') || id === undefined )? 'h-8' : 'h-1 group-hover/home:h-4'} 
                                     border-2 rounded-tr-xl rounded-br-xl transition-all ease-in-out duration-300`}
                 />
                 <div

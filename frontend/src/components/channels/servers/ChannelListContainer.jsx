@@ -1,16 +1,27 @@
 import axios from 'axios'
 import React, { useContext, useRef, useState } from 'react'
 import { ServerContext, LoadingContext } from 'src/pages/Channels'
+import { AccountContext } from 'src/components/auth/UserContext'
 import { PiDiamondsFourDuotone } from "react-icons/pi";
 import { MdGroupAdd } from "react-icons/md";
 import socket from 'src/socket';
 import GenerateTokenModal from './GenerateTokenModal';
+import { IoChevronDown } from "react-icons/io5";
+import { IoClose } from "react-icons/io5";
+import LeaveServer from './LeaveServer';
+import { FaPencilAlt } from "react-icons/fa";
+import { FaTrashCan } from "react-icons/fa6";
+
 
 const ChannelListContainer = ({ props }) => {
   const { channels, setChannels } = useContext(ServerContext)
   const { sidebarLoading } = useContext(LoadingContext)
+  const { user } = useContext(AccountContext)
 
-  const [addingChannel, setAddingChannel] = useState(false); const [generateTokenModalOpen, setGenerateTokenModalOpen] = useState(false);
+  const [addingChannel, setAddingChannel] = useState(false);
+  const [generateTokenModalOpen, setGenerateTokenModalOpen] = useState(false);
+
+
   const [newChannelName, setNewChannelName] = useState("");
 
   const handleAddChannel = (e) => {
@@ -28,9 +39,9 @@ const ChannelListContainer = ({ props }) => {
         props.setSelectedChannel(res.data.channel)
         socket.emit("created_channel", props.server.server_id, res.data.channel)
       })
-      .catch((error) => { 
+      .catch((error) => {
         alert(`${error.response.data.msg}. Popup to be implemented...`)
-        console.log(error) 
+        console.log(error)
       })
     console.log("Adding Channel!")
   }
@@ -38,16 +49,60 @@ const ChannelListContainer = ({ props }) => {
   const inputRef = useRef();
   return (
     <div className='flex flex-shrink-0 flex-col w-[150px] md:w-[200px] lg:w-[235px] h-screen bg-[#2a2d31]'>
-      {!sidebarLoading && props.server !== null &&
+      {!sidebarLoading && props.server !== null && props.server !== undefined &&
         <>
           <div className='flex justify-between items-center w-full py-[11.5px] px-4 border-b border-black'>
             <span className='max-w-[80%] h-fit truncate text-md'>{props.server.server_name}</span>
-            <MdGroupAdd 
-              className='h-5 w-5 text-neutral-400 cursor-pointer hover:text-white'
-              onClick={() => {setGenerateTokenModalOpen(true)}}
-            />
+            {props.serverOptionsOpen ?
+              <IoClose
+                className='h-5 w-5 cursor-pointer text-white'
+                onClick={() => { props.setServerOptionsOpen(false); }}
+              /> :
+              <IoChevronDown
+                className='h-5 w-5 cursor-pointer text-white'
+                onClick={() => { props.setServerOptionsOpen(true); }}
+              />
+            }
+
           </div>
-          <div className='flex flex-col w-full h-[90%] overflow-y-scroll scrollbar-hide pb-10'>
+          <div className='relative flex flex-col w-full h-[90%] overflow-y-scroll scrollbar-hide pb-10'>
+            {props.serverOptionsOpen &&
+              <div className='absolute z-10 top-2 mx-[5%] w-[90%] bg-black rounded-md py-2 flex flex-col space-y-0.5'>
+                {props.server.server_owner !== user.userid ?
+                  <>
+                    <LeaveServer server_id={props.server.server_id} setServerOptionsOpen={props.setServerOptionsOpen} />
+                  </> :
+                  <>
+                    <div
+                      className='group/invite flex items-center justify-between px-2 py-1.5 w-[92%] mx-auto rounded-sm hover:bg-[#313167ff] cursor-pointer'
+                      onClick={() => { setGenerateTokenModalOpen(true) }}
+                    >
+                      <span className='text-sm text-neutral-400 group-hover/invite:text-white'>Invite People</span>
+                      <MdGroupAdd
+                        className='h-[18px] w-[18px] text-neutral-400 group-hover/invite:text-white'
+                      />
+                    </div>
+                    <div
+                      className='group/edit flex items-center justify-between px-2 py-1.5 w-[92%] mx-auto rounded-sm hover:bg-[#313167ff] cursor-pointer'
+                    >
+                      <span className='text-sm text-neutral-400 group-hover/edit:text-white'>Edit Server Profile</span>
+                      <FaPencilAlt
+                        className='h-[18px] w-[18px] text-neutral-400 group-hover/edit:text-white'
+                      />
+                    </div>
+                    <span className='w-[90%] mx-auto border border-neutral-700'></span>
+                    <div
+                      className='group/leave flex items-center justify-between px-2 py-1.5 w-[92%] mx-auto rounded-sm hover:bg-red-600 cursor-pointer'
+                    >
+                      <span className='text-sm text-red-600 group-hover/leave:text-white'>Delete Server</span>
+                      <FaTrashCan
+                        className='h-[18px] w-[18px] text-red-600 group-hover/leave:text-white'
+                      />
+                    </div>
+                  </>
+                }
+              </div>
+            }
             <br />
             <div className='flex items-center justify-between text-sm text-neutral-400 mx-3 my-1'>
               <span>Channels:</span>

@@ -28,6 +28,7 @@ const initializeUser = async (socket) => {
     const friendDMIdList = await redisClient.lrange(
         `friends:${socket.user.userid}`, 0, -1
     )
+    socket.emit("connected", true, socket.user.userid)
     if (friendDMIdList.length > 0) {
         socket.to(friendDMIdList.map((item) => item.split('.')[0])).emit("connected", true, socket.user.userid)
     }
@@ -225,6 +226,14 @@ const joinedServer = async (socket, user, server) => {
     }
 }
 
+const leftServer = async (socket, user, server) => {
+    if (user && server) {
+        const members = await getServerMembersList(socket, server.server_id);
+        socket.emit("left_server", user, server);
+        socket.to(members).emit("left_server", user, { ...server, server_members: members });
+    }
+}
+
 module.exports = {
     authorizeUser,
     initializeUser,
@@ -234,5 +243,6 @@ module.exports = {
     deleteMessage,
     editMessage,
     createdChannel,
-    joinedServer
+    joinedServer, 
+    leftServer
 }

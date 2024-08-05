@@ -9,6 +9,7 @@ const Server = () => {
   const { id: server_id } = useParams();
   const { sidebarLoading, setSidebarLoading, membersLoading, setMembersLoading } = useContext(LoadingContext);
   const { channels, serverList, loadedServers, setLoadedServers, setChannels } = useContext(ServerContext);
+  const [serverOptionsOpen, setServerOptionsOpen] = useState(false);
   const { setMemberList } = useContext(MemberContext)
 
   const [selectedChannel, setSelectedChannel] = useState({ channel_id: null })
@@ -70,6 +71,7 @@ const Server = () => {
       return;
     }
     if (server !== null && server.server_id === Number(server_id)) return;
+    setServerOptionsOpen(false);
     setMembersLoading(true);
     if (loadedServers.indexOf(Number(server_id)) !== -1) {
       setLoadedServers(prev => [Number(server_id), ...prev.filter(item => item !== Number(server_id))])
@@ -90,7 +92,7 @@ const Server = () => {
 
   return (
     <div className='flex w-full h-full'>
-      <ChannelListContainer props={{ server, selectedChannel, setSelectedChannel }} />
+      <ChannelListContainer props={{ server, selectedChannel, setSelectedChannel, serverOptionsOpen, setServerOptionsOpen }} />
       {!membersLoading && selectedChannel.channel_id !== null ?
         <Channel props={{
           channelId: selectedChannel.channel_id,

@@ -128,9 +128,36 @@ const joinServer = async (req, res) => {
     res.status(StatusCodes.OK).json({ server })
 }
 
+const leaveServer = async (req, res) => {
+    if (!req.session.user || !req.session.user.userid) throw new UnauthenticatedError('You must log in before accessing channels');
+    const {
+        params: { id: server_id }
+    } = req;
+
+    let server = (await pool.query(
+        "SELECT * FROM SERVERS WHERE server_id = $1",
+        [Number(server_id)]
+    )).rows;
+    if (server.length === 0) throw new NotFoundError("Server not found.")
+    server = server[0];
+
+    if (!server.server_members.find(item => item === req.session.user.userid)) throw new UnauthorizedError("You are not a member of this server.");
+
+    await Promise.all([
+        pool.query(
+            `UPDATE SERVERS SET server_members = ARRAY_REMOVE(server_members, $1) WHERE server_id = $2`,
+            [req.session.user.userid, Number(server_id)]
+        ),
+        redisClient.lrem(`servers:${req.session.user.userid}`, 1 , Number(server_id))
+    ])
+
+
+    res.status(StatusCodes.OK).json({ server })
+}
+
 module.exports = {
     createSingleServer,
     getServerMembers,
     generateInviteToken,
-    joinServer
+    joinServer, leaveServer
 }

@@ -17,6 +17,7 @@ const UseSocketSetup = (setFriendList, setServerList, setMessages, setMemberList
         socket.off("edit_message");
         socket.off("created_channel");
         socket.off("joined_server");
+        socket.off("left_server");
         socket.off("connected");
         socket.off("connect_error");
         socket.disconnect();
@@ -87,7 +88,27 @@ const UseSocketSetup = (setFriendList, setServerList, setMessages, setMemberList
                 })
             }
         });
+        socket.on("left_server", (targetUser, server) => {
+            if (targetUser.userid === user.userid) {
+                setServerList(prev => prev.filter(item => item.server_id !== server.server_id))
+                navigate('/channels/@me')
+            } else {
+                setLoadedServers(prev => {
+                    if (prev.length > 0 && prev[0] === server.server_id) {
+                        setMemberList(prev => prev.filter(item => item.userid !== targetUser.userid));
+                    }
+                    return prev;
+                })
+            }
+        });
         socket.on("connected", (connected, userid) => {
+            if (user.userid === userid) {
+                setMemberList(prev => prev.map(item => {
+                    if (item.userid === user.userid) item.connected = true;
+                    return item;
+                }))
+                return;
+            }
             setFriendList(prev =>
                 prev.map((friend) => {
                     if (friend.userid === userid) {
