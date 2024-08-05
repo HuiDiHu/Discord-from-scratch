@@ -16,7 +16,6 @@ const formatDate = (date) => {
 
 const HeaderMessageContainer = ({ props }) => {
     const [isEditing, setIsEditing] = useState(false)
-
     return (
         <div
             className={`relative group w-full py-0.5 ${!isEditing && props.hoveredMessage === props.psudoId ? 'bg-gradient-to-r to-[#303338] from-[#313167]' : ''} flex items-start pr-10 mt-4`}

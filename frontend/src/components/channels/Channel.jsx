@@ -5,6 +5,7 @@ import Chat from './channel/Chat'
 import ChatBox from './channel/ChatBox'
 import MemberListContainer from './servers/MemberListContainer'
 import { LoadingContext, MessagesContext, MemberContext, ServerContext } from 'src/pages/Channels'
+import { AccountContext } from 'src/components/auth/UserContext'
 import { useNavigate } from 'react-router-dom'
 
 const Channel = ({ props }) => {
@@ -12,15 +13,24 @@ const Channel = ({ props }) => {
     const { memberListOpen } = useContext(MemberContext)
     const { loadedChannels, setLoadedChannels } = useContext(ServerContext)
     const { messages, setMessages, loadedDMs, setLoadedDMs, usersLoaded, setUsersLoaded } = useContext(MessagesContext)
+    const { user } = useContext(AccountContext)
 
     const navigate = useNavigate();
 
     //remember to modify usersLoaded when ever someone sends an message
 
     //this will only be called for server channels
-    const loadNewMessageUsers = (newMessages) => {
+    const loadNewMessageUserIds = (newMessages) => {
         const tempUserIds = new Set(usersLoaded.map(item => item.userid));
         const newUserIds = [... new Set(newMessages.map(item => item.posted_by).filter(uuid => !tempUserIds.has(uuid)))]
+        loadNewMessageUsers(newUserIds)
+    }
+
+    const loadNewMessageUsers = (newUserIds) => {
+        if (newUserIds.length === 0) {
+            setMsgLoading(false);
+            return;
+        }
         axios
             .create({
                 baseURL: import.meta.env.VITE_IS_DEV ? import.meta.env.VITE_SERVER_DEV_URL : import.meta.env.VITE_SERVER_URL,
@@ -54,6 +64,8 @@ const Channel = ({ props }) => {
                             if (tempMessages.indexOf(msg.message_id) === -1) uniqueMsgs.push(msg);
                         })
                         setMessages(prev => [...uniqueMsgs, ...prev])
+                        if (usersLoaded.findIndex(item => item.userid === user.userid) === -1) setUsersLoaded(prev => [user, ...prev]);
+                        if (usersLoaded.findIndex(item => item.userid === props.friend.userid) === -1) setUsersLoaded(prev => [props.friend, ...prev]);
                         setMsgLoading(false);
                     })
                     .catch((error) => {
@@ -75,7 +87,7 @@ const Channel = ({ props }) => {
                             if (tempMessages.indexOf(msg.message_id) === -1) uniqueMsgs.push(msg);
                         })
                         setMessages(prev => [...uniqueMsgs, ...prev])
-                        loadNewMessageUsers(uniqueMsgs);
+                        loadNewMessageUserIds(uniqueMsgs);
                     })
                     .catch((error) => {
                         console.log(error)

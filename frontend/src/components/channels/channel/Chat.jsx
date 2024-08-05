@@ -13,7 +13,6 @@ const Chat = ({ props }) => {
     const { messages, setMessages, usersLoaded} = useContext(MessagesContext)
     const { user } = useContext(AccountContext)
     const [hoveredMessage, setHoveredMessage] = useState(null)
-
     const handleDeleteMessage = (message_id, in_dm, in_channel, posted_by) => {
         if (posted_by !== user.userid) {
             alert('You can only delete your own messages!')
