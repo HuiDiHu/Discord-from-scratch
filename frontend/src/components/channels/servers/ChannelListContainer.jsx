@@ -9,7 +9,7 @@ import GenerateTokenModal from './GenerateTokenModal';
 import { IoChevronDown } from "react-icons/io5";
 import { IoClose } from "react-icons/io5";
 import LeaveServer from './LeaveServer';
-import { FaPencilAlt } from "react-icons/fa";
+import EditServerProfile from './EditServerProfile';
 import { FaTrashCan } from "react-icons/fa6";
 
 
@@ -82,14 +82,7 @@ const ChannelListContainer = ({ props }) => {
                         className='h-[18px] w-[18px] text-neutral-400 group-hover/invite:text-white'
                       />
                     </div>
-                    <div
-                      className='group/edit flex items-center justify-between px-2 py-1.5 w-[92%] mx-auto rounded-sm hover:bg-[#313167ff] cursor-pointer'
-                    >
-                      <span className='text-sm text-neutral-400 group-hover/edit:text-white'>Edit Server Profile</span>
-                      <FaPencilAlt
-                        className='h-[18px] w-[18px] text-neutral-400 group-hover/edit:text-white'
-                      />
-                    </div>
+                    <EditServerProfile server_id={props.server.server_id} setServerOptionsOpen={props.setServerOptionsOpen} />
                     <span className='w-[90%] mx-auto border border-neutral-700'></span>
                     <div
                       className='group/leave flex items-center justify-between px-2 py-1.5 w-[92%] mx-auto rounded-sm hover:bg-red-600 cursor-pointer'

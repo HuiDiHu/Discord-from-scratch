@@ -10,6 +10,31 @@ const authorizeUser = (socket, next) => {
     }
 };
 
+const alertAllServerMembers = (socket, serverList, loggingOn) => {
+    if (!serverList) return;
+    const serverMemberIdSet = new Set();
+    for (let server of serverList) {
+        if (!server.server_members) continue;
+        for (let memberId of server.server_members) serverMemberIdSet.add(memberId);
+    }
+    serverMemberIdSet.delete(socket.user.userid)
+    socket.to([...serverMemberIdSet]).emit("connected", loggingOn, socket.user.userid);
+}
+
+const getServerList = async (socket) => {
+    //server id list;
+    const serverIdList = await redisClient.lrange(
+        `servers:${socket.user.userid}`, 0, -1
+    )
+    //server lsit
+    const serverList = (await pool.query(
+        "SELECT * FROM SERVERS WHERE server_id = ANY ($1)",
+        [serverIdList]
+    )).rows;
+
+    return serverList
+}
+
 const initializeUser = async (socket) => {
     socket.user = { ...socket.request.session.user };
     socket.join(socket.user.userid)
@@ -33,19 +58,11 @@ const initializeUser = async (socket) => {
         socket.to(friendDMIdList.map((item) => item.split('.')[0])).emit("connected", true, socket.user.userid)
     }
     const friendList = await getFriendList(friendDMIdList)
-
-    //server id list;
-    const serverIdList = await redisClient.lrange(
-        `servers:${socket.user.userid}`, 0, -1
-    )
-    //server lsit
-    const serverList = (await pool.query(
-        "SELECT * FROM SERVERS WHERE server_id = ANY ($1)",
-        [serverIdList]
-    )).rows;
-
+    const serverList = await getServerList(socket);
+    alertAllServerMembers(socket, serverList, true);
     socket.emit("friends", friendList);
-    socket.emit("servers", serverList)
+    socket.emit("servers", serverList);
+
     console.log(socket.user.username, "logged ON")
 
 };
@@ -123,6 +140,9 @@ const onDisconnect = async (socket) => {
     if (friendIdList.length > 0) {
         socket.to(friendIdList).emit("connected", false, socket.user.userid)
     }
+    //emit to all server members
+    const serverList = await getServerList(socket);
+    alertAllServerMembers(socket, serverList, false);
 }
 
 const getServerMembersList = async (socket, server_id) => {
@@ -243,6 +263,6 @@ module.exports = {
     deleteMessage,
     editMessage,
     createdChannel,
-    joinedServer, 
+    joinedServer,
     leftServer
 }
