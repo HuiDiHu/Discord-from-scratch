@@ -5,15 +5,6 @@ import { ServerContext } from 'src/pages/Channels'
 import socket from 'src/socket'
 import { MemberContext } from "src/pages/Channels";
 
-function blobToArrayBuffer(blob) {
-    return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = () => resolve(reader.result);
-        reader.onerror = reject;
-        reader.readAsArrayBuffer(blob);
-    });
-}
-
 const ImportProfilePictureModal = ({ ID, setImportProfilePictureModalOpen, uploadTo }) => {
     const [selectedImage, setSelectedImage] = useState(null);
     const [errMsg, setErrMsg] = useState("")
