@@ -39,7 +39,7 @@ const ServerSideNavBar = ({ props }) => {
                 <SideNavItem key={`sv:${item.server_id}`} props={{
                     selectedPath: props.selectedPath, setSelectedPath: props.setSelectedPath,
                     server_id: item.server_id,
-                    icon: item.server_icon || 'GRAGAS',
+                    icon: item.server_icon || '../../../assets/tempIcons/GRAGAS.png',
                     server_name: item.server_name
                 }}
                 />

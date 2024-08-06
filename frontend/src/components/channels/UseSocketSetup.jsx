@@ -3,7 +3,7 @@ import socket from 'src/socket'
 import { AccountContext } from 'src/components/auth/UserContext';
 import { useNavigate } from 'react-router-dom';
 
-const UseSocketSetup = (setFriendList, setServerList, setMessages, setMemberList, setChannels, setLoadedServers, setUsersLoaded) => {
+const UseSocketSetup = (setFriendList, setServerList, setMessages, setMemberList, setChannels, setLoadedServers, setUsersLoaded, setSessionTempLinks) => {
     const { user, setUser } = useContext(AccountContext);
 
     const navigate = useNavigate();
@@ -18,6 +18,7 @@ const UseSocketSetup = (setFriendList, setServerList, setMessages, setMemberList
         socket.off("created_channel");
         socket.off("joined_server");
         socket.off("left_server");
+        socket.off("update_server_icon")
         socket.off("connected");
         socket.off("connect_error");
         socket.disconnect();
@@ -27,7 +28,15 @@ const UseSocketSetup = (setFriendList, setServerList, setMessages, setMemberList
         //maybe make loading then make initialize send a callback for loading
         if (socket.connected) disconnectedAll();
         socket.connect();
-        //TODO: socket.on("servers", (serverList) => {})
+        socket.on("disconnect", () => {
+            console.log("disconnecting")
+            setSessionTempLinks(prev => {
+                prev.forEach(url => {
+                    URL.revokeObjectURL(url);
+                })
+                return [];
+            })
+        })
         socket.on("friends", (friendList) => {
             console.log("RECIEVED!")
             if (friendList === null || friendList === undefined) {
@@ -100,6 +109,16 @@ const UseSocketSetup = (setFriendList, setServerList, setMessages, setMemberList
                     return prev;
                 })
             }
+        });
+        socket.on("update_server_icon", (server_id, arrayBuffer) => {
+            const tempBlobURL = URL.createObjectURL(new Blob([arrayBuffer], { type: 'image/png' }));
+            setServerList(temp => temp.map(item => {
+                if (item.server_id === server_id) {
+                    item.server_icon = tempBlobURL;
+                    setSessionTempLinks(prev => [tempBlobURL, ...prev]);
+                }
+                return item;
+            }))
         });
         socket.on("connected", (connected, userid) => {
             if (user.userid === userid) {

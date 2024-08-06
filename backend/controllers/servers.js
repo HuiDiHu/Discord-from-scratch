@@ -155,9 +155,26 @@ const leaveServer = async (req, res) => {
     res.status(StatusCodes.OK).json({ server })
 }
 
+const uploadServerIcon = async (req, res) => {
+    const {
+        params: { id: server_id }
+    } = req;
+    const image = req.file;
+    if (!image) throw new UnprocessableEntityError('No image uploaded.');
+
+    const { originalname, buffer } = image;
+    await pool.query(
+        "UPDATE SERVERS SET server_icon = $2 WHERE server_id = $1",
+        [Number(server_id), buffer]
+    )
+    res.setHeader('Content-Type', 'image/png');
+    res.status(StatusCodes.OK).send(buffer)
+}
+
 module.exports = {
     createSingleServer,
     getServerMembers,
     generateInviteToken,
-    joinServer, leaveServer
+    joinServer, leaveServer,
+    uploadServerIcon
 }

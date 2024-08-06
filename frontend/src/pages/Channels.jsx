@@ -36,12 +36,13 @@ const Channels = ({ props }) => {
     const [usersLoaded, setUsersLoaded] = useState([]); //array of user objects
     const [msgLoading, setMsgLoading] = useState(true); const [sidebarLoading, setSidebarLoading] = useState(true); const [membersLoading, setMembersLoading] = useState(true);
     const [memberListOpen, setMemberListOpen] = useState(false);
-    UseSocketSetup(setFriendList, setServerList, setMessages, setMemberList, setChannels, setLoadedServers, setUsersLoaded);
+    const [sessionTempLinks, setSessionTempLinks] = useState([]);
+    UseSocketSetup(setFriendList, setServerList, setMessages, setMemberList, setChannels, setLoadedServers, setUsersLoaded, setSessionTempLinks);
     return (
         <LoadingContext.Provider value={{ msgLoading, setMsgLoading, sidebarLoading, setSidebarLoading, membersLoading, setMembersLoading }} >
             <FriendContext.Provider value={{ friendList, setFriendList }}>
                 <ServerContext.Provider value={{ serverList, setServerList, loadedServers, setLoadedServers, loadedChannels, setLoadedChannels, channels, setChannels }} >
-                    <MemberContext.Provider value={{ memberList, setMemberList, memberListOpen, setMemberListOpen }}>
+                    <MemberContext.Provider value={{ memberList, setMemberList, memberListOpen, setMemberListOpen, sessionTempLinks, setSessionTempLinks }}>
                         <div className="flex h-screen w-screen">
                             <ServerSideNavBar props={{ selectedPath: curPath, setSelectedPath: setCurPath }} />
                             <MessagesContext.Provider value={{ messages, setMessages, loadedDMs, setLoadedDMs, usersLoaded, setUsersLoaded }}>

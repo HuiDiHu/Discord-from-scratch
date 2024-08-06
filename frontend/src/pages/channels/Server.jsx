@@ -88,7 +88,7 @@ const Server = () => {
     if (serverList !== null) {
       setServer(serverList.find(item => item.server_id === Number(server_id)))
     }
-  }, [serverList, server_id])
+  }, [serverList !== null, server_id])
 
   return (
     <div className='flex w-full h-full'>

@@ -13,7 +13,7 @@ const SideNavItem = ({ props }) => {
             <img
                 className={`flex justify-center items-center h-12 w-12 m-auto
                              ${props.selectedPath === `/server/${props.server_id}` ? "rounded-2xl" : "rounded-[50%]"} group-hover:rounded-2xl transition-[border-radius] duration-300 ease-in-out`}
-                src={`../../../assets/tempIcons/${props.icon}.png`}
+                src={props.icon}
                 onClick={() => {
                     if (props.selectedPath !== `/server/${props.server_id}`) {
                         props.setSelectedPath(`/server/${props.server_id}`);

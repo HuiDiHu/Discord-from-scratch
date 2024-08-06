@@ -10,6 +10,7 @@ import { IoChevronDown } from "react-icons/io5";
 import { IoClose } from "react-icons/io5";
 import LeaveServer from './LeaveServer';
 import EditServerProfile from './EditServerProfile';
+import ImportProfilePictureModal from './ImportProfilePictureModal';
 import { FaTrashCan } from "react-icons/fa6";
 
 
@@ -20,6 +21,8 @@ const ChannelListContainer = ({ props }) => {
 
   const [addingChannel, setAddingChannel] = useState(false);
   const [generateTokenModalOpen, setGenerateTokenModalOpen] = useState(false);
+  const [importProfilePictureModalOpen, setImportProfilePictureModalOpen] = useState(false);
+
 
 
   const [newChannelName, setNewChannelName] = useState("");
@@ -82,7 +85,7 @@ const ChannelListContainer = ({ props }) => {
                         className='h-[18px] w-[18px] text-neutral-400 group-hover/invite:text-white'
                       />
                     </div>
-                    <EditServerProfile server_id={props.server.server_id} setServerOptionsOpen={props.setServerOptionsOpen} />
+                    <EditServerProfile setServerOptionsOpen={props.setServerOptionsOpen} setImportProfilePictureModalOpen={ setImportProfilePictureModalOpen } />
                     <span className='w-[90%] mx-auto border border-neutral-700'></span>
                     <div
                       className='group/leave flex items-center justify-between px-2 py-1.5 w-[92%] mx-auto rounded-sm hover:bg-red-600 cursor-pointer'
@@ -96,6 +99,7 @@ const ChannelListContainer = ({ props }) => {
                 }
               </div>
             }
+            { importProfilePictureModalOpen && <ImportProfilePictureModal ID={props.server.server_id} setImportProfilePictureModalOpen={ setImportProfilePictureModalOpen } uploadTo={ "SERVERS" } /> }
             <br />
             <div className='flex items-center justify-between text-sm text-neutral-400 mx-3 my-1'>
               <span>Channels:</span>

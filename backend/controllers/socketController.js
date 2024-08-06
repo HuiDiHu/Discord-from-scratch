@@ -28,10 +28,9 @@ const getServerList = async (socket) => {
     )
     //server lsit
     const serverList = (await pool.query(
-        "SELECT * FROM SERVERS WHERE server_id = ANY ($1)",
+        "SELECT server_id, date_created, server_name, server_owner, server_members FROM SERVERS WHERE server_id = ANY ($1)",
         [serverIdList]
     )).rows;
-
     return serverList
 }
 
@@ -42,7 +41,6 @@ const initializeUser = async (socket) => {
         `user:${socket.user.userid}`,
         'userid', socket.user.userid,
         'username', socket.user.username,
-        'profile', 'GRAGAS',
         'connected', true
     )
     await redisClient.hset(
@@ -254,6 +252,13 @@ const leftServer = async (socket, user, server) => {
     }
 }
 
+const updateServerIcon = async (socket, server_id, arrayBuffer) => {
+    if (server_id !== null && server_id !== undefined && arrayBuffer) {
+       const members = await getServerMembersList(socket, server_id);
+       socket.to(members).emit("update_server_icon", server_id, arrayBuffer);
+    }
+}
+
 module.exports = {
     authorizeUser,
     initializeUser,
@@ -264,5 +269,6 @@ module.exports = {
     editMessage,
     createdChannel,
     joinedServer,
-    leftServer
+    leftServer,
+    updateServerIcon
 }
