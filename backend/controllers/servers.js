@@ -93,7 +93,7 @@ const joinServer = async (req, res) => {
     const {
         params: { id: token }
     } = req;
-    
+
     const tokenQuery = (await pool.query(
         "SELECT * FROM INVITE_TOKENS WHERE token = $1",
         [token]
@@ -109,8 +109,9 @@ const joinServer = async (req, res) => {
         throw new BadRequestError("This invitation has expired.")
     }
     //check if user is already a member
+
     let server = (await pool.query(
-        "SELECT * FROM SERVERS WHERE server_id = $1",
+        "SELECT server_id, date_created, server_name, server_owner, server_members FROM SERVERS WHERE server_id = $1",
         [tokenQuery[0].references_server]
     )).rows;
     if (server.length === 0) throw new NotFoundError("Server not found.")
@@ -135,7 +136,7 @@ const leaveServer = async (req, res) => {
     } = req;
 
     let server = (await pool.query(
-        "SELECT * FROM SERVERS WHERE server_id = $1",
+        "SELECT server_id, date_created, server_name, server_owner, server_members FROM SERVERS WHERE server_id = $1",
         [Number(server_id)]
     )).rows;
     if (server.length === 0) throw new NotFoundError("Server not found.")
@@ -148,7 +149,7 @@ const leaveServer = async (req, res) => {
             `UPDATE SERVERS SET server_members = ARRAY_REMOVE(server_members, $1) WHERE server_id = $2`,
             [req.session.user.userid, Number(server_id)]
         ),
-        redisClient.lrem(`servers:${req.session.user.userid}`, 1 , Number(server_id))
+        redisClient.lrem(`servers:${req.session.user.userid}`, 1, Number(server_id))
     ])
 
 
@@ -162,7 +163,7 @@ const uploadServerIcon = async (req, res) => {
     const image = req.file;
     if (!image) throw new UnprocessableEntityError('No image uploaded.');
 
-    const { originalname, buffer } = image;
+    const { buffer } = image;
     await pool.query(
         "UPDATE SERVERS SET server_icon = $2 WHERE server_id = $1",
         [Number(server_id), buffer]
@@ -171,10 +172,25 @@ const uploadServerIcon = async (req, res) => {
     res.status(StatusCodes.OK).send(buffer)
 }
 
+const deleteServerWithId = async (req, res) => {
+    const {
+        params: { id: server_id }
+    } = req;
+    await Promise.all([
+        pool.query(
+            "DELETE FROM SERVERS WHERE server_id = $1",
+            [Number(server_id)]
+        ),
+        redisClient.lrem(`servers:${req.session.user.userid}`, 1, Number(server_id))
+    ])
+    res.status(StatusCodes.OK).send(`Delete Server With Id: ${server_id}`);
+}
+
 module.exports = {
     createSingleServer,
     getServerMembers,
     generateInviteToken,
     joinServer, leaveServer,
-    uploadServerIcon
+    uploadServerIcon,
+    deleteServerWithId
 }

@@ -14,10 +14,8 @@ const register = async (req, res) => {
         //register
         const salt = await bcrypt.genSalt(10);
         const passhash = await bcrypt.hash(password, salt);
-        //TODO: once the USERS table is updated (to include things like profile), update the pool.query to include them (remember to add $4, $5,...)
-        //returning username and email for debugging purpose
         const user = await pool.query(
-            "INSERT INTO USERS(username, email, passhash, userid) values($1,$2,$3,$4) RETURNING id, username, email, userid",
+            "INSERT INTO USERS(username, email, passhash, userid) values($1,$2,$3,$4) RETURNING id, username, email, userid, profilePicture",
             [username, email, passhash, uuidv4()]
         )
         //stores the session data which will persist
@@ -25,6 +23,7 @@ const register = async (req, res) => {
             id: user.rows[0].id,
             username, 
             email,
+            profile: user.rows[0].profilePicture ? user.rows[0].profilePicture.toString('base64') : "",
             userid: user.rows[0].userid
         }
         //TODO: update this too once updated USERS table is implemented
@@ -45,7 +44,7 @@ const login = async (req, res) => {
 
     //TODO: update this too once updated USERS table is implemented
     const user = await pool.query(
-        "SELECT id, email, username, passhash, userid FROM USERS u WHERE u.email=$1",
+        "SELECT * FROM USERS u WHERE u.email=$1",
         [email]
     )
     if (user.rowCount > 0) {
@@ -55,6 +54,7 @@ const login = async (req, res) => {
                 id: user.rows[0].id,
                 username: user.rows[0].username,
                 email,
+                profile: user.rows[0].profilePicture ? user.rows[0].profilePicture.toString('base64') : "",
                 userid: user.rows[0].userid
             }
             //TODO: update this too once updated USERS table is implemented

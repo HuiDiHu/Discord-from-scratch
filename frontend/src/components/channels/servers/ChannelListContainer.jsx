@@ -9,10 +9,10 @@ import GenerateTokenModal from './GenerateTokenModal';
 import { IoChevronDown } from "react-icons/io5";
 import { IoClose } from "react-icons/io5";
 import LeaveServer from './LeaveServer';
+import DeleteServer from './DeleteServer';
 import EditServerProfile from './EditServerProfile';
 import ImportProfilePictureModal from './ImportProfilePictureModal';
-import { FaTrashCan } from "react-icons/fa6";
-
+import DeleteServerModal from './DeleteServerModal';
 
 const ChannelListContainer = ({ props }) => {
   const { channels, setChannels } = useContext(ServerContext)
@@ -22,7 +22,7 @@ const ChannelListContainer = ({ props }) => {
   const [addingChannel, setAddingChannel] = useState(false);
   const [generateTokenModalOpen, setGenerateTokenModalOpen] = useState(false);
   const [importProfilePictureModalOpen, setImportProfilePictureModalOpen] = useState(false);
-
+  const [deleteServerModalOpen, setDeleteServerModal] = useState(false);
 
 
   const [newChannelName, setNewChannelName] = useState("");
@@ -78,28 +78,23 @@ const ChannelListContainer = ({ props }) => {
                   <>
                     <div
                       className='group/invite flex items-center justify-between px-2 py-1.5 w-[92%] mx-auto rounded-sm hover:bg-[#313167ff] cursor-pointer'
-                      onClick={() => { setGenerateTokenModalOpen(true) }}
+                      onClick={() => {
+                        setGenerateTokenModalOpen(true)
+                        props.setServerOptionsOpen(false);
+                      }}
                     >
                       <span className='text-sm text-neutral-400 group-hover/invite:text-white'>Invite People</span>
                       <MdGroupAdd
                         className='h-[18px] w-[18px] text-neutral-400 group-hover/invite:text-white'
                       />
                     </div>
-                    <EditServerProfile setServerOptionsOpen={props.setServerOptionsOpen} setImportProfilePictureModalOpen={ setImportProfilePictureModalOpen } />
+                    <EditServerProfile setServerOptionsOpen={props.setServerOptionsOpen} setImportProfilePictureModalOpen={setImportProfilePictureModalOpen} />
                     <span className='w-[90%] mx-auto border border-neutral-700'></span>
-                    <div
-                      className='group/leave flex items-center justify-between px-2 py-1.5 w-[92%] mx-auto rounded-sm hover:bg-red-600 cursor-pointer'
-                    >
-                      <span className='text-sm text-red-600 group-hover/leave:text-white'>Delete Server</span>
-                      <FaTrashCan
-                        className='h-[18px] w-[18px] text-red-600 group-hover/leave:text-white'
-                      />
-                    </div>
+                    <DeleteServer setServerOptionsOpen={props.setServerOptionsOpen} setDeleteServerModal={setDeleteServerModal} />
                   </>
                 }
               </div>
             }
-            { importProfilePictureModalOpen && <ImportProfilePictureModal ID={props.server.server_id} setImportProfilePictureModalOpen={ setImportProfilePictureModalOpen } uploadTo={ "SERVERS" } /> }
             <br />
             <div className='flex items-center justify-between text-sm text-neutral-400 mx-3 my-1'>
               <span>Channels:</span>
@@ -149,6 +144,8 @@ const ChannelListContainer = ({ props }) => {
           <div className='min-h-12 grow bg-red-800'>
 
           </div>
+          {importProfilePictureModalOpen && <ImportProfilePictureModal ID={props.server.server_id} setImportProfilePictureModalOpen={setImportProfilePictureModalOpen} uploadTo={"SERVERS"} profilePicture={user.profilePicture} server_icon={props.server.server_icon} />}
+          {deleteServerModalOpen && <DeleteServerModal setDeleteServerModal={setDeleteServerModal} server_id={props.server.server_id} server_name={props.server.server_name} />}
           {generateTokenModalOpen && <GenerateTokenModal props={{ setGenerateTokenModalOpen }} />}
         </>
       }

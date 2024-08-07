@@ -24,7 +24,7 @@ const HeaderMessageContainer = ({ props }) => {
         >
             <img
                 className='w-10 h-10 rounded-full [clip-path:circle(45%_at_50%_50%)] ml-3 mr-2 cursor-pointer'
-                src={`../../../../assets/tempIcons/${props.author.profile || 'GRAGAS'}.png`}
+                src={props.author.profile || `../../../../assets/tempIcons/GRAGAS.png`}
                 onClick={() => { alert(`${props.author.username}'s profile...`) }}
             />
             <div className='w-full flex flex-col'>

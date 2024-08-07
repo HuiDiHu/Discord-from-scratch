@@ -19,6 +19,7 @@ const UseSocketSetup = (setFriendList, setServerList, setMessages, setMemberList
         socket.off("joined_server");
         socket.off("left_server");
         socket.off("update_server_icon")
+        socket.off("delete_server")
         socket.off("connected");
         socket.off("connect_error");
         socket.disconnect();
@@ -51,7 +52,16 @@ const UseSocketSetup = (setFriendList, setServerList, setMessages, setMemberList
             }))
         });
         socket.on("servers", (serverList) => {
-            setServerList(serverList)
+            const tempBlobURLs = []
+            setServerList(serverList.map(item => {
+                if (item.server_icon) {
+                    const tempBlobURL = URL.createObjectURL(new Blob([item.server_icon], { type: 'image/png' }));
+                    item.server_icon = tempBlobURL;
+                    tempBlobURLs.push(tempBlobURL);
+                }
+                return item;
+            }));
+            setSessionTempLinks(prev => [...tempBlobURLs, ...prev]);
         });
         socket.on("create_message", (message, author) => {
             //TODO: Figure out why sometimes dupe messages get sent and remove this stupid contraption after its fixed
@@ -85,6 +95,12 @@ const UseSocketSetup = (setFriendList, setServerList, setMessages, setMemberList
         });
         socket.on("joined_server", (targetUser, server) => {
             if (targetUser.userid === user.userid) {
+                if (server.server_icon) {
+                    console.log("blob:",server.server_icon)
+                    const tempBlobURL = URL.createObjectURL(new Blob([server.server_icon], { type: 'image/png' }));
+                    server.server_icon = tempBlobURL;
+                    setSessionTempLinks(prev => [tempBlobURL, ...prev]);
+                }
                 setServerList(prev => [...prev, server]);
                 navigate(`/channels/server/${server.server_id}`)
             } else {
@@ -120,6 +136,13 @@ const UseSocketSetup = (setFriendList, setServerList, setMessages, setMemberList
                 return item;
             }))
         });
+        socket.on("delete_server", (server_id) => {
+            setServerList(prev => prev.filter(item => item.server_id !== server_id))
+            setLoadedServers(prev => {
+                if (prev.length > 0 && prev[0] === server_id) navigate('/channels/@me');
+                return prev;
+            })
+        })
         socket.on("connected", (connected, userid) => {
             if (user.userid === userid) {
                 setMemberList(prev => prev.map(item => {

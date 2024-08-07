@@ -63,7 +63,8 @@ const {
     createMessage, deleteMessage, editMessage,
     createdChannel,
     joinedServer, leftServer,
-    updateServerIcon
+    updateServerIcon,
+    deleteServer
 } = require('./controllers/socketController');
 
 io.use(wrap(sessionMiddleware));
@@ -81,8 +82,8 @@ io.on("connect", socket => {
         socket.on('joined_server', (targetUser, targetServer) => joinedServer(socket, targetUser, targetServer))
         socket.on('left_server', (targetUser, targetServer) => leftServer(socket, targetUser, targetServer))
         socket.on('update_server_icon', (server_id, arrayBuffer) => updateServerIcon(socket, server_id, arrayBuffer))
+        socket.on('delete_server', (server_id) => deleteServer(socket, server_id))
     }
-
 });
 
 const port = process.env.PORT || 4000;

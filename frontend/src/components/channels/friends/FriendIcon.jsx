@@ -5,7 +5,7 @@ const FriendIcon = ({ props }) => {
         <>
             <div className='relative h-10 w-10'>
                 <img
-                    src={`../../../../assets/tempIcons/${props.friend.profile || 'GRAGAS'}.png`}
+                    src={props.friend.profile || `../../../../assets/tempIcons/GRAGAS.png`}
                     className='h-full w-full [clip-path:circle(45%_at_50%_50%)]'
                 >
                 </img>

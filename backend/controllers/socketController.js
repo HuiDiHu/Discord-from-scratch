@@ -21,14 +21,15 @@ const alertAllServerMembers = (socket, serverList, loggingOn) => {
     socket.to([...serverMemberIdSet]).emit("connected", loggingOn, socket.user.userid);
 }
 
-const getServerList = async (socket) => {
+const getServerList = async (socket, includeIcon) => {
     //server id list;
     const serverIdList = await redisClient.lrange(
         `servers:${socket.user.userid}`, 0, -1
     )
     //server lsit
+    const query = `SELECT server_id, date_created, server_name, server_owner, server_members${includeIcon ? ', server_icon' : ''} FROM SERVERS WHERE server_id = ANY ($1)`
     const serverList = (await pool.query(
-        "SELECT server_id, date_created, server_name, server_owner, server_members FROM SERVERS WHERE server_id = ANY ($1)",
+        query,
         [serverIdList]
     )).rows;
     return serverList
@@ -41,6 +42,7 @@ const initializeUser = async (socket) => {
         `user:${socket.user.userid}`,
         'userid', socket.user.userid,
         'username', socket.user.username,
+        'profile', socket.user.profile,
         'connected', true
     )
     await redisClient.hset(
@@ -56,7 +58,7 @@ const initializeUser = async (socket) => {
         socket.to(friendDMIdList.map((item) => item.split('.')[0])).emit("connected", true, socket.user.userid)
     }
     const friendList = await getFriendList(friendDMIdList)
-    const serverList = await getServerList(socket);
+    const serverList = await getServerList(socket, true);
     alertAllServerMembers(socket, serverList, true);
     socket.emit("friends", friendList);
     socket.emit("servers", serverList);
@@ -107,8 +109,9 @@ const addFriend = async (socket, temp, cb) => {
 
     //TODO: lpush to pending instead of friends
     await redisClient.lpush(`friends:${socket.user.userid}`, [friendId, dm_id].join('.'));
-    const friend = await redisClient.hgetall(`user:${friendId}`); friend.connected = friend.connected === 'true';
-    console.log(friend)
+    const friend = await redisClient.hgetall(`user:${friendId}`); 
+    friend.connected = friend.connected === 'true'; 
+    if (friend.profile) friend.profile = Buffer.from(friend.profile, 'base64');
     socket.to(friend.userid).emit("connected", true, socket.user.userid)
 
     cb({ done: true, friend: { ...friend, dm_id } })
@@ -121,7 +124,11 @@ const getFriendList = async (friendDMIdList) => {
             `user:${friendDMId.split('.')[0]}`
         )
         friend.connected = friend.connected === 'true';
-        friendList.push({ ...friend, dm_id: Number(friendDMId.split('.')[1]) })
+        friendList.push({ 
+            ...friend, 
+            dm_id: Number(friendDMId.split('.')[1]), 
+            profile: friend.profile ? Buffer.from(friend.profile, 'base64') : friend.profile
+        })
     }
     return friendList;
 }
@@ -139,7 +146,7 @@ const onDisconnect = async (socket) => {
         socket.to(friendIdList).emit("connected", false, socket.user.userid)
     }
     //emit to all server members
-    const serverList = await getServerList(socket);
+    const serverList = await getServerList(socket, false);
     alertAllServerMembers(socket, serverList, false);
 }
 
@@ -238,9 +245,17 @@ const createdChannel = async (socket, server_id, channel) => {
 
 const joinedServer = async (socket, user, server) => {
     if (user && server) {
-        const members = await getServerMembersList(socket, server.server_id);
-        socket.emit("joined_server", user, { ...server, server_members: [user, ...members] });
-        socket.to(members).emit("joined_server", user, { ...server, server_members: [user, ...members] });
+        const [members, server_icon] = await Promise.all([
+            getServerMembersList(socket, server.server_id),
+            pool.query(
+                "SELECT server_icon FROM SERVERS WHERE server_id = $1",
+                [Number(server.server_id)]
+            )
+        ]);
+        server.server_members = [user, ...members];
+        socket.to(members).emit("joined_server", user, server);
+        server.server_icon = server_icon.rows[0].server_icon;
+        socket.emit("joined_server", user, server);
     }
 }
 
@@ -259,6 +274,16 @@ const updateServerIcon = async (socket, server_id, arrayBuffer) => {
     }
 }
 
+const deleteServer = async (socket, server_id) => {
+    if (server_id !== null && server_id !== undefined) {
+        const members = await getServerMembersList(socket, server_id);
+        for (let memberId of members) {
+            await redisClient.lrem(`servers:${memberId}`, 1, server_id)
+        }
+        socket.to(members).emit("delete_server", server_id);
+    }
+}
+
 module.exports = {
     authorizeUser,
     initializeUser,
@@ -270,5 +295,6 @@ module.exports = {
     createdChannel,
     joinedServer,
     leftServer,
-    updateServerIcon
+    updateServerIcon,
+    deleteServer
 }
