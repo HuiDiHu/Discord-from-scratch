@@ -5,10 +5,12 @@ import { FriendContext, MemberContext, LoadingContext } from 'src/pages/Channels
 import { AccountContext } from 'src/components/auth/UserContext'
 import FriendIcon from './friends/FriendIcon'
 import { GiUnfriendlyFire } from "react-icons/gi";
+import FriendListSkeleton from '../skeleton/FriendListSkeleton'
+import TinyUserProfileContainer from '../TinyUserProfileContainer'
 
 const FriendsAndDMSidebar = () => {
     const { friendList } = useContext(FriendContext)
-    const { setMemberList } = useContext(MemberContext)
+    const { memberList, setMemberList } = useContext(MemberContext)
     const { user } = useContext(AccountContext)
     const navigate = useNavigate();
     const { id } = useParams();
@@ -23,11 +25,11 @@ const FriendsAndDMSidebar = () => {
                 console.log("FRIEND DOESN'T EXIST!")
                 return;
             }
-            setMemberList([user, friend])
+            setMemberList([user, friend]);
         }
     }, [friendList, id])
     return (
-        <div className="flex flex-col min-w-[150px] md:min-w-[200px] lg:min-w-[235px] h-screen bg-[#2a2d31] overflow-y-scroll scrollbar-hide">
+        <div className="relative flex flex-col min-w-[150px] md:min-w-[200px] lg:min-w-[235px] h-screen bg-[#2a2d31] overflow-y-scroll scrollbar-hide">
             <button
                 className={`flex m-2 px-auto py-2 px-5 space-x-2 justify-start items-center ${id === undefined ? 'bg-[#404248]' : 'hover:bg-[#36383c]'} rounded-lg`}
                 onClick={() => { navigate('/channels/@me') }}
@@ -51,9 +53,11 @@ const FriendsAndDMSidebar = () => {
                     </li>
                 ))}
                 {friendList === null && (
-                    <div className='w-full flex p-3 text-red-800 justify-center'>LOADING...</div>
+                    <FriendListSkeleton />
                 )}
             </ul>
+            <br /> <br /> <br />
+            <TinyUserProfileContainer />
         </div>
     )
 }

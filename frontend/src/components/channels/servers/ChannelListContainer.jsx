@@ -13,6 +13,8 @@ import DeleteServer from './DeleteServer';
 import EditServerProfile from './EditServerProfile';
 import ImportProfilePictureModal from './ImportProfilePictureModal';
 import DeleteServerModal from './DeleteServerModal';
+import ChannelListSkeleton from '../../skeleton/ChannelListSkeleton';
+import TinyUserProfileContainer from 'src/components/TinyUserProfileContainer';
 
 const ChannelListContainer = ({ props }) => {
   const { channels, setChannels } = useContext(ServerContext)
@@ -51,8 +53,8 @@ const ChannelListContainer = ({ props }) => {
 
   const inputRef = useRef();
   return (
-    <div className='flex flex-shrink-0 flex-col w-[150px] md:w-[200px] lg:w-[235px] h-screen bg-[#2a2d31]'>
-      {!sidebarLoading && props.server !== null && props.server !== undefined &&
+    <div className='relative flex flex-shrink-0 flex-col w-[150px] md:w-[200px] lg:w-[235px] h-screen bg-[#2a2d31]'>
+      {!sidebarLoading && props.server !== null && props.server !== undefined ?
         <>
           <div className='flex justify-between items-center w-full py-[11.5px] px-4 border-b border-black'>
             <span className='max-w-[80%] h-fit truncate text-md'>{props.server.server_name}</span>
@@ -66,7 +68,6 @@ const ChannelListContainer = ({ props }) => {
                 onClick={() => { props.setServerOptionsOpen(true); }}
               />
             }
-
           </div>
           <div className='relative flex flex-col w-full h-[90%] overflow-y-scroll scrollbar-hide pb-10'>
             {props.serverOptionsOpen &&
@@ -141,13 +142,12 @@ const ChannelListContainer = ({ props }) => {
               />
             </div>
           </div>
-          <div className='min-h-12 grow bg-red-800'>
-
-          </div>
+          <TinyUserProfileContainer />
           {importProfilePictureModalOpen && <ImportProfilePictureModal ID={props.server.server_id} setImportProfilePictureModalOpen={setImportProfilePictureModalOpen} uploadTo={"SERVERS"} profilePicture={user.profilePicture} server_icon={props.server.server_icon} />}
           {deleteServerModalOpen && <DeleteServerModal setDeleteServerModal={setDeleteServerModal} server_id={props.server.server_id} server_name={props.server.server_name} />}
           {generateTokenModalOpen && <GenerateTokenModal props={{ setGenerateTokenModalOpen }} />}
-        </>
+        </> :
+        <ChannelListSkeleton />
       }
     </div>
   )

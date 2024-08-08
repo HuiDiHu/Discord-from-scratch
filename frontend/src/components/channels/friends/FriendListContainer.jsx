@@ -54,7 +54,9 @@ const FriendListContainer = ({ props }) => {
                 </>
             }
             {friendList === null && (
-                <div className='w-full flex p-3 text-red-800 justify-center'>LOADING...</div>
+                <span className='text-xs text-neutral-400 font-medium'>
+                    {selectedTitle(props.selectedSection)}0
+                </span>
             )}
         </div>
     )

@@ -4,6 +4,17 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { LoadingContext, ServerContext, MemberContext } from 'src/pages/Channels'
 import ChannelListContainer from 'src/components/channels/servers/ChannelListContainer'
 import Channel from 'src/components/channels/Channel'
+import ChannelSkeleton from 'src/components/skeleton/ChannelSkeleton'
+
+function generateRandomString(length) {
+  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
+  let result = '';
+  for (let i = 0; i < length; i++) {
+    const randomIndex = Math.floor(Math.random() * characters.length);
+    result += characters[randomIndex];
+  }
+  return result;
+}
 
 const Server = () => {
   const { id: server_id } = useParams();
@@ -14,6 +25,7 @@ const Server = () => {
 
   const [selectedChannel, setSelectedChannel] = useState({ channel_id: null })
   const [server, setServer] = useState(null);
+  const [skeletonSeed, setSkeletonSeed] = useState("default")
 
   const navigate = useNavigate();
 
@@ -54,11 +66,13 @@ const Server = () => {
             setChannels(prev => [...uniqueChs, ...prev]);
             setMemberList([...res.data.members]);
             setLoadedServers(prev => [Number(server_id), ...prev]);
-            setSidebarLoading(false); setMembersLoading(false);
+            setTimeout(() => {setSidebarLoading(false);}, 750)
+            setMembersLoading(false);
           })
           .catch((error) => {
             console.log(error)
-            setSidebarLoading(false); setMembersLoading(false);
+            setSidebarLoading(false); 
+            setMembersLoading(false);
             navigate('/channels/@me')
           })
       }
@@ -70,6 +84,7 @@ const Server = () => {
       setSidebarLoading(true); setMembersLoading(true);
       return;
     }
+    setSkeletonSeed(generateRandomString(100))
     if (server !== null && server.server_id === Number(server_id)) return;
     setServerOptionsOpen(false);
     setMembersLoading(true);
@@ -97,9 +112,10 @@ const Server = () => {
         <Channel props={{
           channelId: selectedChannel.channel_id,
           channel_name: selectedChannel.channel_name,
-          channelType: "channel"
+          channelType: "channel",
+          skeletonSeed
         }} /> :
-        <div className='grow text-center text-red-800 text-3xl'>LOADING STAGE 1...</div>
+        <ChannelSkeleton skeletonSeed={skeletonSeed} channelType={'channel'}/>
       }
     </div>
   )

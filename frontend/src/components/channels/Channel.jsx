@@ -4,6 +4,7 @@ import ChannelHeader from './channel/ChannelHeader'
 import Chat from './channel/Chat'
 import ChatBox from './channel/ChatBox'
 import MemberListContainer from './servers/MemberListContainer'
+import ChannelSkeleton from '../skeleton/ChannelSkeleton'
 import { LoadingContext, MessagesContext, MemberContext, ServerContext } from 'src/pages/Channels'
 import { AccountContext } from 'src/components/auth/UserContext'
 import { useNavigate } from 'react-router-dom'
@@ -39,7 +40,7 @@ const Channel = ({ props }) => {
             .post('/api/v1/user/multiple', { useridList: newUserIds })
             .then((res) => {
                 setUsersLoaded(prev => [...res.data, ...prev])
-                setMsgLoading(false);
+                setTimeout(() => {setMsgLoading(false)}, 750);
             })
             .catch((error) => {
                 console.log(error)
@@ -66,7 +67,7 @@ const Channel = ({ props }) => {
                         setMessages(prev => [...uniqueMsgs, ...prev])
                         if (usersLoaded.findIndex(item => item.userid === user.userid) === -1) setUsersLoaded(prev => [user, ...prev]);
                         if (usersLoaded.findIndex(item => item.userid === props.friend.userid) === -1) setUsersLoaded(prev => [props.friend, ...prev]);
-                        setMsgLoading(false);
+                        setTimeout(() => {setMsgLoading(false)}, 750);
                     })
                     .catch((error) => {
                         console.log(error)
@@ -140,7 +141,7 @@ const Channel = ({ props }) => {
                         </div>
                     </>
                 </div> :
-                <div className='grow text-center text-yellow-500 text-3xl'>LOADING STAGE 2...</div>
+                <ChannelSkeleton skeletonSeed={props.skeletonSeed} channelType={props.channelType} />
             }
         </>
     )
