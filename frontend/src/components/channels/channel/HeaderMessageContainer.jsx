@@ -38,10 +38,16 @@ const HeaderMessageContainer = ({ props }) => {
                 {isEditing && <EditMessageContainer props={{ message: props.message, setIsEditing, index: props.index }} />}
 
                 {!isEditing &&
-                    <span className='text-wrap w-fit break-all text-sm font-light whitespace-pre'>
-                        {props.message.content}
-                        {props.message.is_edited ? <span className='text-neutral-500 text-[8px] ml-1 font-medium'>{'(edited)'}</span> : ''}
-                    </span>
+                    <p className='text-wrap w-fit text-sm font-light inline whitespace-pre-wrap'>
+                        <span className='inline'>
+                            <span className='break-all'>{props.message.content}</span>
+                            {props.message.is_edited ? 
+                                <span className='text-neutral-500 text-[8px] font-medium break-words'>
+                                    {"  "}(edited)
+                                </span> : ""
+                            }
+                        </span>
+                    </p>
                 }
 
             </div>
@@ -70,7 +76,7 @@ const HeaderMessageContainer = ({ props }) => {
                 </button>
                 <button
                     className={`group/delete relative ${!props.by_user ? 'hidden' : ''} p-2 bg-[#2a2d31] rounded-r-md hover:bg-neutral-500`}
-                    onClick={() => { props.handleDeleteMessage(props.message.message_id,  props.message.in_dm, props.message.in_channel, props.message.posted_by) }}
+                    onClick={() => { props.handleDeleteMessage(props.message.message_id, props.message.in_dm, props.message.in_channel, props.message.posted_by) }}
                 >
                     <MdDeleteForever className='h-5 w-5' />
                     <div className='absolute -top-8 -left-2.5 hidden group-hover/delete:block px-2 py-0.5 rounded-md bg-black'>

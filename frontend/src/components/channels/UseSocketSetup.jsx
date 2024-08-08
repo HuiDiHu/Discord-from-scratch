@@ -82,8 +82,22 @@ const UseSocketSetup = (setFriendList, setServerList, setMessages, setMemberList
         socket.on("delete_message", (message_id, in_dm, in_channel) => {
             setMessages(prev => prev.filter(item => !(item.message_id === message_id && ((in_dm !== null && in_dm !== undefined && item.in_dm === in_dm) || (in_channel !== null && in_channel !== undefined && item.in_channel === in_channel)))))
         });
-        socket.on("edit_message", (newMessage, index) => {
-            setMessages(prev => prev.with(index, newMessage))
+        socket.on("edit_message", (newMessage) => {
+            if (newMessage.in_dm !== null && newMessage.in_dm !== undefined) {
+                setMessages(prev => prev.map(item => {
+                    if (item.in_dm === newMessage.in_dm && item.message_id === newMessage.message_id) {
+                        item = newMessage;
+                    }
+                    return item;
+                }))
+            } else if (newMessage.in_channel !== null && newMessage.in_channel !== undefined) {
+                setMessages(prev => prev.map(item => {
+                    if (item.in_channel === newMessage.in_channel && item.message_id === newMessage.message_id) {
+                        item = newMessage;
+                    }
+                    return item;
+                }))
+            }
         });
         socket.on("created_channel", (server_id, channel) => {
             setLoadedServers(prev => {

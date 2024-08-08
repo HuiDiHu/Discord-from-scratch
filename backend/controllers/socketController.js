@@ -220,7 +220,7 @@ const deleteMessage = async (socket, message_id, in_dm, in_channel) => {
     socket.to(members).emit("delete_message", message_id, in_dm, in_channel)
 }
 
-const editMessage = async (socket, newMessage, index) => {
+const editMessage = async (socket, newMessage) => {
     if (newMessage.in_dm !== null && newMessage.in_dm !== undefined) {
         await pool.query(
             "UPDATE DM_MESSAGES SET content = $1, is_edited = $2 WHERE message_id = $3",
@@ -233,7 +233,7 @@ const editMessage = async (socket, newMessage, index) => {
         )
     }
     const members = await getMembersList(socket, newMessage.in_dm, newMessage.in_channel)
-    socket.to(members).emit("edit_message", newMessage, index)
+    socket.to(members).emit("edit_message", newMessage)
 }
 
 const createdChannel = async (socket, server_id, channel) => {

@@ -19,11 +19,24 @@ const EditMessageContainer = ({ props }) => {
             alert("You can only edit your own messages!")
             return;
         }
-        if ((props.message.in_dm !== null && props.message.in_dm !== undefined ) || (props.message.in_channel !== null && props.message.in_channel !== undefined)) {
-            const newMessage = props.message;
-            newMessage.content = message; newMessage.is_edited = 1;
-            setMessages(prev => prev.with(props.index, newMessage))
-            socket.emit("edit_message", newMessage, props.index)
+        const newMessage = props.message;
+        newMessage.content = message; newMessage.is_edited = 1;
+        if ( props.message.in_dm !== null && props.message.in_dm !== undefined ) {
+            setMessages(prev => prev.map(item => {
+                if (item.in_dm === props.message.in_dm && item.message_id === props.message.message_id) {
+                    item = newMessage;
+                }
+                return item;
+            }))
+            socket.emit("edit_message", newMessage)
+        } else if ( props.message.in_channel !== null && props.message.in_channel !== undefined ) {
+            setMessages(prev => prev.map(item => {
+                if (item.in_channel === props.message.in_channel && item.message_id === props.message.message_id) {
+                    item = newMessage;
+                }
+                return item;
+            }))
+            socket.emit("edit_message", newMessage)
         }
     }
     return (

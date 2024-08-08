@@ -13,17 +13,23 @@ const MessageContainer = ({ props }) => {
             onMouseOverCapture={() => props.setHoveredMessage(props.psudoId)}
             onMouseLeave={() => props.setHoveredMessage(null)}
         >
-            <span className={`${props.hoveredMessage === props.psudoId ? 'text-neutral-500' : 'text-transparent'} w-[60px] flex items-center justify-center text-[10px] mt-0.5`}>
+            <span className={`${props.hoveredMessage === props.psudoId ? 'text-neutral-500' : 'text-transparent'} flex-shrink-0 w-[60px] flex items-center justify-center text-[10px] mt-0.5`}>
                 {(new Date(props.message.created_at)).toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true })}
             </span>
 
             {isEditing && <EditMessageContainer props={{ message: props.message, setIsEditing, index: props.index }} />}
 
             {!isEditing &&
-                <span className='flex text-wrap w-fit break-all text-sm font-light whitespace-pre'>
-                    {props.message.content}
-                    {props.message.is_edited ? <span className='text-neutral-500 text-[8px] ml-1 font-medium pt-0.5'>{'(edited)'}</span> : ''}
-                </span>
+                <p className='text-wrap w-fit text-sm font-light inline whitespace-pre-wrap'>
+                    <span className='inline'>
+                        <span className='break-all'>{props.message.content}</span>
+                        {props.message.is_edited ?
+                            <span className='text-neutral-500 text-[8px] font-medium break-words'>
+                                {"  "}(edited)
+                            </span> : ""
+                        }
+                    </span>
+                </p>
             }
 
             <div className={`absolute right-5 -top-6 hover:flex ${!isEditing && props.hoveredMessage === props.psudoId ? 'flex' : 'hidden'}`}>
