@@ -1,4 +1,4 @@
-import React, { useContext, useRef, useState } from 'react'
+import React, { useContext, useEffect, useRef, useState } from 'react'
 import { AccountContext } from 'src/components/auth/UserContext'
 import { MessagesContext } from 'src/pages/Channels';
 import socket from 'src/socket'
@@ -9,6 +9,8 @@ const EditMessageContainer = ({ props }) => {
     const textRef = useRef();
     const { user } = useContext(AccountContext)
     const { setMessages } = useContext(MessagesContext)
+
+    const editRef = useRef();
 
     const handleSubmit = (e) => {
         e.stopPropagation(); e.preventDefault();
@@ -21,7 +23,7 @@ const EditMessageContainer = ({ props }) => {
         }
         const newMessage = props.message;
         newMessage.content = message; newMessage.is_edited = 1;
-        if ( props.message.in_dm !== null && props.message.in_dm !== undefined ) {
+        if (props.message.in_dm !== null && props.message.in_dm !== undefined) {
             setMessages(prev => prev.map(item => {
                 if (item.in_dm === props.message.in_dm && item.message_id === props.message.message_id) {
                     item = newMessage;
@@ -29,7 +31,7 @@ const EditMessageContainer = ({ props }) => {
                 return item;
             }))
             socket.emit("edit_message", newMessage)
-        } else if ( props.message.in_channel !== null && props.message.in_channel !== undefined ) {
+        } else if (props.message.in_channel !== null && props.message.in_channel !== undefined) {
             setMessages(prev => prev.map(item => {
                 if (item.in_channel === props.message.in_channel && item.message_id === props.message.message_id) {
                     item = newMessage;
@@ -39,15 +41,24 @@ const EditMessageContainer = ({ props }) => {
             socket.emit("edit_message", newMessage)
         }
     }
+
+    useEffect(() => {
+        const { current } = editRef;
+        if (current !== null) { current.scrollIntoView({ behavior: "smooth" }) }
+    }, [])
+
     return (
-        <div className='flex flex-col w-full bg-gradient-to-r py-3 px-4 pb-2 rounded-lg from-[#313167] to-[#303338]'>
+        <div
+            ref={editRef}
+            className='flex flex-col w-full bg-gradient-to-r py-3 px-4 pb-2 rounded-lg from-[#313167] to-[#303338]'
+        >
             <textarea
                 className='h-6 max-h-72 w-[95%] resize-none text-sm bg-transparent outline-none cursor-text'
                 autoFocus={true}
                 ref={textRef}
-                onFocus={() => { 
+                onFocus={() => {
                     setMessage(props.message.content);
-                    setTimeout(() => {if (textRef.current !== undefined) textRef.current.style.height = `${textRef.current.scrollHeight}px`}, 10)
+                    setTimeout(() => { if (textRef.current !== undefined) textRef.current.style.height = `${textRef.current.scrollHeight}px` }, 10)
                 }}
                 autoComplete='off'
                 onChange={(e) => {
@@ -72,7 +83,7 @@ const EditMessageContainer = ({ props }) => {
                 <span className='text-neutral-500'> | </span><span>enter to </span>
                 <span
                     className='text-sky-500 hover:underline cursor-pointer'
-                    onClick={(e) => {handleSubmit(e)}}
+                    onClick={(e) => { handleSubmit(e) }}
                 >save</span>
             </p>
         </div>

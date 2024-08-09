@@ -1,4 +1,4 @@
-import React, { useContext, useRef, useState } from 'react'
+import React, { useContext, useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { MessagesContext, LoadingContext } from 'src/pages/Channels'
 import MessageContainer from './MessageContainer'
 import HeaderMessageContainer from './HeaderMessageContainer';
@@ -12,6 +12,9 @@ const Chat = ({ props }) => {
     const { messages, setMessages, usersLoaded } = useContext(MessagesContext)
     const { user } = useContext(AccountContext)
     const [hoveredMessage, setHoveredMessage] = useState(null)
+    const [isAtBottom, setIsAtBottom] = useState(true)
+
+    const chatRef = useRef();
     const handleDeleteMessage = (message_id, in_dm, in_channel, posted_by) => {
         if (posted_by !== user.userid) {
             alert('You can only delete your own messages!')
@@ -33,9 +36,37 @@ const Chat = ({ props }) => {
         socket.emit("delete_message", message_id, in_dm, in_channel)
     }
 
+    const checkIfAtBottom = () => {
+        const container = chatRef.current;
+        if (container) {
+            const isAtBottom =
+                container.scrollHeight - container.scrollTop === container.clientHeight;
+            setIsAtBottom(isAtBottom);
+        }
+    };
+
+    // Scroll to the bottom if the user was at the bottom
+    const scrollToBottom = () => {
+        const container = chatRef.current;
+        if (container && isAtBottom) {
+            container.scrollTop = container.scrollHeight;
+        }
+    };
+
+    useEffect(() => {
+        const container = chatRef.current;
+        if (container && isAtBottom) {
+            container.scrollTop = container.scrollHeight;
+        }
+    }, [messages])
+
+    //DO NOT USE flex here. it disables scrolling. i have no idea why
     return (
-        <div className='w-full grow flex flex-col justify-end overflow-y-auto [overflow-anchor:none] pr-3'>
-            <div className='h-64 w-full flex-shrink-0' />
+        <ul
+            ref={chatRef} className='grow [overflow-anchor:none] overflow-y-auto pr-3'
+            onScrollCapture={checkIfAtBottom}
+        >
+            <li className='h-[90%] w-auto' />
             {messages.filter(message => {
                 if (props.channelType === 'dm') {
                     return message.in_dm === props.channelId
@@ -73,7 +104,7 @@ const Chat = ({ props }) => {
                 ))
             }
             <br />
-        </div>
+        </ul>
     )
 }
 

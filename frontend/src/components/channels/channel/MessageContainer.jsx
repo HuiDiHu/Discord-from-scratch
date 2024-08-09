@@ -8,8 +8,8 @@ const MessageContainer = ({ props }) => {
     const [isEditing, setIsEditing] = useState(false)
 
     return (
-        <div
-            className={`flex-shrink-0 relative group w-full py-0.5 ${!isEditing && props.hoveredMessage === props.psudoId ? 'bg-gradient-to-r to-[#303338] from-[#313167]' : ''} flex items-start pr-10`}
+        <li
+            className={`flex-shrink-0 min-h-0 relative group w-full py-0.5 ${!isEditing && props.hoveredMessage === props.psudoId ? 'bg-gradient-to-r to-[#303338] from-[#313167]' : ''} flex items-start pr-10`}
             onMouseOverCapture={() => props.setHoveredMessage(props.psudoId)}
             onMouseLeave={() => props.setHoveredMessage(null)}
         >
@@ -65,7 +65,7 @@ const MessageContainer = ({ props }) => {
                     </div>
                 </button>
             </div>
-        </div>
+        </li>
     )
 }
 

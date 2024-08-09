@@ -1,4 +1,4 @@
-import { useContext, useEffect, useLayoutEffect } from 'react'
+import { useContext, useEffect, useLayoutEffect, useRef } from 'react'
 import axios from 'axios'
 import ChannelHeader from './channel/ChannelHeader'
 import Chat from './channel/Chat'
@@ -17,7 +17,6 @@ const Channel = ({ props }) => {
     const { user } = useContext(AccountContext)
 
     const navigate = useNavigate();
-
     //remember to modify usersLoaded when ever someone sends an message
 
     //this will only be called for server channels
@@ -29,7 +28,7 @@ const Channel = ({ props }) => {
 
     const loadNewMessageUsers = (newUserIds) => {
         if (newUserIds.length === 0) {
-            setTimeout(() => {setMsgLoading(false);}, 500)
+            setTimeout(() => { setMsgLoading(false); }, 500)
             return;
         }
         axios
@@ -40,7 +39,7 @@ const Channel = ({ props }) => {
             .post('/api/v1/user/multiple', { useridList: newUserIds })
             .then((res) => {
                 setUsersLoaded(prev => [...res.data, ...prev])
-                setTimeout(() => {setMsgLoading(false)}, 750);
+                setTimeout(() => { setMsgLoading(false) }, 750);
             })
             .catch((error) => {
                 console.log(error)
@@ -67,7 +66,7 @@ const Channel = ({ props }) => {
                         setMessages(prev => [...uniqueMsgs, ...prev])
                         if (usersLoaded.findIndex(item => item.userid === user.userid) === -1) setUsersLoaded(prev => [user, ...prev]);
                         if (usersLoaded.findIndex(item => item.userid === props.friend.userid) === -1) setUsersLoaded(prev => [props.friend, ...prev]);
-                        setTimeout(() => {setMsgLoading(false)}, 750);
+                        setTimeout(() => { setMsgLoading(false); }, 750);
                     })
                     .catch((error) => {
                         console.log(error)
@@ -114,7 +113,6 @@ const Channel = ({ props }) => {
         }
     }, [props.channelId, props.channelType])
 
-    //generate loading state here
     return (
         <>
             {!msgLoading ?
