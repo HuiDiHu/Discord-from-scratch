@@ -69,7 +69,7 @@ const ChannelListContainer = ({ props }) => {
               />
             }
           </div>
-          <div className='relative flex flex-col w-full h-[90%] overflow-y-scroll scrollbar-hide pb-10'>
+          <div className='relative flex flex-col w-full h-[90%] overflow-y-auto scrollbar-hide pb-10'>
             {props.serverOptionsOpen &&
               <div className='absolute z-10 top-2 mx-[5%] w-[90%] bg-black rounded-md py-2 flex flex-col space-y-0.5'>
                 {props.server.server_owner !== user.userid ?

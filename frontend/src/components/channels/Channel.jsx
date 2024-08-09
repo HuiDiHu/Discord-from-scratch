@@ -29,7 +29,7 @@ const Channel = ({ props }) => {
 
     const loadNewMessageUsers = (newUserIds) => {
         if (newUserIds.length === 0) {
-            setMsgLoading(false);
+            setTimeout(() => {setMsgLoading(false);}, 500)
             return;
         }
         axios

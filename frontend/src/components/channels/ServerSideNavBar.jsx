@@ -14,7 +14,7 @@ const ServerSideNavBar = ({ props }) => {
     const { id } = useParams();
     const navigate = useNavigate();
     return (
-        <div className="relative min-w-fit flex flex-col overflow-y-scroll py-5 pr-2 space-y-2 items-center scrollbar-hide">
+        <div className="relative min-w-fit flex flex-col overflow-y-auto py-5 pr-2 space-y-2 items-center scrollbar-hide">
             <div className="group/home flex items-center space-x-2">
                 <span
                     className={`${( props.selectedPath.startsWith('/@me') || id === undefined )? 'h-8' : 'h-1 group-hover/home:h-4'} 

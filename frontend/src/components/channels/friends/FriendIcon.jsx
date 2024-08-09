@@ -3,7 +3,7 @@ import React from 'react'
 const FriendIcon = ({ props }) => {
     return (
         <>
-            <div className='relative h-10 w-10'>
+            <div className='relative h-10 w-10 flex-shrink-0'>
                 <img
                     src={props.friend.profile || `../../../../assets/tempIcons/GRAGAS.png`}
                     className='h-full w-full [clip-path:circle(45%_at_50%_50%)]'

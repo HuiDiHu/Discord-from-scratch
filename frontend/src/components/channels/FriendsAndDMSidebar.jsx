@@ -29,7 +29,7 @@ const FriendsAndDMSidebar = () => {
         }
     }, [friendList, id])
     return (
-        <div className="relative flex flex-col min-w-[150px] md:min-w-[200px] lg:min-w-[235px] h-screen bg-[#2a2d31] overflow-y-scroll scrollbar-hide">
+        <div className="relative flex flex-col min-w-[150px] md:min-w-[200px] lg:min-w-[235px] h-screen bg-[#2a2d31] overflow-y-auto scrollbar-hide">
             <button
                 className={`flex m-2 px-auto py-2 px-5 space-x-2 justify-start items-center ${id === undefined ? 'bg-[#404248]' : 'hover:bg-[#36383c]'} rounded-lg`}
                 onClick={() => { navigate('/channels/@me') }}

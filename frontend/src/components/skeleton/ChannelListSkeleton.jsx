@@ -12,7 +12,7 @@ const ChannelListSkeleton = () => {
                 <div className='w-[80%] h-6 rounded-lg bg-neutral-600 animate-pulse' />
                 <IoChevronDown className='h-5 w-5 cursor-pointer text-white' />
             </div>
-            <div className='relative flex flex-col w-full h-[90%] overflow-y-scroll scrollbar-hide pb-10'>
+            <div className='relative flex flex-col w-full h-[90%] overflow-y-auto scrollbar-hide pb-10'>
                 <br />
                 <div className='flex items-center justify-between text-sm text-neutral-400 mx-3 my-1'>
                     <span>Channels:</span>

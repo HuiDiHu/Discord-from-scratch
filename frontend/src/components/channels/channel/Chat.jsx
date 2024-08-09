@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react'
+import React, { useContext, useRef, useState } from 'react'
 import { MessagesContext, LoadingContext } from 'src/pages/Channels'
 import MessageContainer from './MessageContainer'
 import HeaderMessageContainer from './HeaderMessageContainer';
@@ -9,7 +9,6 @@ import socket from 'src/socket'
 const FIVE_MIN = 5 * 60 * 1000;
 
 const Chat = ({ props }) => {
-    const { msgLoading } = useContext(LoadingContext)
     const { messages, setMessages, usersLoaded} = useContext(MessagesContext)
     const { user } = useContext(AccountContext)
     const [hoveredMessage, setHoveredMessage] = useState(null)
@@ -33,11 +32,11 @@ const Chat = ({ props }) => {
         }
         socket.emit("delete_message", message_id, in_dm, in_channel)
     }
+
     return (
         <div className='w-full grow flex flex-col justify-end overflow-y-scroll pr-3'>
-            <br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br />
-            {msgLoading ? <div> LOADING </div> :
-                messages.filter(message => {
+            <div className='h-64 w-full flex-shrink-0' />
+            {messages.filter(message => {
                     if (props.channelType === 'dm') {
                         return message.in_dm === props.channelId
                     } else if (props.channelType === 'channel') {

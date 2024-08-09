@@ -6,7 +6,7 @@ const MemberListContainer = () => {
     const { memberList } = useContext(MemberContext)
     return (
         <div className='flex flex-col h-full w-[225px] bg-[#313167] flex-shrink-0 p-5 pl-3 border-l border-l-neutral-500'>
-            <span className='text-neutral-400 text-sm mb-2 whitespace-pre'>{"   "}MEMERBS-{memberList.length}</span>
+            <span className='text-neutral-400 text-sm mb-2 whitespace-pre'>{"   "}MEMBERS-{memberList.length}</span>
             <ul className='flex flex-col'>
                 {memberList.sort((a, b) => {
                     if (a.connected === b.connected) return 0;

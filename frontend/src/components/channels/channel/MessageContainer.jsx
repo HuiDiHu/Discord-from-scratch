@@ -9,7 +9,7 @@ const MessageContainer = ({ props }) => {
 
     return (
         <div
-            className={`relative group w-full py-0.5 ${!isEditing && props.hoveredMessage === props.psudoId ? 'bg-gradient-to-r to-[#303338] from-[#313167]' : ''} flex items-start pr-10`}
+            className={`flex-shrink-0 relative group w-full py-0.5 ${!isEditing && props.hoveredMessage === props.psudoId ? 'bg-gradient-to-r to-[#303338] from-[#313167]' : ''} flex items-start pr-10`}
             onMouseOverCapture={() => props.setHoveredMessage(props.psudoId)}
             onMouseLeave={() => props.setHoveredMessage(null)}
         >

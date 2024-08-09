@@ -8,13 +8,12 @@ const TinyUserProfileContainer = () => {
 
     return (
         <div className='absolute bottom-0 h-14 w-full bg-neutral-900 bg-opacity-70 flex justify-between pt-2 px-2'>
-            <div className='flex'>
-                <div className='relative h-9 w-9'>
+            <div className='flex max-w-40'>
+                <div className='relative h-9 w-9 flex-shrink-0'>
                     <img
                         src={user.profile || `../../../../assets/tempIcons/GRAGAS.png`}
                         className='h-full w-full [clip-path:circle(45%_at_50%_50%)]'
-                    >
-                    </img>
+                    />
                     <div
                         className={`absolute h-3 w-3 rounded-lg border-2 border-[#2a2d31] bg-green-500 transition-all duration-300 ease-in-out bottom-0.5 right-0.5`}
                     />

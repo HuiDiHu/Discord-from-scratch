@@ -30,7 +30,7 @@ const ChannelSkeleton = ({ skeletonSeed, channelType }) => {
             </div>
             <div className='flex flex-col h-[calc(100%-3rem)]'>
                 {/* skeleton of Chat */}
-                <div className='w-full grow flex flex-col justify-end overflow-y-scroll pr-3'>
+                <div className='w-full grow flex flex-col justify-end overflow-y-auto pr-3'>
                     <HeaderMessageSkeleton rng={rng} nameLength={genNL()} numText={genTL()} />
                     <BodyMessageSkeleton rng={rng} numText={genTL()} />
                     <BodyMessageSkeleton rng={rng} numText={genTL()} />
