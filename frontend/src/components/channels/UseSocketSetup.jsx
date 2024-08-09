@@ -39,7 +39,7 @@ const UseSocketSetup = (setFriendList, setServerList, setMessages, setMemberList
             })
         })
         socket.on("friends", (friendList) => {
-            console.log("RECIEVED!")
+            console.log("RECEIVED!")
             if (friendList === null || friendList === undefined) {
                 console.log("NULL friendlist")
                 setFriendList([]);

@@ -1,7 +1,6 @@
 import React, { useContext, useLayoutEffect } from 'react'
-import axios from 'axios'
 import { useNavigate, useParams } from 'react-router-dom'
-import { FriendContext, MemberContext, LoadingContext } from 'src/pages/Channels'
+import { FriendContext, MemberContext } from 'src/pages/Channels'
 import { AccountContext } from 'src/components/auth/UserContext'
 import FriendIcon from './friends/FriendIcon'
 import { GiUnfriendlyFire } from "react-icons/gi";
@@ -10,7 +9,7 @@ import TinyUserProfileContainer from '../TinyUserProfileContainer'
 
 const FriendsAndDMSidebar = () => {
     const { friendList } = useContext(FriendContext)
-    const { memberList, setMemberList } = useContext(MemberContext)
+    const { setMemberList } = useContext(MemberContext)
     const { user } = useContext(AccountContext)
     const navigate = useNavigate();
     const { id } = useParams();
@@ -29,7 +28,7 @@ const FriendsAndDMSidebar = () => {
         }
     }, [friendList, id])
     return (
-        <div className="relative flex flex-col min-w-[150px] md:min-w-[200px] lg:min-w-[235px] h-screen bg-[#2a2d31] overflow-y-auto scrollbar-hide">
+        <div className="relative flex flex-col w-[150px] md:w-[200px] lg:w-[235px] h-screen bg-[#2a2d31] overflow-y-auto scrollbar-hide flex-shrink-0">
             <button
                 className={`flex m-2 px-auto py-2 px-5 space-x-2 justify-start items-center ${id === undefined ? 'bg-[#404248]' : 'hover:bg-[#36383c]'} rounded-lg`}
                 onClick={() => { navigate('/channels/@me') }}
