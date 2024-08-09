@@ -1,8 +1,11 @@
-import React, { useContext } from 'react'
+import React, { useContext, useState } from 'react'
 import { FriendContext, LoadingContext } from 'src/pages/Channels';
 import FriendIcon from './FriendIcon';
 import { IoMdMore } from "react-icons/io";
 import { useNavigate } from 'react-router-dom';
+import DeleteFriend from './DeleteFriend';
+import { FaAngleLeft } from "react-icons/fa6";
+
 
 const selectedTitle = (selectedSection) => {
     switch (selectedSection) {
@@ -17,6 +20,7 @@ const selectedTitle = (selectedSection) => {
 
 const FriendListContainer = ({ props }) => {
     const { friendList } = useContext(FriendContext)
+    const [friendSettingOpen, setFriendSettingOpen] = useState(null);
     const navigate = useNavigate();
     return (
         <div className='flex flex-col transition-all'>
@@ -33,6 +37,7 @@ const FriendListContainer = ({ props }) => {
                             onClick={() => {
                                 navigate(`/channels/@me/${friend.userid}`)
                             }}
+                            onMouseLeave={() => { setFriendSettingOpen(null) }}
                         >
                             <span className='absolute -top-0.5 left-2.5 w-[98%] border-y border-[#383c41]' />
                             <div className='flex justify-between items-center w-full pl-2 pr-3.5'>
@@ -40,13 +45,22 @@ const FriendListContainer = ({ props }) => {
                                     <FriendIcon props={{ friend, selected: true }} />
                                 </div>
                                 <div
-                                    className='p-1 rounded-full bg-neutral-800 bg-opacity-50 group-hover:bg-opacity-100'
+                                    className='flex items-center p-1 rounded-full bg-neutral-800 bg-opacity-50 group-hover:bg-opacity-100 transition-transform ease-in-out duration-300'
                                     onClick={(e) => {
                                         e.stopPropagation();
-                                        alert('REMOVE FRIEND, ... (more features will be added)')
+                                        setFriendSettingOpen(prev => {
+                                            if (prev === null) return friend.userid;
+                                            return null;
+                                        });
                                     }}
                                 >
-                                    <IoMdMore className='w-7 h-7' />
+                                    {friendSettingOpen !== friend.userid && <IoMdMore className='w-7 h-7' />}
+                                    {friendSettingOpen === friend.userid && 
+                                        <>
+                                            <DeleteFriend setFriendSettingOpen={setFriendSettingOpen} friend_username={friend.username} friend_id={friend.userid} dm_id={friend.dm_id} />
+                                            <FaAngleLeft className='w-6 h-6 ml-2'/>
+                                        </>
+                                    }
                                 </div>
                             </div>
                         </div>

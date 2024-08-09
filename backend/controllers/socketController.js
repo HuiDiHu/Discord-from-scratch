@@ -112,6 +112,7 @@ const addFriend = async (socket, temp, cb) => {
     const friend = await redisClient.hgetall(`user:${friendId}`); 
     friend.connected = friend.connected === 'true'; 
     if (friend.profile) friend.profile = Buffer.from(friend.profile, 'base64');
+    
     socket.to(friend.userid).emit("connected", true, socket.user.userid)
 
     cb({ done: true, friend: { ...friend, dm_id } })

@@ -188,6 +188,7 @@ const UseSocketSetup = (setFriendList, setServerList, setMessages, setMemberList
                 })
             )
         });
+        //If you recieve a connection error your connected status will not reset until your next login
         socket.on("connect_error", () => {
             console.log("Websocket connection error... Logging user out")
             setUser({ loggedIn: false })

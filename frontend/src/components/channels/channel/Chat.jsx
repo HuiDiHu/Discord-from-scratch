@@ -53,13 +53,14 @@ const Chat = ({ props }) => {
         }
     };
 
+    useLayoutEffect(() => { setIsAtBottom(true) }, [props.channelType, props.channelId])
+
     useEffect(() => {
         const container = chatRef.current;
         if (container && isAtBottom) {
             container.scrollTop = container.scrollHeight;
         }
-    }, [messages])
-
+    }, [messages, isAtBottom, props.channelType, props.channelId])
     //DO NOT USE flex here. it disables scrolling. i have no idea why
     return (
         <ul
