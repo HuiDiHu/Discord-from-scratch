@@ -4,7 +4,8 @@ import { AccountContext } from 'src/components/auth/UserContext';
 import { useNavigate } from 'react-router-dom';
 import base64ToURL from 'src/base64ToURL';
 
-const UseSocketSetup = (setFriendList, setServerList, setMessages, setMemberList, setChannels, setLoadedServers, setUsersLoaded, setSessionTempLinks) => {
+const UseSocketSetup = (setFriendList, setServerList, setMessages, setMemberList, setChannels, 
+    setLoadedServers, setUsersLoaded, setSessionTempLinks) => {
     const { user, setUser } = useContext(AccountContext);
 
     const navigate = useNavigate();
@@ -84,6 +85,7 @@ const UseSocketSetup = (setFriendList, setServerList, setMessages, setMemberList
             setSessionTempLinks(prev => [...tempBlobURLs, ...prev]);
         });
         socket.on("create_message", (message, author) => {
+            //could be unnecessary
             setMessages(prev => {
                 if (!prev.find(item => item.message_id === message.message_id)) {
                     return [...prev, message];

@@ -10,6 +10,7 @@ const FIVE_MIN = 5 * 60 * 1000;
 
 const Chat = ({ props }) => {
     const { messages, setMessages, usersLoaded } = useContext(MessagesContext)
+    const prevMsgListLengthRef = useRef(messages.length);
     const { user } = useContext(AccountContext)
     const [hoveredMessage, setHoveredMessage] = useState(null)
     const [isAtBottom, setIsAtBottom] = useState(true)
@@ -45,22 +46,23 @@ const Chat = ({ props }) => {
         }
     };
 
-    // Scroll to the bottom if the user was at the bottom
-    const scrollToBottom = () => {
-        const container = chatRef.current;
-        if (container && isAtBottom) {
-            container.scrollTop = container.scrollHeight;
-        }
-    };
-
     useLayoutEffect(() => { setIsAtBottom(true) }, [props.channelType, props.channelId])
+    const bottomElementRef = useRef();
 
     useEffect(() => {
+        //scroll down if user is at the bottom before the new message
         const container = chatRef.current;
-        if (container && isAtBottom) {
-            container.scrollTop = container.scrollHeight;
-        }
+        if (container && isAtBottom) container.scrollTop = container.scrollHeight;
     }, [messages, isAtBottom, props.channelType, props.channelId])
+
+    useEffect(() => {
+        if (messages.length > prevMsgListLengthRef.current && messages.length > 0 && messages[messages.length - 1].posted_by === user.userid) {
+            if (bottomElementRef.current) {
+                bottomElementRef.current.scrollIntoView({ behavior: "smooth",  block: 'end' });
+            }
+        }
+        prevMsgListLengthRef.current = messages.length;
+    }, [messages.length])
     //DO NOT USE flex here. it disables scrolling. i have no idea why
     return (
         <ul
@@ -104,7 +106,7 @@ const Chat = ({ props }) => {
                         />
                 ))
             }
-            <br />
+            <div ref={bottomElementRef} className='h-6 w-full' />
         </ul>
     )
 }

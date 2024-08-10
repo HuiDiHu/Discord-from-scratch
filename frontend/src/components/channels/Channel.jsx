@@ -1,4 +1,4 @@
-import { useContext, useEffect, useLayoutEffect, useRef } from 'react'
+import { useContext, useEffect, useLayoutEffect } from 'react'
 import axios from 'axios'
 import ChannelHeader from './channel/ChannelHeader'
 import Chat from './channel/Chat'
@@ -129,7 +129,6 @@ const Channel = ({ props }) => {
             }
         }
     }, [props.channelId, props.channelType])
-
     return (
         <>
             {!msgLoading ?
