@@ -44,7 +44,7 @@ const EditMessageContainer = ({ props }) => {
 
     useEffect(() => {
         const { current } = editRef;
-        if (current !== null) { current.scrollIntoView({ behavior: "smooth" }) }
+        if (current !== null) { current.scrollIntoView({ behavior: "smooth",  block: 'center', inline: 'nearest' }) }
     }, [])
 
     return (

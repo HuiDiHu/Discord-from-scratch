@@ -1,14 +1,16 @@
 import React, { useContext, useState } from "react";
 import axios from "axios";
-import { ServerContext } from 'src/pages/Channels'
 import socket from 'src/socket'
-import { MemberContext } from "src/pages/Channels";
+import { ServerContext, MemberContext, MessagesContext } from "src/pages/Channels";
+import { AccountContext } from 'src/components/auth/UserContext'
 
 const ImportProfilePictureModal = ({ ID, setImportProfilePictureModalOpen, uploadTo, profilePicture, server_icon }) => {
     const [selectedImage, setSelectedImage] = useState(null);
     const [errMsg, setErrMsg] = useState("")
     const { setServerList } = useContext(ServerContext)
     const { setSessionTempLinks } = useContext(MemberContext)
+    const { setUser } = useContext(AccountContext)
+    const { setUsersLoaded } = useContext(MessagesContext)
 
     const handleUploadImage = () => {
         if (selectedImage === null || selectedImage === undefined) {
@@ -32,11 +34,10 @@ const ImportProfilePictureModal = ({ ID, setImportProfilePictureModalOpen, uploa
                 .then(async (res) => {
                     //send websocket request
                     const tempBlobURL = URL.createObjectURL(new Blob([res.data], { type: 'image/png' }));
+                    setSessionTempLinks(prev => [tempBlobURL, ...prev]);
+
                     setServerList(prev => prev.map(item => {
-                        if (item.server_id === Number(ID)) {
-                            item.server_icon = tempBlobURL;
-                            setSessionTempLinks(prev => [tempBlobURL, ...prev]);
-                        }
+                        if (item.server_id === Number(ID)) item.server_icon = tempBlobURL;
                         return item;
                     }))
                     socket.emit('update_server_icon', Number(ID), res.data);
@@ -50,7 +51,35 @@ const ImportProfilePictureModal = ({ ID, setImportProfilePictureModalOpen, uploa
             //send a socket request to update all members this new server profile (done in UseSocketSetup probably)
 
         } else if (uploadTo === 'USERS') {
-            setImportProfilePictureModalOpen(false)
+            const formData = new FormData();
+            formData.append('image', selectedImage);
+            axios
+                .create({
+                    baseURL: import.meta.env.VITE_IS_DEV ? import.meta.env.VITE_SERVER_DEV_URL : import.meta.env.VITE_SERVER_URL,
+                    withCredentials: true,
+                    headers: {
+                        'Content-Type': 'multipart/form-data',
+                    },
+                    responseType: 'arraybuffer'
+                })
+                .put(`/api/v1/user/profilePicture/upload/${ID}`, formData)
+                .then((res) => {
+                    const tempBlobURL = URL.createObjectURL(new Blob([res.data], { type: 'image/png' }));
+                    setSessionTempLinks(prev => [tempBlobURL, ...prev]);
+                    setUser(prev => ({
+                        ...prev,
+                        profile: tempBlobURL
+                    }))
+                    setUsersLoaded(prev => prev.map(item => {
+                        if (item.userid === ID) item.profile = tempBlobURL;
+                        return item;
+                    }))
+                    setImportProfilePictureModalOpen(false)
+                })
+                .catch((error) => {
+                    setErrMsg(error.response.data.msg)
+                    console.log(error)
+                })
         } else {
             console.log('INVALID LOCATION TO UPLOAD IMAGE')
             setImportProfilePictureModalOpen(false)
@@ -73,7 +102,7 @@ const ImportProfilePictureModal = ({ ID, setImportProfilePictureModalOpen, uploa
                         <div className="ml-16 p-1 rounded-full border-[3px] border-dashed w-fit">
                             <div className='relative h-28 w-28'>
                                 <img
-                                    src={ (uploadTo === 'USERS' ? profilePicture : server_icon) || '../../../../assets/tempIcons/GRAGAS.png' }
+                                    src={(uploadTo === 'USERS' ? profilePicture : server_icon) || '../../../../assets/tempIcons/GRAGAS.png'}
                                     alt="not found"
                                     className='h-full w-full [clip-path:circle(45%_at_50%_50%)]'
                                 />

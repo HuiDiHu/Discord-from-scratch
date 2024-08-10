@@ -2,6 +2,7 @@ import { useContext, useState } from 'react'
 import axios from 'axios'
 import { useNavigate } from "react-router-dom";
 import { AccountContext } from 'src/components/auth/UserContext';
+import base64ToURL from '../base64ToURL';
 
 
 const Login = () => {
@@ -32,6 +33,7 @@ const Login = () => {
             })
             .post('/api/v1/auth/login', { email, password })
             .then((res) => {
+                if (res.data.profile) res.data.profile = base64ToURL(res.data.profile);
                 setUser({ ...res.data })
                 console.log("logged in", { ...res.data })
                 navigate('/channels/@me')

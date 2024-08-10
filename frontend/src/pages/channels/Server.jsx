@@ -5,6 +5,7 @@ import { LoadingContext, ServerContext, MemberContext } from 'src/pages/Channels
 import ChannelListContainer from 'src/components/channels/servers/ChannelListContainer'
 import Channel from 'src/components/channels/Channel'
 import ChannelSkeleton from 'src/components/skeleton/ChannelSkeleton'
+import base64ToURL from 'src/base64ToURL'
 
 function generateRandomString(length) {
   const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
@@ -21,11 +22,21 @@ const Server = () => {
   const { sidebarLoading, setSidebarLoading, membersLoading, setMembersLoading } = useContext(LoadingContext);
   const { channels, serverList, loadedServers, setLoadedServers, setChannels } = useContext(ServerContext);
   const [serverOptionsOpen, setServerOptionsOpen] = useState(false);
-  const { setMemberList } = useContext(MemberContext)
+  const { memberList, setMemberList } = useContext(MemberContext)
 
   const [selectedChannel, setSelectedChannel] = useState({ channel_id: null })
   const [server, setServer] = useState(null);
   const [skeletonSeed, setSkeletonSeed] = useState("default")
+
+  const freeAndAllocateMembersProfilePicture = (newMemberList) => {
+    memberList.forEach(item => {
+      if (item.profile) URL.revokeObjectURL(item.profile);
+    })
+    return newMemberList.map(member => {
+              if (member.profile) member.profile = base64ToURL(member.profile);
+              return member;
+            })
+  }
 
   const navigate = useNavigate();
 
@@ -39,7 +50,8 @@ const Server = () => {
           })
           .get(`/api/v1/servers/members/${server_id}`)
           .then((res) => {
-            setMemberList([...res.data.members]);
+              res.data.members = freeAndAllocateMembersProfilePicture(res.data.members);
+              setMemberList([...res.data.members]);
             setMembersLoading(false);
             return;
           })
@@ -64,14 +76,17 @@ const Server = () => {
               if (tempChannelIdList.indexOf(ch.channel_id) === -1) uniqueChs.push(ch);
             })
             setChannels(prev => [...uniqueChs, ...prev]);
+
+            res.data.members = freeAndAllocateMembersProfilePicture(res.data.members);
             setMemberList([...res.data.members]);
+            
             setLoadedServers(prev => [Number(server_id), ...prev]);
-            setTimeout(() => {setSidebarLoading(false);}, 750)
+            setTimeout(() => { setSidebarLoading(false); }, 750)
             setMembersLoading(false);
           })
           .catch((error) => {
             console.log(error)
-            setSidebarLoading(false); 
+            setSidebarLoading(false);
             setMembersLoading(false);
             navigate('/channels/@me')
           })
@@ -115,7 +130,7 @@ const Server = () => {
           channelType: "channel",
           skeletonSeed
         }} /> :
-        <ChannelSkeleton skeletonSeed={skeletonSeed} channelType={'channel'}/>
+        <ChannelSkeleton skeletonSeed={skeletonSeed} channelType={'channel'} />
       }
     </div>
   )

@@ -4,7 +4,7 @@ const lengthArray = [6, 10, 12, 16, 20]
 
 const BodyMessageSkeleton = ({ rng, numText }) => {
     return (
-        <div className='relative group w-full py-0.5 flex items-start pr-10 pl-[58px] space-x-2 overflow-x-hidden flex-shrink-0'>
+        <div className='relative group w-full py-0.5 flex items-start pr-10 pl-[60px] space-x-2 overflow-x-hidden flex-shrink-0'>
             {Array.from({ length: numText }).map((_, index) => (
                 <div
                     key={index}

@@ -23,10 +23,9 @@ const register = async (req, res) => {
             id: user.rows[0].id,
             username, 
             email,
-            profile: user.rows[0].profilePicture ? user.rows[0].profilePicture.toString('base64') : "",
+            profile: user.rows[0].profilepicture ? user.rows[0].profilepicture.toString('base64') : "",
             userid: user.rows[0].userid
         }
-        //TODO: update this too once updated USERS table is implemented
         res.status(StatusCodes.CREATED).json({
             loggedIn: true,
             ...req.session.user
@@ -42,7 +41,6 @@ const register = async (req, res) => {
 const login = async (req, res) => {
     const { email, password } = req.body;
 
-    //TODO: update this too once updated USERS table is implemented
     const user = await pool.query(
         "SELECT * FROM USERS u WHERE u.email=$1",
         [email]
@@ -54,10 +52,9 @@ const login = async (req, res) => {
                 id: user.rows[0].id,
                 username: user.rows[0].username,
                 email,
-                profile: user.rows[0].profilePicture ? user.rows[0].profilePicture.toString('base64') : "",
+                profile: user.rows[0].profilepicture ? user.rows[0].profilepicture.toString('base64') : "",
                 userid: user.rows[0].userid
             }
-            //TODO: update this too once updated USERS table is implemented
             res.status(StatusCodes.OK).json({
                 loggedIn: true,
                 ...req.session.user
@@ -77,7 +74,7 @@ const login = async (req, res) => {
 }
 
 const verifyLogin = async (req, res) => {
-    if (req.session.user && req.session.user.id) {
+    if (req.session.user && req.session.user.userid) {
         res.status(StatusCodes.OK).json({ loggedIn: true, ...req.session.user })
     } else {
         res.status(StatusCodes.OK).json({ loggedIn: false })

@@ -1,12 +1,14 @@
 import React, { useContext, useState } from 'react'
 import { IoMdClose } from "react-icons/io";
 import socket from 'src/socket';
-import { FriendContext } from 'src/pages/Channels'
+import { FriendContext, MemberContext } from 'src/pages/Channels'
+import base64ToURL from 'src/base64ToURL';
 
 const AddFriendModal = ({ props }) => {
     const [friendId, setFriendId] = useState("")
     const [friendIdErrMsg, setFriendIdErrMsg] = useState("")
     const { setFriendList } = useContext(FriendContext)
+    const { setSessionTempLinks } = useContext(MemberContext)
 
     const handleAddFriend = () => {
         if (!friendId) {
@@ -16,6 +18,10 @@ const AddFriendModal = ({ props }) => {
         socket.emit("add_friend", friendId, ({ done,  errMsg, friend }) => {
             if (done) {
                 //TODO: set pending list 
+                if (friend.profile) {
+                    friend.profile = base64ToURL(friend.profile);
+                    setSessionTempLinks(prev => [friend.profile, ...prev]);
+                }
                 setFriendList(prev => [friend, ...prev])
                 props.setIsAddFriendOpen(false)
                 return;

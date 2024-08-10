@@ -3,7 +3,7 @@ import axios from 'axios' //an alternative to fetch request to send data to data
 import { IoMdArrowRoundBack } from "react-icons/io"; //basic arrow icon as an html element
 import { useNavigate } from "react-router-dom";
 import { AccountContext } from 'src/components/auth/UserContext';
-
+import base64ToURL from '../base64ToURL';
 
 const Signup = () => {
     const { setUser } = useContext(AccountContext)
@@ -41,6 +41,7 @@ const Signup = () => {
             })
             .post('/api/v1/auth/register', { email, username, password })
             .then((res) => {
+                if (res.data.profile) res.data.profile = base64ToURL(res.data.profile);
                 setUser({ ...res.data })
                 console.log("logged in", { ...res.data })
                 navigate('/channels/@me')

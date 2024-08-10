@@ -1,5 +1,5 @@
 const { StatusCodes } = require('http-status-codes')
-const { UnauthorizedError, BadRequestError } = require('../errors')
+const { UnauthorizedError, BadRequestError, UnauthenticatedError, UnprocessableEntityError } = require('../errors')
 const pool = require('../db/connect')
 const redisClient = require('../redis')
 
@@ -12,7 +12,7 @@ const getAuthor = async (userid) => {
             profile: null
         }
     }
-    return { userid: user.userid, username: user.username, profile: user.profile };
+    return { ...user };
 }
 
 const getMultipleUsers = async (req, res) => {
@@ -25,6 +25,8 @@ const getMultipleUsers = async (req, res) => {
 }
 
 const deleteFriend = async (req, res) => {
+    if (!req.session.user || !req.session.user.userid) throw new UnauthenticatedError('You must log in before accessing channels');
+
     const {
         params: { id: friend_id_dm_id }
     } = req;
@@ -34,8 +36,36 @@ const deleteFriend = async (req, res) => {
     res.status(StatusCodes.OK).send({ friend_id: friend_id_dm_id.split('.')[0] })
 }
 
+const uploadProfilePicture = async (req, res) => {
+    const {
+        params: { id: userid }
+    } = req;
+
+    if (!req.session.user || !req.session.user.userid || !userid) throw new UnauthenticatedError('You must log in before accessing channels');
+    if (userid !== req.session.user.userid) throw new UnauthorizedError("You are not authorized to do this action.")
+    
+    const image = req.file;
+    if (!image) throw new UnprocessableEntityError('No image uploaded.');
+    const { buffer } = image;
+
+    await Promise.all([
+        pool.query(
+            "UPDATE USERS SET profilePicture = $2 WHERE userid = $1",
+            [userid, buffer]
+        ),
+        redisClient.hset(
+            `user:${userid}`,
+            'profile', buffer.toString('base64')
+        )
+    ]);
+    req.session.user.profile = buffer.toString('base64');
+
+    res.status(StatusCodes.OK).send(buffer)
+}
+
 module.exports = {
     getAuthor,
     getMultipleUsers,
-    deleteFriend
+    deleteFriend,
+    uploadProfilePicture
 }

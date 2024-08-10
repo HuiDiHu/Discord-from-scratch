@@ -15,7 +15,7 @@ const ChatBox = ({ props }) => {
     const handleSubmit = (e) => {
         e.stopPropagation(); e.preventDefault();
         if (!message.length) return;
-        //TODO: add message length limit
+        //TODO: add message length limit  --- fuck no
         const messageObject = {
             created_at: new Date().getTime(),
             content: message,
@@ -32,9 +32,9 @@ const ChatBox = ({ props }) => {
     }
     return (
         <div className='flex w-auto px-3 py-2 bg-[#313167] border-t space-x-4 mx-4 mb-3 rounded-b-lg'>
-            <BsPlusCircleFill 
+            <BsPlusCircleFill
                 className='h-6 w-6 cursor-pointer text-neutral-300'
-                onClick={() => {alert("Upload stuff and shits yn?")}}
+                onClick={() => { alert("Upload stuff and shits yn?") }}
             />
             <textarea
                 className='h-6 max-h-72 w-[80%] resize-none text-sm bg-transparent outline-none cursor-text mt-0.5'
@@ -50,11 +50,11 @@ const ChatBox = ({ props }) => {
                 onKeyDown={(e) => { e.key === "Enter" && handleSubmit(e) }}
             />
             <div className='flex justify-end grow'>
-                <button 
+                <button
                     className='flex items-center justify-center w-16 border-l border-neutral-500'
                     onClick={handleSubmit}
                 >
-                    <HiPaperAirplane className='text-neutral-500 w-10 h-5'/>
+                    <HiPaperAirplane className={`${message.length > 0 ? 'text-white' : 'text-neutral-500'} w-10 h-5`} />
                 </button>
             </div>
         </div>

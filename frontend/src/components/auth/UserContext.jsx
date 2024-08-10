@@ -1,7 +1,7 @@
 import axios from "axios";
 import { useState, createContext, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-
+import base64ToURL from "src/base64ToURL";
 
 export const AccountContext = createContext();
 
@@ -21,6 +21,9 @@ const UserContext = ({ children }) => {
                 if (!res || res.status >= 400 || !res.data || !res.data.loggedIn) {
                     setUser({ loggedIn: false })
                 } else {
+                    //decode base64 string into arraybuffer
+                    if (!res.data.profile.startsWith("blob:")) res.data.profile = base64ToURL(res.data.profile);
+                
                     setUser({ ...res.data })
                     console.log("logged in", { ...res.data })
                     if (!window.location.pathname.startsWith('/channels')) { navigate('/channels/@me') }

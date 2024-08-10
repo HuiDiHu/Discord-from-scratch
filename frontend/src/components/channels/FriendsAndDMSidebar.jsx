@@ -1,7 +1,6 @@
-import React, { useContext, useLayoutEffect } from 'react'
+import React, { useContext, useLayoutEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import { FriendContext, MemberContext } from 'src/pages/Channels'
-import { AccountContext } from 'src/components/auth/UserContext'
+import { FriendContext } from 'src/pages/Channels'
 import FriendIcon from './friends/FriendIcon'
 import { GiUnfriendlyFire } from "react-icons/gi";
 import FriendListSkeleton from '../skeleton/FriendListSkeleton'
@@ -9,24 +8,9 @@ import TinyUserProfileContainer from '../TinyUserProfileContainer'
 
 const FriendsAndDMSidebar = () => {
     const { friendList } = useContext(FriendContext)
-    const { setMemberList } = useContext(MemberContext)
-    const { user } = useContext(AccountContext)
     const navigate = useNavigate();
     const { id } = useParams();
-    useLayoutEffect(() => {
-        if (friendList !== null) {
-            if (!id || friendList.length === 0) {
-                console.log("INVALID ID!")
-                return;
-            }
-            const friend = friendList.find(item => item.userid === id)
-            if (!friend) {
-                console.log("FRIEND DOESN'T EXIST!")
-                return;
-            }
-            setMemberList([user, friend]);
-        }
-    }, [friendList, id])
+
     return (
         <div className="relative flex flex-col w-[150px] md:w-[200px] lg:w-[235px] h-screen bg-[#2a2d31] overflow-y-auto scrollbar-hide flex-shrink-0">
             <button

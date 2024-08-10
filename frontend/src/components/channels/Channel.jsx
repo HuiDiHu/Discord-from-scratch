@@ -8,10 +8,11 @@ import ChannelSkeleton from '../skeleton/ChannelSkeleton'
 import { LoadingContext, MessagesContext, MemberContext, ServerContext } from 'src/pages/Channels'
 import { AccountContext } from 'src/components/auth/UserContext'
 import { useNavigate } from 'react-router-dom'
+import base64ToURL from 'src/base64ToURL'
 
 const Channel = ({ props }) => {
     const { msgLoading, setMsgLoading, membersLoading } = useContext(LoadingContext)
-    const { memberListOpen } = useContext(MemberContext)
+    const { memberListOpen, setSessionTempLinks } = useContext(MemberContext)
     const { loadedChannels, setLoadedChannels } = useContext(ServerContext)
     const { messages, setMessages, loadedDMs, setLoadedDMs, usersLoaded, setUsersLoaded } = useContext(MessagesContext)
     const { user } = useContext(AccountContext)
@@ -38,6 +39,14 @@ const Channel = ({ props }) => {
             })
             .post('/api/v1/user/multiple', { useridList: newUserIds })
             .then((res) => {
+                const tempBlobURLs = [];
+                for (let i = 0; i < res.data.length; ++i) {
+                    if (res.data[i].profile) {
+                        res.data[i].profile = base64ToURL(res.data[i].profile);
+                        tempBlobURLs.push(res.data[i].profile)
+                    }
+                }
+                setSessionTempLinks(prev => [...tempBlobURLs, ...prev])
                 setUsersLoaded(prev => [...res.data, ...prev])
                 setTimeout(() => { setMsgLoading(false) }, 750);
             })
@@ -64,8 +73,16 @@ const Channel = ({ props }) => {
                             if (tempMessages.indexOf(msg.message_id) === -1) uniqueMsgs.push(msg);
                         })
                         setMessages(prev => [...uniqueMsgs, ...prev])
-                        if (usersLoaded.findIndex(item => item.userid === user.userid) === -1) setUsersLoaded(prev => [user, ...prev]);
-                        if (usersLoaded.findIndex(item => item.userid === props.friend.userid) === -1) setUsersLoaded(prev => [props.friend, ...prev]);
+                        if (usersLoaded.findIndex(item => item.userid === user.userid) === -1) {
+                            /*if (!user.profile.startsWith("blob:")) {
+                                console.log("NOT BLOB: user")
+                                user.profile = base64ToURL(user.profile);
+                            }*/
+                            setUsersLoaded(prev => [user, ...prev]);
+                        }
+                        if (usersLoaded.findIndex(item => item.userid === props.friend.userid) === -1) {
+                            setUsersLoaded(prev => [props.friend, ...prev]);
+                        }
                         setTimeout(() => { setMsgLoading(false); }, 750);
                     })
                     .catch((error) => {

@@ -109,10 +109,8 @@ const addFriend = async (socket, temp, cb) => {
 
     //TODO: lpush to pending instead of friends
     await redisClient.lpush(`friends:${socket.user.userid}`, [friendId, dm_id].join('.'));
-    const friend = await redisClient.hgetall(`user:${friendId}`); 
-    friend.connected = friend.connected === 'true'; 
-    if (friend.profile) friend.profile = Buffer.from(friend.profile, 'base64');
-    
+    const friend = await redisClient.hgetall(`user:${friendId}`);
+    friend.connected = friend.connected === 'true';
     socket.to(friend.userid).emit("connected", true, socket.user.userid)
 
     cb({ done: true, friend: { ...friend, dm_id } })
@@ -125,9 +123,9 @@ const getFriendList = async (friendDMIdList) => {
             `user:${friendDMId.split('.')[0]}`
         )
         friend.connected = friend.connected === 'true';
-        friendList.push({ 
-            ...friend, 
-            dm_id: Number(friendDMId.split('.')[1]), 
+        friendList.push({
+            ...friend,
+            dm_id: Number(friendDMId.split('.')[1]),
             profile: friend.profile ? Buffer.from(friend.profile, 'base64') : friend.profile
         })
     }
@@ -198,7 +196,7 @@ const createMessage = async (socket, tempMessage) => {
             [tempMessage.created_at / 1000.0, tempMessage.content, tempMessage.posted_by, tempMessage.in_channel]
         )).rows[0];
     }
-    let author = await getAuthor(message.posted_by)
+    const author = await getAuthor(message.posted_by)
 
     socket.emit("create_message", message, author)
     members = await getMembersList(socket, message.in_dm, message.in_channel)
@@ -253,8 +251,12 @@ const joinedServer = async (socket, user, server) => {
                 [Number(server.server_id)]
             )
         ]);
+        const user_profile = await redisClient.hget(
+            `user:${user.userid}`,
+            'profile'
+        )
         server.server_members = [user, ...members];
-        socket.to(members).emit("joined_server", user, server);
+        socket.to(members).emit("joined_server", { ...user, profile: user_profile }, server);
         server.server_icon = server_icon.rows[0].server_icon;
         socket.emit("joined_server", user, server);
     }
@@ -270,8 +272,8 @@ const leftServer = async (socket, user, server) => {
 
 const updateServerIcon = async (socket, server_id, arrayBuffer) => {
     if (server_id !== null && server_id !== undefined && arrayBuffer) {
-       const members = await getServerMembersList(socket, server_id);
-       socket.to(members).emit("update_server_icon", server_id, arrayBuffer);
+        const members = await getServerMembersList(socket, server_id);
+        socket.to(members).emit("update_server_icon", server_id, arrayBuffer);
     }
 }
 

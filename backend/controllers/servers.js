@@ -55,6 +55,7 @@ function makeToken(length) {
     }
     return result;
 }
+
 const ONE_DAY = 24 * 60 * 60 * 1000;
 
 const generateInviteToken = async (req, res) => {

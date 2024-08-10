@@ -2,6 +2,7 @@ import { useContext, useEffect } from 'react'
 import socket from 'src/socket'
 import { AccountContext } from 'src/components/auth/UserContext';
 import { useNavigate } from 'react-router-dom';
+import base64ToURL from 'src/base64ToURL';
 
 const UseSocketSetup = (setFriendList, setServerList, setMessages, setMemberList, setChannels, setLoadedServers, setUsersLoaded, setSessionTempLinks) => {
     const { user, setUser } = useContext(AccountContext);
@@ -28,15 +29,25 @@ const UseSocketSetup = (setFriendList, setServerList, setMessages, setMemberList
     useEffect(() => {
         //maybe make loading then make initialize send a callback for loading
         if (socket.connected) disconnectedAll();
+        if (!user.profile || user.profile.length > 150) {
+            console.log("user profile is not loading!")
+        }
         socket.connect();
-        socket.on("disconnect", () => {
+        socket.on("disconnecting", () => {
             console.log("disconnecting")
+            if (user.profile && user.profile.startsWith("blob:")) URL.revokeObjectURL(user.profile)
             setSessionTempLinks(prev => {
                 prev.forEach(url => {
                     URL.revokeObjectURL(url);
                 })
                 return [];
-            })
+            });
+            setMemberList(prev => {
+                prev.forEach(item => {
+                    if (item.profile && item.profile.startsWith("blob:")) URL.revokeObjectURL(item.profile);
+                })
+                return prev;
+            });
         })
         socket.on("friends", (friendList) => {
             console.log("RECEIVED!")
@@ -45,11 +56,20 @@ const UseSocketSetup = (setFriendList, setServerList, setMessages, setMemberList
                 setFriendList([]);
                 return;
             }
+            const tempBlobURLs = []
             setFriendList(friendList.sort((a, b) => {
                 if (a.connected === b.connected) return 0;
                 if (a.connected) return -1;
                 return 1;
-            }))
+            }).map(item => {
+                if (item.profile) {
+                    const tempBlobURL = URL.createObjectURL(new Blob([item.profile], { type: 'image/png' }));
+                    item.profile = tempBlobURL;
+                    tempBlobURLs.push(tempBlobURL);
+                }
+                return item;
+            }));
+            setSessionTempLinks(prev => [...tempBlobURLs, ...prev]);
         });
         socket.on("servers", (serverList) => {
             const tempBlobURLs = []
@@ -64,7 +84,6 @@ const UseSocketSetup = (setFriendList, setServerList, setMessages, setMemberList
             setSessionTempLinks(prev => [...tempBlobURLs, ...prev]);
         });
         socket.on("create_message", (message, author) => {
-            //TODO: Figure out why sometimes dupe messages get sent and remove this stupid contraption after its fixed
             setMessages(prev => {
                 if (!prev.find(item => item.message_id === message.message_id)) {
                     return [...prev, message];
@@ -74,6 +93,9 @@ const UseSocketSetup = (setFriendList, setServerList, setMessages, setMemberList
             })
             setUsersLoaded(prev => {
                 if (prev.findIndex(item => item.userid === author.userid) === -1) {
+                    const tempBlobURL = URL.createObjectURL(new Blob([author.profile], { type: 'image/png' }));
+                    author.profile = tempBlobURL;
+                    setSessionTempLinks(prev => [tempBlobURL, ...prev]);
                     return [author, ...prev];
                 }
                 return prev;
@@ -118,7 +140,9 @@ const UseSocketSetup = (setFriendList, setServerList, setMessages, setMemberList
                 setServerList(prev => [...prev, server]);
                 navigate(`/channels/server/${server.server_id}`)
             } else {
-                console.log("NEW MEMBER JOINED!", targetUser);
+                if (targetUser.profile) targetUser.profile = base64ToURL(targetUser.profile);
+
+                //console.log("NEW MEMBER JOINED!", targetUser);
                 setLoadedServers(prev => {
                     if (prev.length > 0 && prev[0] === server.server_id) {
                         setMemberList(prev => [...prev, targetUser]);

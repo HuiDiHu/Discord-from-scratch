@@ -1,4 +1,4 @@
-import { createContext, useEffect, useState } from "react"
+import { createContext, useState } from "react"
 import Friends from "./channels/Friends"
 import DirectMessage from "./channels/DirectMessage"
 import Server from "./channels/Server"
@@ -35,7 +35,7 @@ const Channels = ({ props }) => {
     const [memberList, setMemberList] = useState([]); //array of objects (set when new server or dm is being loaded)
     const [usersLoaded, setUsersLoaded] = useState([]); //array of user objects
     const [msgLoading, setMsgLoading] = useState(true); const [sidebarLoading, setSidebarLoading] = useState(true); const [membersLoading, setMembersLoading] = useState(true);
-    const [memberListOpen, setMemberListOpen] = useState(false);
+    const [memberListOpen, setMemberListOpen] = useState(true);
     const [sessionTempLinks, setSessionTempLinks] = useState([]);
     UseSocketSetup(setFriendList, setServerList, setMessages, setMemberList, setChannels, setLoadedServers, setUsersLoaded, setSessionTempLinks);
     return (

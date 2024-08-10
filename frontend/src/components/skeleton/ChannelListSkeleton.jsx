@@ -1,6 +1,5 @@
 import React from 'react'
 import { IoChevronDown } from "react-icons/io5";
-import { PiDiamondsFourDuotone } from "react-icons/pi";
 import TinyUserProfileContainer from 'src/components/TinyUserProfileContainer';
 
 const numChannelSkeleton = 13;
