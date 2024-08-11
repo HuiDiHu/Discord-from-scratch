@@ -1,17 +1,18 @@
 import React, { useContext, useEffect, useLayoutEffect, useRef, useState } from 'react'
-import { MessagesContext, LoadingContext } from 'src/pages/Channels'
+import { MessagesContext, SocketContext } from 'src/pages/Channels'
 import MessageContainer from './MessageContainer'
 import HeaderMessageContainer from './HeaderMessageContainer';
 import { AccountContext } from 'src/components/auth/UserContext'
-import socket from 'src/socket'
 
 
 const FIVE_MIN = 5 * 60 * 1000;
 
 const Chat = ({ props }) => {
     const { messages, setMessages, usersLoaded } = useContext(MessagesContext)
-    const prevMsgListLengthRef = useRef(messages.length);
     const { user } = useContext(AccountContext)
+    const { socket } = useContext(SocketContext)
+
+    const prevMsgListLengthRef = useRef(messages.length);
     const [hoveredMessage, setHoveredMessage] = useState(null)
     const [isAtBottom, setIsAtBottom] = useState(true)
 

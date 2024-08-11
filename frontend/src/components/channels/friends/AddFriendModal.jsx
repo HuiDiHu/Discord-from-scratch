@@ -1,14 +1,15 @@
 import React, { useContext, useState } from 'react'
 import { IoMdClose } from "react-icons/io";
-import socket from 'src/socket';
-import { FriendContext, MemberContext } from 'src/pages/Channels'
+import { FriendContext, MemberContext, SocketContext } from 'src/pages/Channels'
 import base64ToURL from 'src/base64ToURL';
 
 const AddFriendModal = ({ props }) => {
-    const [friendId, setFriendId] = useState("")
-    const [friendIdErrMsg, setFriendIdErrMsg] = useState("")
     const { setFriendList } = useContext(FriendContext)
     const { setSessionTempLinks } = useContext(MemberContext)
+    const { socket } = useContext(SocketContext)
+    
+    const [friendId, setFriendId] = useState("")
+    const [friendIdErrMsg, setFriendIdErrMsg] = useState("")
 
     const handleAddFriend = () => {
         if (!friendId) {

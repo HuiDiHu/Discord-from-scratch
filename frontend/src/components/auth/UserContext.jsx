@@ -6,14 +6,16 @@ import base64ToURL from "src/base64ToURL";
 export const AccountContext = createContext();
 
 const UserContext = ({ children }) => {
-    const [user, setUser] = useState({ loggedIn: null });
+    const [user, setUser] = useState({ loggedIn: null, token: localStorage.getItem("token") });
 
     const navigate = useNavigate();
     useEffect(() => {
         axios
             .create({
                 baseURL: import.meta.env.VITE_IS_DEV ? import.meta.env.VITE_SERVER_DEV_URL : import.meta.env.VITE_SERVER_URL,
-                withCredentials: true
+                headers: {
+                    'Authorization': `Bearer ${user.token}`
+                }
             })
             .get('/api/v1/auth/login')
             .then((res) => {
@@ -22,14 +24,14 @@ const UserContext = ({ children }) => {
                     setUser({ loggedIn: false })
                 } else {
                     //decode base64 string into arraybuffer
-                    if (!res.data.profile.startsWith("blob:")) res.data.profile = base64ToURL(res.data.profile);
-                
+                    if (res.data.profile && !res.data.profile.startsWith("blob:")) res.data.profile = base64ToURL(res.data.profile);
                     setUser({ ...res.data })
                     console.log("logged in", { ...res.data })
                     if (!window.location.pathname.startsWith('/channels')) { navigate('/channels/@me') }
                 }
             })
             .catch((error) => {
+                console.log(error)
                 setUser({ loggedIn: false })
             })
     }, [])

@@ -1,11 +1,14 @@
-import { createContext, useState } from "react"
+import { createContext, useContext, useEffect, useState } from "react"
+import socketConn from "../socket"
 import Friends from "./channels/Friends"
 import DirectMessage from "./channels/DirectMessage"
 import Server from "./channels/Server"
 import NotFoundPage from "./NotFoundPage"
 import ServerSideNavBar from "src/components/channels/ServerSideNavBar"
 import UseSocketSetup from "src/components/channels/UseSocketSetup"
+import { AccountContext } from "../components/auth/UserContext"
 
+export const SocketContext = createContext();
 export const FriendContext = createContext();
 export const MessagesContext = createContext();
 export const MemberContext = createContext();
@@ -27,7 +30,7 @@ const Channels = ({ props }) => {
                 return (<NotFoundPage />)
         }
     }
-    
+
     //TODO: add pendingList, setPendingList into FriendContext.Provder value
     const [friendList, setFriendList] = useState(null); const [serverList, setServerList] = useState(null); //array of objects
     const [loadedDMs, setLoadedDMs] = useState([]); const [loadedServers, setLoadedServers] = useState([]); const [loadedChannels, setLoadedChannels] = useState([]) //array of ids
@@ -37,23 +40,31 @@ const Channels = ({ props }) => {
     const [msgLoading, setMsgLoading] = useState(true); const [sidebarLoading, setSidebarLoading] = useState(true); const [membersLoading, setMembersLoading] = useState(true);
     const [memberListOpen, setMemberListOpen] = useState(true);
     const [sessionTempLinks, setSessionTempLinks] = useState([]);
-    UseSocketSetup(setFriendList, setServerList, setMessages, setMemberList, setChannels, setLoadedServers, setUsersLoaded, setSessionTempLinks);
+
+    const { user } = useContext(AccountContext)
+    const [socket, setSocket] = useState(() => socketConn(user))
+    useEffect(() => {
+        setSocket(() => socketConn(user));
+    },[ user.loggedIn, user.userid, user.token ])
+    UseSocketSetup(setFriendList, setServerList, setMessages, setMemberList, setChannels, setLoadedServers, setUsersLoaded, setSessionTempLinks, socket);
     return (
         <LoadingContext.Provider value={{ msgLoading, setMsgLoading, sidebarLoading, setSidebarLoading, membersLoading, setMembersLoading }} >
-            <FriendContext.Provider value={{ friendList, setFriendList }}>
-                <ServerContext.Provider value={{ serverList, setServerList, loadedServers, setLoadedServers, loadedChannels, setLoadedChannels, channels, setChannels }} >
-                    <MemberContext.Provider value={{ memberList, setMemberList, memberListOpen, setMemberListOpen, sessionTempLinks, setSessionTempLinks }}>
-                        <div className="flex h-screen w-screen">
-                            <ServerSideNavBar props={{ selectedPath: curPath, setSelectedPath: setCurPath }} />
-                            <MessagesContext.Provider value={{ messages, setMessages, loadedDMs, setLoadedDMs, usersLoaded, setUsersLoaded }}>
-                                <div className="grow">
-                                    {pageView()}
-                                </div>
-                            </MessagesContext.Provider>
-                        </div>
-                    </MemberContext.Provider>
-                </ServerContext.Provider>
-            </FriendContext.Provider>
+            <SocketContext.Provider value={{ socket }}>
+                <FriendContext.Provider value={{ friendList, setFriendList }}>
+                    <ServerContext.Provider value={{ serverList, setServerList, loadedServers, setLoadedServers, loadedChannels, setLoadedChannels, channels, setChannels }} >
+                        <MemberContext.Provider value={{ memberList, setMemberList, memberListOpen, setMemberListOpen, sessionTempLinks, setSessionTempLinks }}>
+                            <div className="flex h-screen w-screen">
+                                <ServerSideNavBar props={{ selectedPath: curPath, setSelectedPath: setCurPath }} />
+                                <MessagesContext.Provider value={{ messages, setMessages, loadedDMs, setLoadedDMs, usersLoaded, setUsersLoaded }}>
+                                    <div className="grow">
+                                        {pageView()}
+                                    </div>
+                                </MessagesContext.Provider>
+                            </div>
+                        </MemberContext.Provider>
+                    </ServerContext.Provider>
+                </FriendContext.Provider>
+            </SocketContext.Provider>
         </LoadingContext.Provider>
     )
 }

@@ -1,11 +1,10 @@
 import { useContext, useEffect } from 'react'
-import socket from 'src/socket'
 import { AccountContext } from 'src/components/auth/UserContext';
 import { useNavigate } from 'react-router-dom';
 import base64ToURL from 'src/base64ToURL';
 
-const UseSocketSetup = (setFriendList, setServerList, setMessages, setMemberList, setChannels, 
-    setLoadedServers, setUsersLoaded, setSessionTempLinks) => {
+const UseSocketSetup = (setFriendList, setServerList, setMessages, setMemberList, setChannels,
+    setLoadedServers, setUsersLoaded, setSessionTempLinks, socket) => {
     const { user, setUser } = useContext(AccountContext);
 
     const navigate = useNavigate();
@@ -30,9 +29,6 @@ const UseSocketSetup = (setFriendList, setServerList, setMessages, setMemberList
     useEffect(() => {
         //maybe make loading then make initialize send a callback for loading
         if (socket.connected) disconnectedAll();
-        if (!user.profile || user.profile.length > 150) {
-            console.log("user profile is not loading!")
-        }
         socket.connect();
         socket.on("disconnecting", () => {
             console.log("disconnecting")
@@ -95,9 +91,11 @@ const UseSocketSetup = (setFriendList, setServerList, setMessages, setMemberList
             })
             setUsersLoaded(prev => {
                 if (prev.findIndex(item => item.userid === author.userid) === -1) {
-                    const tempBlobURL = URL.createObjectURL(new Blob([author.profile], { type: 'image/png' }));
-                    author.profile = tempBlobURL;
-                    setSessionTempLinks(prev => [tempBlobURL, ...prev]);
+                    if (author.profile) {
+                        const tempBlobURL = URL.createObjectURL(new Blob([author.profile], { type: 'image/png' }));
+                        author.profile = tempBlobURL;
+                        setSessionTempLinks(prev => [tempBlobURL, ...prev]);
+                    }
                     return [author, ...prev];
                 }
                 return prev;
@@ -134,7 +132,7 @@ const UseSocketSetup = (setFriendList, setServerList, setMessages, setMemberList
         socket.on("joined_server", (targetUser, server) => {
             if (targetUser.userid === user.userid) {
                 if (server.server_icon) {
-                    console.log("blob:",server.server_icon)
+                    console.log("blob:", server.server_icon)
                     const tempBlobURL = URL.createObjectURL(new Blob([server.server_icon], { type: 'image/png' }));
                     server.server_icon = tempBlobURL;
                     setSessionTempLinks(prev => [tempBlobURL, ...prev]);
@@ -142,12 +140,17 @@ const UseSocketSetup = (setFriendList, setServerList, setMessages, setMemberList
                 setServerList(prev => [...prev, server]);
                 navigate(`/channels/server/${server.server_id}`)
             } else {
-                if (targetUser.profile) targetUser.profile = base64ToURL(targetUser.profile);
+                if (targetUser.profile) {
+                    targetUser.profile = base64ToURL(targetUser.profile);
+                    setSessionTempLinks(prev => [targetUser.profile, ...prev]);
+
+                }
 
                 //console.log("NEW MEMBER JOINED!", targetUser);
                 setLoadedServers(prev => {
                     if (prev.length > 0 && prev[0] === server.server_id) {
                         setMemberList(prev => [...prev, targetUser]);
+                        
                     }
                     return prev;
                 })
@@ -222,7 +225,7 @@ const UseSocketSetup = (setFriendList, setServerList, setMessages, setMemberList
         return () => {
             disconnectedAll();
         };
-    }, [])
+    }, [socket])
 };
 
 export default UseSocketSetup

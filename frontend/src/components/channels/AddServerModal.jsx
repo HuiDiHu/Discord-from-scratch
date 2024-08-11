@@ -1,14 +1,14 @@
 import React, { useContext, useState } from 'react'
 import axios from 'axios';
-import socket from 'src/socket'
 import { IoMdClose } from "react-icons/io";
-import { ServerContext, LoadingContext } from 'src/pages/Channels'
+import { ServerContext, SocketContext } from 'src/pages/Channels'
 import { AccountContext } from 'src/components/auth/UserContext'
 import { useNavigate } from 'react-router-dom';
 
 const AddServerModal = ({ props }) => {
     const { user } = useContext(AccountContext);
     const { setServerList } = useContext(ServerContext);
+    const { socket } = useContext(SocketContext)
 
     const [serverName, setServerName] = useState(`${user.username}'s server`);
     const [serverNameErrMsg, setServerNameErrMsg] = useState("");
@@ -23,7 +23,9 @@ const AddServerModal = ({ props }) => {
         axios
             .create({
                 baseURL: import.meta.env.VITE_IS_DEV ? import.meta.env.VITE_SERVER_DEV_URL : import.meta.env.VITE_SERVER_URL,
-                withCredentials: true
+                headers: {
+                    'Authorization': `Bearer ${user.token}`
+                }
             })
             .post('/api/v1/servers/create', { server_name: serverName })
             .then((res) => {
@@ -43,7 +45,9 @@ const AddServerModal = ({ props }) => {
         axios
             .create({
                 baseURL: import.meta.env.VITE_IS_DEV ? import.meta.env.VITE_SERVER_DEV_URL : import.meta.env.VITE_SERVER_URL,
-                withCredentials: true
+                headers: {
+                    'Authorization': `Bearer ${user.token}`
+                }
             })
             .put(`/api/v1/servers/join/${inviteToken}`)
             .then((res) => {

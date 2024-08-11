@@ -29,17 +29,21 @@ const Login = () => {
         axios
             .create({
                 baseURL: import.meta.env.VITE_IS_DEV ? import.meta.env.VITE_SERVER_DEV_URL : import.meta.env.VITE_SERVER_URL,
-                withCredentials: true
             })
             .post('/api/v1/auth/login', { email, password })
             .then((res) => {
                 if (res.data.profile) res.data.profile = base64ToURL(res.data.profile);
                 setUser({ ...res.data })
                 console.log("logged in", { ...res.data })
+                localStorage.setItem("token", res.data.token);
                 navigate('/channels/@me')
             })
             .catch((error) => {
-                setEmailErrMsg(error.response.data.emailErrMsg || "")
+                if (!error.response || !error.response.data || !error.response.data.emailErrMsg) {
+                    setEmailErrMsg("An unknown error has occured. Please try again")
+                } else {
+                    setEmailErrMsg(error.response.data.emailErrMsg)
+                }
                 setPasswordErrMsg(" ")
             })
 

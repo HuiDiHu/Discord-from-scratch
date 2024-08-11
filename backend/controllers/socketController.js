@@ -1,13 +1,21 @@
+
+const { getAuthor } = require('../controllers/user');
+const { jwtVerify } = require('./jwt/jwtAuth');
 const { BadRequestError } = require('../errors')
 const redisClient = require('../redis')
 const pool = require('../db/connect')
 
 const authorizeUser = (socket, next) => {
-    if (!socket.request.session || !socket.request.session.user) {
-        next(new BadRequestError("Not Authorized!"))
-    } else {
-        next()
-    }
+    const token = socket.handshake.auth.token;
+    jwtVerify(token, process.env.JWT_SECRET)
+        .then(decoded => {
+            socket.user = { ...decoded };
+            next();
+        })
+        .catch(error => {
+            //console.log(error);
+            next(new BadRequestError("Not Authorized!"));
+        })
 };
 
 const alertAllServerMembers = (socket, serverList, loggingOn) => {
@@ -36,13 +44,21 @@ const getServerList = async (socket, includeIcon) => {
 }
 
 const initializeUser = async (socket) => {
-    socket.user = { ...socket.request.session.user };
     socket.join(socket.user.userid)
+    let userProfilePicture = await pool.query(
+        "SELECT profilePicture FROM USERS WHERE userid = $1",
+        [socket.user.userid]
+    )
+    if (userProfilePicture.rowCount === 0) {
+        userProfilePicture = "";
+    } else {
+       userProfilePicture = userProfilePicture.rows[0].profilepicture ? userProfilePicture.rows[0].profilepicture.toString('base64') : "";
+    }
     await redisClient.hset(
         `user:${socket.user.userid}`,
         'userid', socket.user.userid,
         'username', socket.user.username,
-        'profile', socket.user.profile,
+        'profile', userProfilePicture,
         'connected', true
     )
     await redisClient.hset(
@@ -179,8 +195,6 @@ const getMembersList = async (socket, in_dm, in_channel) => {
     }
     return membersList;
 }
-
-const { getAuthor } = require('../controllers/user')
 
 const createMessage = async (socket, tempMessage) => {
     //console.log(tempMessage)

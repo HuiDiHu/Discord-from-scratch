@@ -35,7 +35,9 @@ const Channel = ({ props }) => {
         axios
             .create({
                 baseURL: import.meta.env.VITE_IS_DEV ? import.meta.env.VITE_SERVER_DEV_URL : import.meta.env.VITE_SERVER_URL,
-                withCredentials: true
+                headers: {
+                    'Authorization': `Bearer ${user.token}`
+                }
             })
             .post('/api/v1/user/multiple', { useridList: newUserIds })
             .then((res) => {
@@ -62,7 +64,9 @@ const Channel = ({ props }) => {
                 axios
                     .create({
                         baseURL: import.meta.env.VITE_IS_DEV ? import.meta.env.VITE_SERVER_DEV_URL : import.meta.env.VITE_SERVER_URL,
-                        withCredentials: true
+                        headers: {
+                            'Authorization': `Bearer ${user.token}`
+                        }
                     })
                     .get(`/api/v1/messages/channels/@me/${props.channelId}`)
                     .then((res) => {
@@ -74,10 +78,6 @@ const Channel = ({ props }) => {
                         })
                         setMessages(prev => [...uniqueMsgs, ...prev])
                         if (usersLoaded.findIndex(item => item.userid === user.userid) === -1) {
-                            /*if (!user.profile.startsWith("blob:")) {
-                                console.log("NOT BLOB: user")
-                                user.profile = base64ToURL(user.profile);
-                            }*/
                             setUsersLoaded(prev => [user, ...prev]);
                         }
                         if (usersLoaded.findIndex(item => item.userid === props.friend.userid) === -1) {
@@ -93,7 +93,9 @@ const Channel = ({ props }) => {
                 axios
                     .create({
                         baseURL: import.meta.env.VITE_IS_DEV ? import.meta.env.VITE_SERVER_DEV_URL : import.meta.env.VITE_SERVER_URL,
-                        withCredentials: true
+                        headers: {
+                            'Authorization': `Bearer ${user.token}`
+                        }
                     })
                     .get(`/api/v1/messages/channels/${props.channelId}`)
                     .then((res) => {

@@ -25,13 +25,13 @@ const getMultipleUsers = async (req, res) => {
 }
 
 const deleteFriend = async (req, res) => {
-    if (!req.session.user || !req.session.user.userid) throw new UnauthenticatedError('You must log in before accessing channels');
+    if (!req.user || !req.user.userid) throw new UnauthenticatedError('You must log in before accessing channels');
 
     const {
         params: { id: friend_id_dm_id }
     } = req;
 
-    const removed = await redisClient.lrem(`friends:${req.session.user.userid}`, 1, friend_id_dm_id);
+    const removed = await redisClient.lrem(`friends:${req.user.userid}`, 1, friend_id_dm_id);
     if (removed === 0) throw new BadRequestError(`A friend with an <userid>.<dm_id> of "${friend_id_dm_id}" does not exist within your friendlist.`);
     res.status(StatusCodes.OK).send({ friend_id: friend_id_dm_id.split('.')[0] })
 }
@@ -41,8 +41,8 @@ const uploadProfilePicture = async (req, res) => {
         params: { id: userid }
     } = req;
 
-    if (!req.session.user || !req.session.user.userid || !userid) throw new UnauthenticatedError('You must log in before accessing channels');
-    if (userid !== req.session.user.userid) throw new UnauthorizedError("You are not authorized to do this action.")
+    if (!req.user || !req.user.userid || !userid) throw new UnauthenticatedError('You must log in before accessing channels');
+    if (userid !== req.user.userid) throw new UnauthorizedError("You are not authorized to do this action.")
     
     const image = req.file;
     if (!image) throw new UnprocessableEntityError('No image uploaded.');
@@ -58,7 +58,6 @@ const uploadProfilePicture = async (req, res) => {
             'profile', buffer.toString('base64')
         )
     ]);
-    req.session.user.profile = buffer.toString('base64');
 
     res.status(StatusCodes.OK).send(buffer)
 }

@@ -1,8 +1,10 @@
 const { StatusCodes } = require('http-status-codes')
-const Yup = require('yup')
 const pool = require('../db/connect')
+const jwt = require("jsonwebtoken")
 const bcrypt = require('bcryptjs')
 const { v4: uuidv4 } = require('uuid')
+const { jwtSign, jwtVerify, getJwt } = require('./jwt/jwtAuth')
+const redisClient = require('../redis')
 
 const register = async (req, res) => {
     const { email, username, password } = req.body;
@@ -17,19 +19,30 @@ const register = async (req, res) => {
         const user = await pool.query(
             "INSERT INTO USERS(username, email, passhash, userid) values($1,$2,$3,$4) RETURNING id, username, email, userid, profilePicture",
             [username, email, passhash, uuidv4()]
-        )
-        //stores the session data which will persist
-        req.session.user = {
+        );
+        const userData = {
             id: user.rows[0].id,
-            username, 
+            username: user.rows[0].username,
             email,
             profile: user.rows[0].profilepicture ? user.rows[0].profilepicture.toString('base64') : "",
             userid: user.rows[0].userid
         }
-        res.status(StatusCodes.CREATED).json({
-            loggedIn: true,
-            ...req.session.user
-        })
+        const {profile, ...userDataWithoutProfile} = userData;
+        jwtSign(
+            {
+                ...userDataWithoutProfile
+            },
+            process.env.JWT_SECRET,
+            { expiresIn: "14d" }
+        ).then(token => {
+            res.status(StatusCodes.OK).json({ loggedIn: true, ...userData, token })
+        }).catch(error => {
+            console.log(error);
+            res.status(StatusCodes.OK).json({
+                loggedIn: false,
+                status: "Something went wrong, please try again later."
+            })
+        });
     } else {
         res.status(StatusCodes.BAD_REQUEST).json({
             loggedIn: false,
@@ -48,17 +61,29 @@ const login = async (req, res) => {
     if (user.rowCount > 0) {
         const isSamePassword = await bcrypt.compare(password, user.rows[0].passhash)
         if (isSamePassword) {
-            req.session.user = {
+            const userData = {
                 id: user.rows[0].id,
                 username: user.rows[0].username,
                 email,
                 profile: user.rows[0].profilepicture ? user.rows[0].profilepicture.toString('base64') : "",
                 userid: user.rows[0].userid
             }
-            res.status(StatusCodes.OK).json({
-                loggedIn: true,
-                ...req.session.user
-            })
+            const {profile, ...userDataWithoutProfile} = userData;
+            jwtSign(
+                {
+                    ...userDataWithoutProfile
+                },
+                process.env.JWT_SECRET,
+                { expiresIn: "14d" }
+            ).then(token => {
+                res.status(StatusCodes.OK).json({ loggedIn: true, ...userData , token })
+            }).catch(error => {
+                console.log(error);
+                res.status(StatusCodes.OK).json({
+                    loggedIn: false,
+                    status: "Something went wrong, please try again later."
+                })
+            });
         } else {
             res.status(StatusCodes.BAD_REQUEST).json({
                 loggedIn: false,
@@ -74,11 +99,23 @@ const login = async (req, res) => {
 }
 
 const verifyLogin = async (req, res) => {
-    if (req.session.user && req.session.user.userid) {
-        res.status(StatusCodes.OK).json({ loggedIn: true, ...req.session.user })
-    } else {
-        res.status(StatusCodes.OK).json({ loggedIn: false })
+    const token = getJwt(req);
+    if (!token || token === 'null') {
+        res.status(StatusCodes.OK).json({ loggedIn: false });
+        return;
     }
+    jwtVerify(token, process.env.JWT_SECRET)
+        .then(async (decoded) => {
+            const profile_picture = await redisClient.hget(
+                `user:${decoded.userid}`,
+                'profile'
+            )
+            res.status(StatusCodes.OK).json({ loggedIn: true, ...decoded, profile: profile_picture, token });
+        })
+        .catch(error => {
+            //console.log(error)
+            res.status(StatusCodes.OK).json({ loggedIn: false });
+        })
 }
 
 module.exports = {

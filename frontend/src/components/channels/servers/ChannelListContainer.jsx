@@ -1,10 +1,9 @@
 import axios from 'axios'
 import React, { useContext, useRef, useState } from 'react'
-import { ServerContext, LoadingContext } from 'src/pages/Channels'
+import { ServerContext, LoadingContext, SocketContext } from 'src/pages/Channels'
 import { AccountContext } from 'src/components/auth/UserContext'
 import { PiDiamondsFourDuotone } from "react-icons/pi";
 import { MdGroupAdd } from "react-icons/md";
-import socket from 'src/socket';
 import GenerateTokenModal from './GenerateTokenModal';
 import { IoChevronDown } from "react-icons/io5";
 import { IoClose } from "react-icons/io5";
@@ -20,6 +19,7 @@ const ChannelListContainer = ({ props }) => {
   const { channels, setChannels } = useContext(ServerContext)
   const { sidebarLoading } = useContext(LoadingContext)
   const { user } = useContext(AccountContext)
+  const { socket } = useContext(SocketContext)
 
   const [addingChannel, setAddingChannel] = useState(false);
   const [generateTokenModalOpen, setGenerateTokenModalOpen] = useState(false);
@@ -36,7 +36,9 @@ const ChannelListContainer = ({ props }) => {
     axios
       .create({
         baseURL: import.meta.env.VITE_IS_DEV ? import.meta.env.VITE_SERVER_DEV_URL : import.meta.env.VITE_SERVER_URL,
-        withCredentials: true
+        headers: {
+          'Authorization': `Bearer ${user.token}`
+        }
       })
       .post('/api/v1/channels/add', { server_id: props.server.server_id, channel_name: newChannelName })
       .then((res) => {

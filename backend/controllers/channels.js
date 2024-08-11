@@ -4,7 +4,7 @@ const redisClient = require('../redis')
 const { UnauthenticatedError, UnprocessableEntityError } = require('../errors')
 
 const getAllChannelsAndMembersWithServerId = async (req, res) => {
-    if (!req.session.user || !req.session.user.userid) throw new UnauthenticatedError('You must log in before accessing channels');
+    if (!req.user || !req.user.userid) throw new UnauthenticatedError('You must log in before accessing channels');
     const {
         params: { id: server_id }
     } = req;

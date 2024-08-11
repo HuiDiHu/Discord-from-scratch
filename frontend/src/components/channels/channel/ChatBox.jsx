@@ -1,13 +1,14 @@
 import React, { useContext, useRef, useState } from 'react'
 import { AccountContext } from 'src/components/auth/UserContext';
-import socket from 'src/socket'
 import { BsPlusCircleFill } from "react-icons/bs";
 import { HiPaperAirplane } from "react-icons/hi2";
+import { SocketContext } from 'src/pages/Channels';
 
 
 const ChatBox = ({ props }) => {
     const [message, setMessage] = useState("")
     const { user } = useContext(AccountContext)
+    const { socket } = useContext(SocketContext)
 
     const textRef = useRef()
     const handleSubmit = (e) => {

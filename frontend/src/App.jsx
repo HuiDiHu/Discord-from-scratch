@@ -1,9 +1,8 @@
 import UserContext from 'src/components/auth/UserContext';
 import Views from './components/Views';
-import socket from './socket';
+//removed socket here
 
 function App() {
-  socket.connect()
   return (
     <UserContext>
       <Views />

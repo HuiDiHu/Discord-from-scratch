@@ -1,10 +1,13 @@
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { IoMdClose } from "react-icons/io";
 import axios from 'axios';
 import { useParams } from 'react-router-dom';
+import { AccountContext } from 'src/components/auth/UserContext';
 
 
 const GenerateTokenModal = ({ props }) => {
+    const { user } = useContext(AccountContext)
+
     const [token, setToken] = useState("")
     const [errMsg, setErrMsg] = useState("")
     const [copied, setCopied] = useState(false);
@@ -13,7 +16,9 @@ const GenerateTokenModal = ({ props }) => {
         axios
             .create({
                 baseURL: import.meta.env.VITE_IS_DEV ? import.meta.env.VITE_SERVER_DEV_URL : import.meta.env.VITE_SERVER_URL,
-                withCredentials: true
+                headers: {
+                    'Authorization': `Bearer ${user.token}`
+                }
             })
             .get(`/api/v1/servers/token/${server_id}`)
             .then((res) => {

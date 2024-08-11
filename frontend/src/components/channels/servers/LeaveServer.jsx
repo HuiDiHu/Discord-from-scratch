@@ -2,16 +2,19 @@ import { GiEntryDoor } from "react-icons/gi";
 import axios from "axios";
 import { AccountContext } from 'src/components/auth/UserContext'
 import { useContext } from "react";
-import socket from 'src/socket'
+import { SocketContext } from "src/pages/Channels";
 
 const LeaveServer = ({ server_id, setServerOptionsOpen }) => {
     const { user } = useContext(AccountContext)
+    const { socket } = useContext(SocketContext)
 
     const handleLeaveServer = () => {
         axios
             .create({
                 baseURL: import.meta.env.VITE_IS_DEV ? import.meta.env.VITE_SERVER_DEV_URL : import.meta.env.VITE_SERVER_URL,
-                withCredentials: true
+                headers: {
+                    'Authorization': `Bearer ${user.token}`
+                }
             })
             .put(`/api/v1/servers/leave/${server_id}`)
             .then((res) => {

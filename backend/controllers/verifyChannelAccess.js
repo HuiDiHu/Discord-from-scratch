@@ -3,7 +3,7 @@ const { StatusCodes } = require('http-status-codes');
 const { NotFoundError, UnauthorizedError } = require('../errors');
 
 const verifyDMAccess = async (req, res, next) => {
-    if (!req.session.user) {
+    if (!req.user) {
         throw new UnauthorizedError("You are not authorized to access this channel.");
     }
     const {
@@ -15,7 +15,7 @@ const verifyDMAccess = async (req, res, next) => {
         [Number(channelId)]
     )
     if (membersQuery.rowCount > 0) {
-        if (membersQuery.rows[0].members.indexOf(req.session.user.userid) !== -1) {
+        if (membersQuery.rows[0].members.indexOf(req.user.userid) !== -1) {
             next();
         } else {
             throw new UnauthorizedError("You are not authorized to access this channel.");
@@ -26,7 +26,7 @@ const verifyDMAccess = async (req, res, next) => {
 }
 
 const verifyServerAccess = async (req, res, next) => {
-    if (!req.session.user) {
+    if (!req.user) {
         throw new UnauthorizedError("You are not authorized to access this channel.");
     }
     const {
@@ -47,7 +47,7 @@ const verifyServerAccess = async (req, res, next) => {
     )).rows[0].server_members || [];
 
     if (members.length > 0) {
-        if (members.indexOf(req.session.user.userid) !== -1) {
+        if (members.indexOf(req.user.userid) !== -1) {
             next();
         } else {
             throw new UnauthorizedError("You are not authorized to access this channel.");
@@ -58,7 +58,7 @@ const verifyServerAccess = async (req, res, next) => {
 }
 
 const verifyServerOwnership = async (req, res, next) => {
-    if (!req.session.user) {
+    if (!req.user) {
         throw new UnauthorizedError("You are not authorized to access this server.");
     }
     const server_id = req.body.server_id || req.params.id;
@@ -71,7 +71,7 @@ const verifyServerOwnership = async (req, res, next) => {
 
     if (ownerQuery.rows.length > 0 && ownerQuery.rows[0].server_owner) {
         const server_owner = ownerQuery.rows[0].server_owner;
-        if (server_owner === req.session.user.userid) {
+        if (server_owner === req.user.userid) {
             next();
         } else {
             throw new UnauthorizedError("You are not authorized to do this action.")

@@ -1,11 +1,14 @@
 import React, { useContext, useState } from 'react'
 import axios from "axios";
-import socket from 'src/socket'
-import { ServerContext } from 'src/pages/Channels'
+import { ServerContext, SocketContext } from 'src/pages/Channels'
 import { useNavigate } from 'react-router-dom';
+import { AccountContext } from 'src/components/auth/UserContext';
 
 const DeleteServerModal = ({ setDeleteServerModal, server_id, server_name }) => {
     const { setServerList } = useContext(ServerContext)
+    const { socket } = useContext(SocketContext)
+    const { user } = useContext(AccountContext)
+
     const [verifyServerNameInput, setVerifyServerNameInput] = useState("");
     const [errMsg, setErrMsg] = useState("")
 
@@ -23,7 +26,9 @@ const DeleteServerModal = ({ setDeleteServerModal, server_id, server_name }) => 
         axios
             .create({
                 baseURL: import.meta.env.VITE_IS_DEV ? import.meta.env.VITE_SERVER_DEV_URL : import.meta.env.VITE_SERVER_URL,
-                withCredentials: true
+                headers: {
+                    'Authorization': `Bearer ${user.token}`
+                }
             })
             .delete(`/api/v1/servers/delete/${server_id}`)
             .then(() => {

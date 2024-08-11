@@ -1,15 +1,15 @@
 import React, { useContext, useEffect, useRef, useState } from 'react'
 import { AccountContext } from 'src/components/auth/UserContext'
-import { MessagesContext } from 'src/pages/Channels';
-import socket from 'src/socket'
+import { MessagesContext, SocketContext } from 'src/pages/Channels';
 
 
 const EditMessageContainer = ({ props }) => {
     const [message, setMessage] = useState("")
-    const textRef = useRef();
     const { user } = useContext(AccountContext)
     const { setMessages } = useContext(MessagesContext)
-
+    const { socket } = useContext(SocketContext)
+    
+    const textRef = useRef();
     const editRef = useRef();
 
     const handleSubmit = (e) => {

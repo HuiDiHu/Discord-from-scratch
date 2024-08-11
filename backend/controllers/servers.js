@@ -4,16 +4,16 @@ const redisClient = require('../redis')
 const { UnauthenticatedError, UnprocessableEntityError, BadRequestError, UnauthorizedError, NotFoundError } = require('../errors')
 
 const createSingleServer = async (req, res) => {
-    if (!req.session.user || !req.session.user.userid) throw new UnauthenticatedError('You must log in first before creating a server.');
+    if (!req.user || !req.user.userid) throw new UnauthenticatedError('You must log in first before creating a server.');
     const { server_name } = req.body;
     if (!server_name) throw new UnprocessableEntityError('Server name cannot be empty!');
     if (server_name.length > 50) throw new UnprocessableEntityError('Server name too long!');
 
     const server = (await pool.query(
         "INSERT INTO SERVERS(server_name, server_owner, server_members) values($1,$2,$3) RETURNING *",
-        [server_name, req.session.user.userid, [req.session.user.userid]]
+        [server_name, req.user.userid, [req.user.userid]]
     )).rows[0];
-    await redisClient.lpush(`servers:${req.session.user.userid}`, server.server_id);
+    await redisClient.lpush(`servers:${req.user.userid}`, server.server_id);
 
     await pool.query(
         "INSERT INTO CHANNELS(in_server, channel_name) values($1,$2)",
@@ -24,7 +24,7 @@ const createSingleServer = async (req, res) => {
 }
 
 const getServerMembers = async (req, res) => {
-    if (!req.session.user || !req.session.user.userid) throw new UnauthenticatedError('You must log in first before creating a server.');
+    if (!req.user || !req.user.userid) throw new UnauthenticatedError('You must log in first before creating a server.');
     const {
         params: { id: server_id }
     } = req;
@@ -90,7 +90,7 @@ const generateInviteToken = async (req, res) => {
 }
 
 const joinServer = async (req, res) => {
-    if (!req.session.user || !req.session.user.userid) throw new UnauthenticatedError('You must log in before accessing channels');
+    if (!req.user || !req.user.userid) throw new UnauthenticatedError('You must log in before accessing channels');
     const {
         params: { id: token }
     } = req;
@@ -118,20 +118,20 @@ const joinServer = async (req, res) => {
     if (server.length === 0) throw new NotFoundError("Server not found.")
     server = server[0];
 
-    if (server.server_members.find(item => item === req.session.user.userid)) throw new UnauthorizedError("You are already a member of this server.");
+    if (server.server_members.find(item => item === req.user.userid)) throw new UnauthorizedError("You are already a member of this server.");
 
     await Promise.all([
         pool.query(
             `UPDATE SERVERS SET server_members = ARRAY_APPEND(server_members, $1) WHERE server_id = $2`,
-            [req.session.user.userid, tokenQuery[0].references_server]
+            [req.user.userid, tokenQuery[0].references_server]
         ),
-        redisClient.lpush(`servers:${req.session.user.userid}`, tokenQuery[0].references_server)
+        redisClient.lpush(`servers:${req.user.userid}`, tokenQuery[0].references_server)
     ])
     res.status(StatusCodes.OK).json({ server })
 }
 
 const leaveServer = async (req, res) => {
-    if (!req.session.user || !req.session.user.userid) throw new UnauthenticatedError('You must log in before accessing channels');
+    if (!req.user || !req.user.userid) throw new UnauthenticatedError('You must log in before accessing channels');
     const {
         params: { id: server_id }
     } = req;
@@ -143,14 +143,14 @@ const leaveServer = async (req, res) => {
     if (server.length === 0) throw new NotFoundError("Server not found.")
     server = server[0];
 
-    if (!server.server_members.find(item => item === req.session.user.userid)) throw new UnauthorizedError("You are not a member of this server.");
+    if (!server.server_members.find(item => item === req.user.userid)) throw new UnauthorizedError("You are not a member of this server.");
 
     await Promise.all([
         pool.query(
             `UPDATE SERVERS SET server_members = ARRAY_REMOVE(server_members, $1) WHERE server_id = $2`,
-            [req.session.user.userid, Number(server_id)]
+            [req.user.userid, Number(server_id)]
         ),
-        redisClient.lrem(`servers:${req.session.user.userid}`, 1, Number(server_id))
+        redisClient.lrem(`servers:${req.user.userid}`, 1, Number(server_id))
     ])
 
 
@@ -182,7 +182,7 @@ const deleteServerWithId = async (req, res) => {
             "DELETE FROM SERVERS WHERE server_id = $1",
             [Number(server_id)]
         ),
-        redisClient.lrem(`servers:${req.session.user.userid}`, 1, Number(server_id))
+        redisClient.lrem(`servers:${req.user.userid}`, 1, Number(server_id))
     ])
     res.status(StatusCodes.OK).send(`Delete Server With Id: ${server_id}`);
 }

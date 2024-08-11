@@ -1,19 +1,20 @@
 import axios from "axios";
 import { useContext } from "react";
-import { AccountContext } from 'src/components/auth/UserContext'
 import { FriendContext } from "src/pages/Channels";
-import socket from 'src/socket'
+import { AccountContext } from "src/components/auth/UserContext";
 
 const DeleteFriendModal = ({ props }) => {
 
-    const { user } = useContext(AccountContext);
     const { setFriendList } = useContext(FriendContext)
+    const { user } = useContext(AccountContext)
 
     const handleDeleteFriend = () => {
         axios
             .create({
                 baseURL: import.meta.env.VITE_IS_DEV ? import.meta.env.VITE_SERVER_DEV_URL : import.meta.env.VITE_SERVER_URL,
-                withCredentials: true
+                headers: {
+                    'Authorization': `Bearer ${user.token}`
+                }
             })
             .delete(`/api/v1/user/unfriend/${props.friend_id}.${props.dm_id}`)
             .then((res) => {

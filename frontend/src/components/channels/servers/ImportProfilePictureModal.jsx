@@ -1,16 +1,17 @@
 import React, { useContext, useState } from "react";
 import axios from "axios";
-import socket from 'src/socket'
-import { ServerContext, MemberContext, MessagesContext } from "src/pages/Channels";
+import { ServerContext, MemberContext, MessagesContext, SocketContext } from "src/pages/Channels";
 import { AccountContext } from 'src/components/auth/UserContext'
 
 const ImportProfilePictureModal = ({ ID, setImportProfilePictureModalOpen, uploadTo, profilePicture, server_icon }) => {
-    const [selectedImage, setSelectedImage] = useState(null);
-    const [errMsg, setErrMsg] = useState("")
     const { setServerList } = useContext(ServerContext)
     const { setSessionTempLinks } = useContext(MemberContext)
-    const { setUser } = useContext(AccountContext)
+    const { user, setUser } = useContext(AccountContext)
     const { setUsersLoaded } = useContext(MessagesContext)
+    const { socket } = useContext(SocketContext)
+    
+    const [selectedImage, setSelectedImage] = useState(null);
+    const [errMsg, setErrMsg] = useState("")
 
     const handleUploadImage = () => {
         if (selectedImage === null || selectedImage === undefined) {
@@ -24,9 +25,9 @@ const ImportProfilePictureModal = ({ ID, setImportProfilePictureModalOpen, uploa
             axios
                 .create({
                     baseURL: import.meta.env.VITE_IS_DEV ? import.meta.env.VITE_SERVER_DEV_URL : import.meta.env.VITE_SERVER_URL,
-                    withCredentials: true,
                     headers: {
                         'Content-Type': 'multipart/form-data',
+                        'Authorization': `Bearer ${user.token}`
                     },
                     responseType: 'arraybuffer'
                 })
@@ -56,9 +57,9 @@ const ImportProfilePictureModal = ({ ID, setImportProfilePictureModalOpen, uploa
             axios
                 .create({
                     baseURL: import.meta.env.VITE_IS_DEV ? import.meta.env.VITE_SERVER_DEV_URL : import.meta.env.VITE_SERVER_URL,
-                    withCredentials: true,
                     headers: {
                         'Content-Type': 'multipart/form-data',
+                        'Authorization': `Bearer ${user.token}`
                     },
                     responseType: 'arraybuffer'
                 })

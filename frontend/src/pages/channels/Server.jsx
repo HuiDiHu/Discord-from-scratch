@@ -6,6 +6,7 @@ import ChannelListContainer from 'src/components/channels/servers/ChannelListCon
 import Channel from 'src/components/channels/Channel'
 import ChannelSkeleton from 'src/components/skeleton/ChannelSkeleton'
 import base64ToURL from 'src/base64ToURL'
+import { AccountContext } from 'src/components/auth/UserContext'
 
 function generateRandomString(length) {
   const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
@@ -21,9 +22,10 @@ const Server = () => {
   const { id: server_id } = useParams();
   const { sidebarLoading, setSidebarLoading, membersLoading, setMembersLoading } = useContext(LoadingContext);
   const { channels, serverList, loadedServers, setLoadedServers, setChannels } = useContext(ServerContext);
-  const [serverOptionsOpen, setServerOptionsOpen] = useState(false);
   const { memberList, setMemberList } = useContext(MemberContext)
+  const { user } = useContext(AccountContext)
 
+  const [serverOptionsOpen, setServerOptionsOpen] = useState(false);
   const [selectedChannel, setSelectedChannel] = useState({ channel_id: null })
   const [server, setServer] = useState(null);
   const [skeletonSeed, setSkeletonSeed] = useState("default")
@@ -33,9 +35,9 @@ const Server = () => {
       if (item.profile) URL.revokeObjectURL(item.profile);
     })
     return newMemberList.map(member => {
-              if (member.profile) member.profile = base64ToURL(member.profile);
-              return member;
-            })
+      if (member.profile) member.profile = base64ToURL(member.profile);
+      return member;
+    })
   }
 
   const navigate = useNavigate();
@@ -46,12 +48,14 @@ const Server = () => {
         axios
           .create({
             baseURL: import.meta.env.VITE_IS_DEV ? import.meta.env.VITE_SERVER_DEV_URL : import.meta.env.VITE_SERVER_URL,
-            withCredentials: true
+            headers: {
+              'Authorization': `Bearer ${user.token}`
+            }
           })
           .get(`/api/v1/servers/members/${server_id}`)
           .then((res) => {
-              res.data.members = freeAndAllocateMembersProfilePicture(res.data.members);
-              setMemberList([...res.data.members]);
+            res.data.members = freeAndAllocateMembersProfilePicture(res.data.members);
+            setMemberList([...res.data.members]);
             setMembersLoading(false);
             return;
           })
@@ -65,7 +69,9 @@ const Server = () => {
         axios
           .create({
             baseURL: import.meta.env.VITE_IS_DEV ? import.meta.env.VITE_SERVER_DEV_URL : import.meta.env.VITE_SERVER_URL,
-            withCredentials: true
+            headers: {
+              'Authorization': `Bearer ${user.token}`
+            }
           })
           .get(`/api/v1/channels/server/${server_id}`)
           .then((res) => {
@@ -79,7 +85,7 @@ const Server = () => {
 
             res.data.members = freeAndAllocateMembersProfilePicture(res.data.members);
             setMemberList([...res.data.members]);
-            
+
             setLoadedServers(prev => [Number(server_id), ...prev]);
             setTimeout(() => { setSidebarLoading(false); }, 750)
             setMembersLoading(false);
