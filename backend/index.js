@@ -44,11 +44,14 @@ app.get('/', async (req, res) => {
     res.send("Hello World!")
 })
 
-app.use('/api/v1/auth', authRouter)
-app.use('/api/v1/messages', authenticateUser, messagesRouter)
-app.use('/api/v1/servers', authenticateUser, serversRouter)
-app.use('/api/v1/channels', authenticateUser, channelsRouter)
-app.use('/api/v1/user', authenticateUser, userRouter)
+app.use('/api/v1/auth', authRouter);
+app.use('/api/v1/messages', authenticateUser, messagesRouter);
+app.use('/api/v1/servers', authenticateUser, serversRouter);
+app.use('/api/v1/channels', authenticateUser, channelsRouter);
+app.use('/api/v1/user', authenticateUser, userRouter);
+
+//reverse proxy
+app.set("trust proxy", 1);
 
 app.use(notFoundMiddleware)
 app.use(errorHandlerMiddleware)
