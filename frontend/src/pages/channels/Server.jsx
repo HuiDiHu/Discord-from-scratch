@@ -87,7 +87,7 @@ const Server = () => {
             setMemberList([...res.data.members]);
 
             setLoadedServers(prev => [Number(server_id), ...prev]);
-            setTimeout(() => { setSidebarLoading(false); }, 750)
+            setTimeout(() => { setSidebarLoading(false); }, 300)
             setMembersLoading(false);
           })
           .catch((error) => {

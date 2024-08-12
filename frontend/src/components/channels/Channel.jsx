@@ -29,7 +29,7 @@ const Channel = ({ props }) => {
 
     const loadNewMessageUsers = (newUserIds) => {
         if (newUserIds.length === 0) {
-            setTimeout(() => { setMsgLoading(false); }, 500)
+            setTimeout(() => { setMsgLoading(false); }, 150)
             return;
         }
         axios
@@ -50,7 +50,7 @@ const Channel = ({ props }) => {
                 }
                 setSessionTempLinks(prev => [...tempBlobURLs, ...prev])
                 setUsersLoaded(prev => [...res.data, ...prev])
-                setTimeout(() => { setMsgLoading(false) }, 750);
+                setTimeout(() => { setMsgLoading(false) }, 300);
             })
             .catch((error) => {
                 console.log(error)
@@ -83,7 +83,7 @@ const Channel = ({ props }) => {
                         if (usersLoaded.findIndex(item => item.userid === props.friend.userid) === -1) {
                             setUsersLoaded(prev => [props.friend, ...prev]);
                         }
-                        setTimeout(() => { setMsgLoading(false); }, 750);
+                        setTimeout(() => { setMsgLoading(false); }, 300);
                     })
                     .catch((error) => {
                         console.log(error)
