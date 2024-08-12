@@ -35,7 +35,7 @@ const Channels = ({ props }) => {
 
     const navigate = useNavigate();
     useEffect(() => {
-        if (curPath !== path && curPath === '/@me') navigate('/channels/@me');
+        if (curPath !== path && curPath === '/@me' && !path.startsWith('/@me')) navigate('/channels/@me');
     },[curPath !== path])
 
     //TODO: add pendingList, setPendingList into FriendContext.Provder value

@@ -79,7 +79,7 @@ const initializeUser = async (socket) => {
     socket.emit("friends", friendList);
     socket.emit("servers", serverList);
 
-    console.log(socket.user.username, "logged ON")
+    //console.log(socket.user.username, "logged ON")
 
 };
 
@@ -150,7 +150,7 @@ const getFriendList = async (friendDMIdList) => {
 
 const onDisconnect = async (socket) => {
     if (!socket.user) return
-    console.log(socket.user.username, "logged off")
+    //console.log(socket.user.username, "logged off")
     await redisClient.hset(
         `user:${socket.user.userid}`,
         'connected', false

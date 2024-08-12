@@ -31,7 +31,7 @@ const UseSocketSetup = (setCurPath, setFriendList, setServerList, setMessages, s
         if (socket.connected) disconnectedAll();
         socket.connect();
         socket.on("disconnecting", () => {
-            console.log("disconnecting")
+            //console.log("disconnecting")
             if (user.profile && user.profile.startsWith("blob:")) URL.revokeObjectURL(user.profile)
             setSessionTempLinks(prev => {
                 prev.forEach(url => {
@@ -47,7 +47,7 @@ const UseSocketSetup = (setCurPath, setFriendList, setServerList, setMessages, s
             });
         })
         socket.on("friends", (friendList) => {
-            console.log("RECEIVED!")
+            //console.log("RECEIVED!")
             if (friendList === null || friendList === undefined) {
                 console.log("NULL friendlist")
                 setFriendList([]);
@@ -132,7 +132,7 @@ const UseSocketSetup = (setCurPath, setFriendList, setServerList, setMessages, s
         socket.on("joined_server", (targetUser, server) => {
             if (targetUser.userid === user.userid) {
                 if (server.server_icon) {
-                    console.log("blob:", server.server_icon)
+                    //console.log("blob:", server.server_icon)
                     const tempBlobURL = URL.createObjectURL(new Blob([server.server_icon], { type: 'image/png' }));
                     server.server_icon = tempBlobURL;
                     setSessionTempLinks(prev => [tempBlobURL, ...prev]);

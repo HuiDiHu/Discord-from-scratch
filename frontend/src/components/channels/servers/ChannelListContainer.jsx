@@ -50,7 +50,7 @@ const ChannelListContainer = ({ props }) => {
         alert(`${error.response.data.msg}. Popup to be implemented...`)
         console.log(error)
       })
-    console.log("Adding Channel!")
+    //console.log("Adding Channel!")
   }
 
   const inputRef = useRef();

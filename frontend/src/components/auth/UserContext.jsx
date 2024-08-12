@@ -26,7 +26,7 @@ const UserContext = ({ children }) => {
                     //decode base64 string into arraybuffer
                     if (res.data.profile && !res.data.profile.startsWith("blob:")) res.data.profile = base64ToURL(res.data.profile);
                     setUser({ ...res.data })
-                    console.log("logged in", { ...res.data })
+                    //console.log("logged in", { ...res.data })
                     if (!window.location.pathname.startsWith('/channels')) { navigate('/channels/@me') }
                 }
             })

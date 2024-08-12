@@ -121,13 +121,13 @@ const Channel = ({ props }) => {
             if (loadedDMs.indexOf(props.channelId) === -1) {
                 setMsgLoading(true);
             } else {
-                console.log("DM ALREADY LOADED")
+                //console.log("DM ALREADY LOADED")
             }
         } else if (props.channelType === 'channel') {
             if (loadedChannels.indexOf(props.channelId) === -1) {
                 setMsgLoading(true);
             } else {
-                console.log("CHANNEL ALREADY LOADED")
+                //console.log("CHANNEL ALREADY LOADED")
             }
         }
     }, [props.channelId, props.channelType])

@@ -42,7 +42,7 @@ const Signup = () => {
             .then((res) => {
                 if (res.data.profile) res.data.profile = base64ToURL(res.data.profile);
                 setUser({ ...res.data })
-                console.log("logged in", { ...res.data })
+                //console.log("logged in", { ...res.data })
                 localStorage.setItem("token", res.data.token);
                 navigate('/channels/@me')
             })

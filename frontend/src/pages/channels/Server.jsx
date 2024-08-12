@@ -113,10 +113,10 @@ const Server = () => {
       setLoadedServers(prev => [Number(server_id), ...prev.filter(item => item !== Number(server_id))])
       setSelectedChannel(channels.find(item => item.in_server === Number(server_id)) || {});
       setSidebarLoading(false);
-      console.log("SERVER ALREADY LOADED!")
+      //console.log("SERVER ALREADY LOADED!")
     } else {
       setSidebarLoading(true);
-      console.log("LOADING SERVER")
+      //console.log("LOADING SERVER")
     }
   }, [server_id])
 

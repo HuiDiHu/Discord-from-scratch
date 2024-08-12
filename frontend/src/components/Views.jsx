@@ -19,8 +19,6 @@ const Views = () => {
                 <Route path='/channels/@me/:id' element={<Channels props={{ page: "dm" }} />} />
                 <Route path='/channels/server/:id' element={<Channels props={{ page: "server" }} />} />
             </Route>
-
-
             <Route path='*' element={<NotFoundPage />} />
         </Routes>
     )
