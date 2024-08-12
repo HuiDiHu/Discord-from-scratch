@@ -26,7 +26,7 @@ const errorHandlerMiddleware = require('./middleware/error-handler.js');
 
 const io = new Server(server, {
     cors: {
-        origin: process.env.IS_DEV ? process.env.CLIENT_DEV_URL : process.env.CLIENT_URL,
+        origin: process.env.IS_DEV === 'true' ? process.env.CLIENT_DEV_URL : process.env.CLIENT_URL,
         credentials: true,
         transports: ['polling', 'websocket']
     }
@@ -35,7 +35,7 @@ const io = new Server(server, {
 app.use(helmet());
 app.use(express.json());
 app.use(cors({
-    origin: process.env.IS_DEV ? process.env.CLIENT_DEV_URL : process.env.CLIENT_URL,
+    origin: process.env.IS_DEV === 'true' ? process.env.CLIENT_DEV_URL : process.env.CLIENT_URL,
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     allowedHeaders: ['Content-Type', 'Authorization']
 }));

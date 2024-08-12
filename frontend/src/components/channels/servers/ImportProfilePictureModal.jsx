@@ -24,7 +24,7 @@ const ImportProfilePictureModal = ({ ID, setImportProfilePictureModalOpen, uploa
             formData.append('image', selectedImage);
             axios
                 .create({
-                    baseURL: import.meta.env.VITE_IS_DEV ? import.meta.env.VITE_SERVER_DEV_URL : import.meta.env.VITE_SERVER_URL,
+                    baseURL: import.meta.env.VITE_IS_DEV === 'true' ? import.meta.env.VITE_SERVER_DEV_URL : import.meta.env.VITE_SERVER_URL,
                     headers: {
                         'Content-Type': 'multipart/form-data',
                         'Authorization': `Bearer ${user.token}`
@@ -56,7 +56,7 @@ const ImportProfilePictureModal = ({ ID, setImportProfilePictureModalOpen, uploa
             formData.append('image', selectedImage);
             axios
                 .create({
-                    baseURL: import.meta.env.VITE_IS_DEV ? import.meta.env.VITE_SERVER_DEV_URL : import.meta.env.VITE_SERVER_URL,
+                    baseURL: import.meta.env.VITE_IS_DEV === 'true' ? import.meta.env.VITE_SERVER_DEV_URL : import.meta.env.VITE_SERVER_URL,
                     headers: {
                         'Content-Type': 'multipart/form-data',
                         'Authorization': `Bearer ${user.token}`

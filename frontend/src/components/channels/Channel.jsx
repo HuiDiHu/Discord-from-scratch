@@ -29,12 +29,12 @@ const Channel = ({ props }) => {
 
     const loadNewMessageUsers = (newUserIds) => {
         if (newUserIds.length === 0) {
-            setTimeout(() => { setMsgLoading(false); }, 500)
+            setTimeout(() => { setMsgLoading(false); }, 150)
             return;
         }
         axios
             .create({
-                baseURL: import.meta.env.VITE_IS_DEV ? import.meta.env.VITE_SERVER_DEV_URL : import.meta.env.VITE_SERVER_URL,
+                baseURL: import.meta.env.VITE_IS_DEV === 'true' ? import.meta.env.VITE_SERVER_DEV_URL : import.meta.env.VITE_SERVER_URL,
                 headers: {
                     'Authorization': `Bearer ${user.token}`
                 }
@@ -50,7 +50,7 @@ const Channel = ({ props }) => {
                 }
                 setSessionTempLinks(prev => [...tempBlobURLs, ...prev])
                 setUsersLoaded(prev => [...res.data, ...prev])
-                setTimeout(() => { setMsgLoading(false) }, 750);
+                setTimeout(() => { setMsgLoading(false) }, 300);
             })
             .catch((error) => {
                 console.log(error)
@@ -63,7 +63,7 @@ const Channel = ({ props }) => {
             if (props.channelType === 'dm') {
                 axios
                     .create({
-                        baseURL: import.meta.env.VITE_IS_DEV ? import.meta.env.VITE_SERVER_DEV_URL : import.meta.env.VITE_SERVER_URL,
+                        baseURL: import.meta.env.VITE_IS_DEV === 'true' ? import.meta.env.VITE_SERVER_DEV_URL : import.meta.env.VITE_SERVER_URL,
                         headers: {
                             'Authorization': `Bearer ${user.token}`
                         }
@@ -83,7 +83,7 @@ const Channel = ({ props }) => {
                         if (usersLoaded.findIndex(item => item.userid === props.friend.userid) === -1) {
                             setUsersLoaded(prev => [props.friend, ...prev]);
                         }
-                        setTimeout(() => { setMsgLoading(false); }, 750);
+                        setTimeout(() => { setMsgLoading(false); }, 300);
                     })
                     .catch((error) => {
                         console.log(error)
@@ -92,7 +92,7 @@ const Channel = ({ props }) => {
             } else if (props.channelType === 'channel') {
                 axios
                     .create({
-                        baseURL: import.meta.env.VITE_IS_DEV ? import.meta.env.VITE_SERVER_DEV_URL : import.meta.env.VITE_SERVER_URL,
+                        baseURL: import.meta.env.VITE_IS_DEV === 'true' ? import.meta.env.VITE_SERVER_DEV_URL : import.meta.env.VITE_SERVER_URL,
                         headers: {
                             'Authorization': `Bearer ${user.token}`
                         }
