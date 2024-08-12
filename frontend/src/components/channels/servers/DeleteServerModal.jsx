@@ -25,7 +25,7 @@ const DeleteServerModal = ({ setDeleteServerModal, server_id, server_name }) => 
         }
         axios
             .create({
-                baseURL: import.meta.env.VITE_IS_DEV ? import.meta.env.VITE_SERVER_DEV_URL : import.meta.env.VITE_SERVER_URL,
+                baseURL: import.meta.env.VITE_IS_DEV === 'true' ? import.meta.env.VITE_SERVER_DEV_URL : import.meta.env.VITE_SERVER_URL,
                 headers: {
                     'Authorization': `Bearer ${user.token}`
                 }
