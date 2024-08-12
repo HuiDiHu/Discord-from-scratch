@@ -6,10 +6,11 @@ import Login from 'src/pages/Login';
 import Signup from 'src/pages/Signup';
 import Channels from 'src/pages/Channels';
 import NotFoundPage from 'src/pages/NotFoundPage';
+import LoadingScreen from './LoadingScreen';
 
 const Views = () => {
     const { user } = useContext(AccountContext);
-    return user.loggedIn === null ? (<div className='h-screen w-screen bg-neutral-600'><h1>Loading..............</h1></div>) : (
+    return user.loggedIn === null ? (<LoadingScreen />) : (
         <Routes>
             <Route path='/' element={<Login />} />
             <Route path='/login' element={<Login />} />
