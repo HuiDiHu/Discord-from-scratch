@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState } from "react"
+import { createContext, useContext, useEffect, useLayoutEffect, useState } from "react"
 import socketConn from "../socket"
 import Friends from "./channels/Friends"
 import DirectMessage from "./channels/DirectMessage"
@@ -7,6 +7,7 @@ import NotFoundPage from "./NotFoundPage"
 import ServerSideNavBar from "src/components/channels/ServerSideNavBar"
 import UseSocketSetup from "src/components/channels/UseSocketSetup"
 import { AccountContext } from "../components/auth/UserContext"
+import { useNavigate } from "react-router-dom"
 
 export const SocketContext = createContext();
 export const FriendContext = createContext();
@@ -15,21 +16,27 @@ export const MemberContext = createContext();
 export const ServerContext = createContext();
 export const LoadingContext = createContext();
 
+const pageView = (page) => {
+    switch (page) {
+        case "friends":
+            return (<Friends />)
+        case "dm":
+            return (<DirectMessage />)
+        case "server":
+            return (<Server />)
+        default:
+            return (<NotFoundPage />)
+    }
+}
+
 const Channels = ({ props }) => {
     const path = window.location.pathname.substring(9);
-    const [curPath, setCurPath] = useState(path)
-    const pageView = () => {
-        switch (props.page) {
-            case "friends":
-                return (<Friends />)
-            case "dm":
-                return (<DirectMessage />)
-            case "server":
-                return (<Server />)
-            default:
-                return (<NotFoundPage />)
-        }
-    }
+    const [curPath, setCurPath] = useState(path);
+
+    const navigate = useNavigate();
+    useEffect(() => {
+        if (curPath !== path && curPath === '/@me') navigate('/channels/@me');
+    },[curPath !== path])
 
     //TODO: add pendingList, setPendingList into FriendContext.Provder value
     const [friendList, setFriendList] = useState(null); const [serverList, setServerList] = useState(null); //array of objects
@@ -43,10 +50,14 @@ const Channels = ({ props }) => {
 
     const { user } = useContext(AccountContext)
     const [socket, setSocket] = useState(() => socketConn(user))
-    useEffect(() => {
-        setSocket(() => socketConn(user));
-    },[ user.loggedIn, user.userid, user.token ])
-    UseSocketSetup(setFriendList, setServerList, setMessages, setMemberList, setChannels, setLoadedServers, setUsersLoaded, setSessionTempLinks, socket);
+
+    useLayoutEffect(() => {
+        if (user.loggedIn && user.userid && user.token) {
+            setSocket(() => socketConn(user));
+        }
+    }, [user.loggedIn, user.userid, user.token])
+
+    UseSocketSetup(setCurPath, setFriendList, setServerList, setMessages, setMemberList, setChannels, setLoadedServers, setUsersLoaded, setSessionTempLinks, socket);
     return (
         <LoadingContext.Provider value={{ msgLoading, setMsgLoading, sidebarLoading, setSidebarLoading, membersLoading, setMembersLoading }} >
             <SocketContext.Provider value={{ socket }}>
@@ -57,7 +68,7 @@ const Channels = ({ props }) => {
                                 <ServerSideNavBar props={{ selectedPath: curPath, setSelectedPath: setCurPath }} />
                                 <MessagesContext.Provider value={{ messages, setMessages, loadedDMs, setLoadedDMs, usersLoaded, setUsersLoaded }}>
                                     <div className="grow">
-                                        {pageView()}
+                                        {pageView(props.page)}
                                     </div>
                                 </MessagesContext.Provider>
                             </div>

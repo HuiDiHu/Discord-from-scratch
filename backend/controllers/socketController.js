@@ -210,7 +210,8 @@ const createMessage = async (socket, tempMessage) => {
             [tempMessage.created_at / 1000.0, tempMessage.content, tempMessage.posted_by, tempMessage.in_channel]
         )).rows[0];
     }
-    const author = await getAuthor(message.posted_by)
+    const author = await getAuthor(message.posted_by);
+    if (author.profile) author.profile = Buffer.from(author.profile, 'base64');
 
     socket.emit("create_message", message, author)
     members = await getMembersList(socket, message.in_dm, message.in_channel)

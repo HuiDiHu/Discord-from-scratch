@@ -3,7 +3,7 @@ import { AccountContext } from 'src/components/auth/UserContext';
 import { useNavigate } from 'react-router-dom';
 import base64ToURL from 'src/base64ToURL';
 
-const UseSocketSetup = (setFriendList, setServerList, setMessages, setMemberList, setChannels,
+const UseSocketSetup = (setCurPath, setFriendList, setServerList, setMessages, setMemberList, setChannels,
     setLoadedServers, setUsersLoaded, setSessionTempLinks, socket) => {
     const { user, setUser } = useContext(AccountContext);
 
@@ -182,9 +182,9 @@ const UseSocketSetup = (setFriendList, setServerList, setMessages, setMemberList
         socket.on("delete_server", (server_id) => {
             setServerList(prev => prev.filter(item => item.server_id !== server_id))
             setLoadedServers(prev => {
-                if (prev.length > 0 && prev[0] === server_id) navigate('/channels/@me');
-                return prev;
-            })
+                if (prev.length > 0 && prev[0] === server_id) setCurPath('/@me');
+                return prev.filter(item => item !== server_id);
+            });
         })
         socket.on("connected", (connected, userid) => {
             if (user.userid === userid) {
