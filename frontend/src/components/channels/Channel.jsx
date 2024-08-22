@@ -81,6 +81,7 @@ const Channel = ({ props }) => {
                             setUsersLoaded(prev => [user, ...prev]);
                         }
                         if (usersLoaded.findIndex(item => item.userid === props.friend.userid) === -1) {
+                            console.log(props.friend)
                             setUsersLoaded(prev => [props.friend, ...prev]);
                         }
                         setTimeout(() => { setMsgLoading(false); }, 300);
