@@ -48,7 +48,7 @@ All postgreSQL table CREATE commands are in /backend/layout/tables.sql
 * WIP: Adding file upload and multiple data types
 
 ## Endpoints
-v1 backend API Documentation: <todo>
+v1 backend API Documentation: todo
 
 ## Find a bug?
 Before sending a PR, squash all your merges and file an issue first.
