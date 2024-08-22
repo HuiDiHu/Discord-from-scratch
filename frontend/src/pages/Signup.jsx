@@ -48,6 +48,7 @@ const Signup = () => {
             })
             .catch((error) => {
                 if (!error.response || !error.response.data || !error.response.data.emailErrMsg) {
+                    console.log(error)
                     setEmailErrMsg("An unknown error has occured. Please try again")
                 } else {
                     setEmailErrMsg(error.response.data.emailErrMsg)
